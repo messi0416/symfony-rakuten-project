@@ -1,0 +1,14 @@
+/**
+ * SKU別重量・サイズ 編集　画面用CSS
+ */
+#logisticsStockTransportEditForm .wrapper-content {
+    margin-right: 100px;
+    position: relative;
+}
+#logisticsStockTransportEditForm .wrapper-content .row-item{
+    padding: 8px 0px;
+}
+
+input:read-only.readonlyFieldName {
+  background-color: #FDF5E6;
+}

@@ -1,0 +1,102 @@
+MiscBundle\Entity\TbDeliverySplitRule:
+    type: entity
+    table: tb_delivery_split_rule
+    id:
+        id:
+            type: smallint
+            nullable: false
+            unsigned: true
+            comment: 'ID(主キー) 梱包サイズが小さいものから順番に設定する'
+            default: '0'
+            id: true
+            column: ID
+            generator:
+                strategy: IDENTITY
+    fields:
+        rulename:
+            type: string
+            nullable: true
+            length: 30
+            fixed: false
+            comment: ルール名
+            default: ''
+        checkorder:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: '優先順位 (この順番にチェックしていく。オーバーしたらその時点でチェック終了)'
+            default: '0'
+        prefectureCheckColumn:
+            type: string
+            comment: '適用可能な都道府県に制限のあるルールの場合、都道府県マスタ tb_prefecture の対応カラム名を記載する。例えばこのカラムに「test80_flg」とあり、現在処理中の受注の送り先が静岡県であれば、tb_prefectureの静岡県のレコードを取得し、test80_flg の値を見る（1なら適用可能、0なら適用不可）都道府県に制限のないルールの場合、空文字とする。'
+            default: ''
+            column: prefecture_check_column
+        longlength:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 長辺(mm)
+            default: '0'
+        middlelength:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 中辺(mm)
+            default: '0'
+        shortlength:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 短辺(mm)
+            default: '0'
+        totallength:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 'サイズ(mm) (長辺+中辺+短辺=合計) (sizecheck=1のものがチェック対象)'
+            default: '0'
+        volume:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 体積
+            default: '0'
+        weight:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: 重さ(g)
+            default: '0'
+        sizecheck:
+            type: smallint
+            nullable: false
+            unsigned: true
+            comment: 'サイズ(各辺の合計値)のチェックが必要かどうか 0:チェック不要() 1:要チェック'
+            default: '0'
+        maxflg:
+            type: smallint
+            nullable: false
+            unsigned: true
+            comment: '最大フラグ 0:最大でない 1:最大 (このフラグがついている発送方法を最大の発送方法とみなす)'
+            default: '0'
+        deliveryId:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: '配送方法コード (tb_sales_detailの配送方法コード、tb_delivery_methodのdelivery_idと同じ)'
+            default: '0'
+            column: delivery_id
+        groupid:
+            type: smallint
+            nullable: false
+            unsigned: true
+            comment: 'グループID 1:通常 2:速達'
+            default: '0'
+        groupname:
+            type: string
+            nullable: true
+            length: 15
+            fixed: false
+            comment: グループ名
+            default: ''
+    lifecycleCallbacks: {  }

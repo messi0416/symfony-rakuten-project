@@ -1,0 +1,150 @@
+/**
+ * ロケーション管理画面用 CSS (モバイルメイン)
+ */
+.locationBlock {
+  line-height: 34px;
+  height: 34px;
+  vertical-align: bottom;
+  word-wrap: break-word;
+  margin-bottom: 15px;
+}
+.locationCode {
+  font-size: 2em;
+  font-weight: bold;
+}
+.daihyoSyohinCode {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+/* 商品ロケーション詳細画面 */
+table#locationList>tbody>tr>th,
+table#locationList>tbody>tr>td {
+  vertical-align: middle;
+  padding: 6px 3px;
+}
+
+table#locationList input.form-control[type="text"] {
+  padding: 3px 6px;
+  height: 34px;
+  font-size: 0.9em;
+}
+table#locationList input.form-control[type="number"] {
+  padding: 3px 6px;
+  height: 34px;
+  font-size: 0.9em;
+}
+
+table#locationList>tbody>tr>th.stock,
+table#locationList>tbody>tr>td.stock {
+  font-size: 1.1em;
+}
+
+table.list>tbody>tr>th.stock,
+table.list>tbody>tr>td.stock {
+  font-size: 1.1em;
+}
+
+
+/* 商品ロケーション履歴 */
+
+.Differences {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  empty-cells: show;
+}
+
+.Differences thead th {
+  text-align: left;
+  border-bottom: 1px solid #000;
+  /* background: #aaa; */
+  color: #000;
+  padding: 4px;
+  font-weight: normal;
+}
+.Differences tbody th {
+  text-align: right;
+  /* background: #ccc; */
+  width: 2em;
+  padding: 1px 2px;
+  border-right: 1px solid #000;
+  vertical-align: top;
+  font-size: 13px;
+}
+
+.Differences td {
+  padding: 1px 2px;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+}
+
+.DifferencesSideBySide .ChangeInsert td.Left {
+  background: #dfd;
+}
+
+.DifferencesSideBySide .ChangeInsert td.Right {
+  background: #cfc;
+}
+
+.DifferencesSideBySide .ChangeDelete td.Left {
+  background: #f88;
+}
+
+.DifferencesSideBySide .ChangeDelete td.Right {
+  background: #faa;
+}
+
+.DifferencesSideBySide .ChangeReplace .Left {
+  background: #fe9;
+}
+
+.DifferencesSideBySide .ChangeReplace .Right {
+  background: #fd8;
+}
+
+.Differences ins, .Differences del {
+  text-decoration: none;
+}
+
+.DifferencesSideBySide .ChangeReplace ins, .DifferencesSideBySide .ChangeReplace del {
+  background: #fc0;
+}
+
+.Differences .Skipped {
+  background: #f7f7f7;
+}
+
+.DifferencesInline .ChangeReplace .Left,
+.DifferencesInline .ChangeDelete .Left {
+  background: #fdd;
+}
+
+.DifferencesInline .ChangeReplace .Right,
+.DifferencesInline .ChangeInsert .Right {
+  background: #dfd;
+}
+
+.DifferencesInline .ChangeReplace ins {
+  background: #9e9;
+}
+
+.DifferencesInline .ChangeReplace del {
+  background: #e99;
+}
+
+pre {
+  width: 100%;
+  overflow: auto;
+}
+
+/* WEBピッキングリスト */
+.pickingNum {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.modal {
+  overflow-y: auto;
+  max-height: 90%;
+}

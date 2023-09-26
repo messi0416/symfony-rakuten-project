@@ -1,0 +1,95 @@
+MiscBundle\Entity\TbSalesDetailVoucherItemOrderYm:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_voucher_item_order_ym
+    id:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+                default: ''
+            id: true
+            column: daihyo_syohin_code
+        orderYM:
+            type: string
+            nullable: false
+            length: 6
+            column: 受注年月
+            options:
+                fixed: false
+                default: ''
+            id: true
+#    fields:
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        伝票数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        明細数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        明細金額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        明細粗利額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        明細粗利率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+    lifecycleCallbacks: {  }

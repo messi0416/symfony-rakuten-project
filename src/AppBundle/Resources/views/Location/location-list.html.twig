@@ -1,0 +1,450 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-location-list.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}ロケーション一覧{% endblock %}
+
+{% block headerButtons %}
+  <a href="{{ path('location_empty_rack_list') }}" class="btn btn-sm btn-default">空き棚</a>
+{% endblock %}
+
+{% block contents %}
+
+<div id="locationList"
+     data-url="{{ path('location_location_list') }}"
+     data-warehouse-move-url="{{ path('location_warehouse_move') }}"
+     data-merge-url="{{ path('location_location_merge') }}"
+     data-validate-change-rack-url="{{ path('location_location_validate_change_rack_code') }}"
+     data-change-rack-url="{{ path('location_location_change_rack_code') }}"
+     data-validate-remove-rack-code-url="{{ path('location_location_validate_remove_rack_code') }}"
+     data-remove-rack-code-url="{{ path('location_location_remove_rack_code') }}"
+  >
+
+  <script type="text/javascript">
+    var SEARCH_PARAMS = {{ searchParamsJson | raw }};
+    var SORT_PARAMS = {{ sortParamsJson | raw }};
+    var WAREHOUSES = {{ warehousesJson | raw }};
+    var LOCATIONS = {{ locationsJson | raw }};
+    var CURRENT_WAREHOUSE_ID = Number("{{ currentWarehouseId }}");
+  </script>
+
+  <div class="panel panel-default" id="searchLocation">
+    <div class="panel-body">
+
+      <div class="row row10 mb10">
+        <div class="form-group col-xs-3 mb0">
+          <select class="form-control" v-model="searchWarehouse" disabled>
+            <option v-for="warehouse in warehouses" v-bind:value="warehouse.id" v-text="warehouse.symbol" v-bind:disabled="isCurrentWarehouse(warehouse.id) ? null : 'disabled'"></option>
+          </select>
+        </div>
+
+        <div class="form-group col-xs-4 mb0">
+          <input type="text" class="form-control" v-model="searchKeywordLocation" v-on:keydown.enter="search" placeholder="コード(複数でOR)">
+        </div>
+        <div class="form-group col-xs-3 mb0">
+          <select class="form-control" v-model="searchLikeMode">
+            <option value="full">部</option>
+            <option value="forward">前</option>
+          </select>
+        </div>
+        <div class="form-group col-xs-2 mb0">
+          <button class="btn btn-primary fullWidth" v-on:click="search">検索</button>
+        </div>
+      </div>
+
+      <div class="row row10">
+        <div class="pull-left w50 inputHeight vMiddle text-center">
+          在庫
+        </div>
+        <div class="form-group pull-left mb0 w70">
+          <input type="number" class="form-control" v-model="searchStockMin" placeholder="最小" v-on:keydown.enter="search">
+        </div>
+        <div class="pull-left inputHeight vMiddle text-center">
+          ～
+        </div>
+        <div class="form-group pull-left mb0 w70">
+          <input type="number" class="form-control" v-model="searchStockMax" placeholder="最大" v-on:keydown.enter="search">
+        </div>
+
+
+        <div class="pull-left">
+          <button class="btn btn-default" v-on:click="clearSearchCondition">クリア</button>
+        </div>
+      </div>
+
+      <div class="mt10 row10">
+        <div class="pull-right">
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+              <i class="fa fa-gear"></i>
+              <span class="caret"></span>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li>
+                <a href="#" v-on:click="moveWarehouseConfirm">
+                  倉庫移動
+                </a>
+              </li>
+
+              <li>
+                <a href="#" v-on:click="mergeLocationConfirm">
+                  ロケーション統合
+                </a>
+              </li>
+              <li>
+                <a href="#" v-on:click="changeRackOpen">
+                  棚番号一括変換
+                </a>
+              </li>
+              <li>
+                <a href="#" v-on:click="removeRackCodeOpen">
+                  棚番号・位置コード一括削除
+                </a>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if pagination.count() > 0 %}
+
+    <div class="navigation text-right">
+      <p class="paginationInfo">
+        {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+        /
+        {{ paginationInfo.totalCount | number_format }}
+      </p>
+      {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <table class="table table-responsive table-condensed list mb20">
+      <tr class="bg-info">
+        <th class="col-xs-3 text-center vMiddle">
+          <i class="fa fa-2x cursorPointer" v-bind:class="checkAllButtonCss" v-on:click="toggleCheckAll"></i>
+        </th>
+
+        <th class="col-xs-2 text-center vMiddle">
+          <a href="#" v-on:click="toggleSort('stock')">
+            在庫
+            <i class="fa" v-bind:class="sortCssStock"></i>
+          </a>
+        </th>
+        <th class="col-xs-2 text-center vMiddle">
+          <a href="#" v-on:click="toggleSort('warehouse')">
+            倉庫
+            <i class="fa" v-bind:class="sortCssWarehouse"></i>
+          </a>
+        </th>
+        <th class="col-xs-5 text-left vMiddle">
+          <a href="#" v-on:click="toggleSort('locationCode')">
+          ロケーション
+          <i class="fa" v-bind:class="sortCssLocationCode"></i>
+          </a>
+        </th>
+      </tr>
+
+      <tr is="result-item"
+          v-for="location in locations"
+          :item="location"
+          :current-warehouse-id="currentWarehouseId"
+        ></tr>
+
+    </table>
+
+  {% else %}
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="alert alert-warning">
+          該当するロケーションはありません。
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# 確認モーダル #}
+  <div class="modal"
+       id="modalMoveWarehouse"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            倉庫移動
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert alert-info">
+            下記ロケーションを、選択した倉庫に移動します。
+            よろしいですか？
+          </div>
+
+          <div>
+            <form role="form">
+              <div class="form-group">
+                <select class="form-control" v-model="warehouseMoveTo">
+                  <option v-for="(index, warehouse) in getWarehousesWithoutCurrent(checkedFirstLocation.warehouseId)" v-text="warehouse.symbol + ' : ' + warehouse.name" v-bind:value="warehouse.id"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <ul class="list-group">
+                  <li class="list-group-item" v-for="(index, location) in orderedCheckedCode">
+                    <label>
+                      <span class="label label-symbol mr5" v-text="location.warehouseSymbol"></span>
+                      <span v-text="location.locationCode"></span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg fullWidth btn-warning" v-on:click="moveWarehouseSubmit">移動を実行</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  {# 確認モーダル #}
+  <div class="modal"
+       id="modalMergeLocationConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            ロケーション統合確認
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert alert-info"
+            v-if="!mergeTargetMessage">
+            下記ロケーションを、選択したロケーションに統合します。
+            よろしいですか？
+          </div>
+
+          <div class="alert alert-danger"
+            v-else>
+            <span class="glyphicon glyphicon-alert" aria-hidden="true"></span>
+            <span v-text="mergeTargetMessage"></span>
+          </div>
+
+          <div>
+            <form role="form">
+              <div class="form-group">
+                <ul class="list-group">
+                  <li class="list-group-item" v-for="(index, location) in orderedCheckedCode" v-on:click="clickRadio($event)">
+                    <label>
+                      <input type="radio" name="merge_target" v-bind:value="location.id" v-model="mergeTargetId">
+                      <span v-text="location.locationCode"></span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg fullWidth btn-warning" v-on:click="mergeLocationSubmit">統合を実行</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 確認モーダル #}
+  <div class="modal"
+       id="modalChangeRackConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            棚番号一括変更
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert" v-bind:class="changeRackMessageCss" v-text="changeRackMessage"></div>
+
+          <form role="form">
+            <div class="panel panel-default">
+              <div class="panel-body">
+
+                <div class="row row10 mb5">
+                  <div class="form-group col-xs-4 inputHeight vMiddle mb0">
+                    変更元
+                  </div>
+                  <div class="form-group col-xs-5 mb0">
+                    <input type="text" class="form-control" v-model="changeRackFrom" v-bind:disabled="isValidChangeRack" onkeyup="this.value=this.value.toUpperCase()" />
+                  </div>
+
+                  <div class="form-group col-xs-3 mb0 inputHeight vMiddle text-center" v-text="changeRackTargetCount"></div>
+                </div>
+
+                <div class="row row10 mb5">
+                  <div class="form-group col-xs-4 inputHeight vMiddle mb0">
+                    変更先
+                  </div>
+                  <div class="form-group col-xs-5 mb0">
+                    <input type="text" class="form-control" v-model="changeRackTo" v-bind:disabled="isValidChangeRack" onkeyup="this.value=this.value.toUpperCase()" />
+                  </div>
+
+                  <div class="form-group col-xs-3 mb0 inputHeight vMiddle text-center" v-text="changeRackDuplicateCount"></div>
+                </div>
+
+              </div>
+            </div>
+          </form>
+          <ul class="list-group">
+            <li class="list-group-item" v-for="(index, location) in orderedCheckedCode">
+              <span v-text="location.locationCode"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg fullWidth btn-danger" v-if="isValidChangeRack" v-on:click="changeRackSubmit">一括変更</button>
+              <button type="button" class="btn btn-lg fullWidth btn-info" v-else v-on:click="changeRackConfirm"">確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 確認モーダル #}
+  <div class="modal"
+       id="modalRemoveRackCodeConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            棚番号・位置コード一括削除
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert" v-bind:class="removeRackCodeMessageCss" v-text="removeRackCodeMessage"></div>
+
+          <ul class="list-group">
+            <li class="list-group-item" v-for="(index, location) in orderedCheckedCode">
+              <div v-if="removeRackCodeList.length > 0" class="row row10">
+                <div class="col-xs-6">
+                  <span v-text="location.locationCode"></span>
+                </div>
+                <div class="col-xs-1 text-center">
+                  <i class="fa fa-arrow-right"></i>
+                </div>
+                <div class="col-xs-5 text-right" v-text="findRemoveRackCodeResult(location.locationCode)"></div>
+              </div>
+              <span v-text="location.locationCode" v-else></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg fullWidth btn-danger" v-if="isValidRemoveRackCode" v-on:click="removeRackCodeSubmit">コード一括削除</button>
+              <button type="button" class="btn btn-lg fullWidth btn-info" v-else v-on:click="removeRackCodeConfirm">確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr
+    data-location-detail-url-base="{{ path('location_location_detail', { 'locationId' : '__DUMMY__' }) }}"
+    style="height: 40px;"
+    >
+    <td class="col-xs-3 text-center vMiddle">
+      <i class="fa fa-3x cursorPointer checkIcon" v-bind:class="checkedCss" v-on:click="toggleCheck" v-show="isCurrentWarehouse"></i>
+    </td>
+
+    <td class="col-xs-2 text-center stock bold bigger vMiddle" v-text="item.stockTotal"></td>
+
+    <td class="col-xs-2 text-center vMiddle">
+      <span class="label label-symbol warehouseSymbol" v-text="item.warehouseSymbol"></span>
+    </td>
+    <td class="col-xs-5 vMiddle">
+      <a v-if="isCurrentWarehouse" v-bind:href="locationDetailUrl" v-text="item.locationCode"></a>
+      <span v-else v-text="item.locationCode"></span>
+    </td>
+  </tr>
+
+</script>
+
+{% endblock %}

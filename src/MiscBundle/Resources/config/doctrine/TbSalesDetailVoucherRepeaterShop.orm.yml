@@ -1,0 +1,138 @@
+MiscBundle\Entity\TbSalesDetailVoucherRepeaterShop:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_voucher_repeater_shop
+    id:
+        # 店舗コード:
+        id:
+            type: string
+            nullable: false
+            length: 2
+            options:
+                fixed: false
+            id: true
+        orderDate:
+            type: date
+            nullable: false
+            id: true
+            column: 受注年月日
+#    fields:
+#        受注年月:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数を含む総合計:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数を含む総合計購入１回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: ポイント数を含む総合計_購入１回
+#        伝票数購入１回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: 伝票数_購入１回
+#        購入割合購入１回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#            column: 購入割合_購入１回
+#        ポイント数を含む総合計購入２回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: ポイント数を含む総合計_購入２回
+#        伝票数購入２回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: 伝票数_購入２回
+#        購入割合購入２回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#            column: 購入割合_購入２回
+#        ポイント数を含む総合計購入３回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: ポイント数を含む総合計_購入３回
+#        伝票数購入３回:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: 伝票数_購入３回
+#        購入割合購入３回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#            column: 購入割合_購入３回
+#        ポイント数を含む総合計購入４回以上:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: ポイント数を含む総合計_購入４回以上
+#        伝票数購入４回以上:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: 伝票数_購入４回以上
+#        購入割合購入４回以上:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#            column: 購入割合_購入４回以上
+    lifecycleCallbacks: {  }

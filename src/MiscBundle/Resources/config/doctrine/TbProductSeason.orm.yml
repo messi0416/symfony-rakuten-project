@@ -1,0 +1,136 @@
+MiscBundle\Entity\TbProductSeason:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductSeasonRepository
+    table: tb_product_season
+    id:
+        daihyo_syohin_code:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            id: true
+            column: daihyo_syohin_code
+            generator:
+                strategy: IDENTITY
+    fields:
+        m1:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 1月'
+            default: '-1'
+        m2:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 2月'
+            default: '-1'
+        m3:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 3月'
+            default: '-1'
+        m4:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 4月'
+            default: '-1'
+        m5:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 5月'
+            default: '-1'
+        m6:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 6月'
+            default: '-1'
+        m7:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 7月'
+            default: '-1'
+        m8:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 8月'
+            default: '-1'
+        m9:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 9月'
+            default: '-1'
+        m10:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 10月'
+            default: '-1'
+        m11:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 11月'
+            default: '-1'
+        m12:
+            type: boolean
+            nullable: false
+            comment: '発注シーズン 12月'
+            default: '-1'
+        s1:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 1月'
+            default: '-1'
+        s2:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 2月'
+            default: '-1'
+        s3:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 3月'
+            default: '-1'
+        s4:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 4月'
+            default: '-1'
+        s5:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 5月'
+            default: '-1'
+        s6:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 6月'
+            default: '-1'
+        s7:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 7月'
+            default: '-1'
+        s8:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 8月'
+            default: '-1'
+        s9:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 9月'
+            default: '-1'
+        s10:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 10月'
+            default: '-1'
+        s11:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 11月'
+            default: '-1'
+        s12:
+            type: boolean
+            nullable: false
+            comment: '販売シーズン 12月'
+            default: '-1'
+    lifecycleCallbacks: {  }

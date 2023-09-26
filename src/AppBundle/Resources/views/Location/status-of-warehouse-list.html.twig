@@ -1,0 +1,103 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block headerTitle %}倉庫状況の報告{% endblock %}
+
+{% block contents %}
+
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tabBoxWithLessThan4InStockList" data-toggle="tab">4個以下の箱数</a></li>
+    <li><a href="#tabEmptyBoxList" data-toggle="tab">空棚数</a></li>
+    <li><a href="#tabMoveBoxBetweenWarehouseList" data-toggle="tab">倉庫間移動箱数</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="tabBoxWithLessThan4InStockList" style="overflow-x:auto;">
+		<table class="table table-responsive table-bordered table-condensed mb20">
+			<thead>
+				<tr style="color: #8a6d3b;background-color: #faebcc">
+					<th class="text-center" colspan={{ warehouseColSizeList[14] }}>
+						<p class="mb0">南京終</p>
+					</th>
+					<th class="text-center" colspan={{ warehouseColSizeList[12] }}>
+						<p class="mb0">古市</p>
+					</th>
+					<th class="text-center" colspan={{ warehouseColSizeList[18] }}>
+						<p class="mb0">旧ムカイ</p>
+				</tr>
+			</thead>
+			<tbody>
+			{% for i in 0..maxRowSize %}
+			<tr>
+				{% for boxCount in boxNumList[i] %}
+				<th style="background-color: #fcf8e3">
+					<p class="mb0">{{ boxCount.code|length == 2 ? boxCount.code : '' }}</p>
+				</th>
+				<td>
+					<p class="mb0">{{ boxCount.count }}</p>
+				</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="tab-pane" id="tabEmptyBoxList">
+		<table class="table table-responsive table-bordered table-condensed mb20">
+			<thead>
+				<tr style="color: #31708f;background-color: #bce8f1">
+					<th class="text-center" colspan="2">
+						<p class="mb0">空棚数</p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for index,rackNum in emptyRackList %}
+				<tr>
+					<th class="col-xs-3" style="background-color: #d9edf7">
+						<p class="mb0">{{ index }}</p>
+					</th>
+					<td>
+						<p class="mb0">{{ rackNum }}</p>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="tab-pane" id="tabMoveBoxBetweenWarehouseList">
+		<table class="table table-responsive table-bordered table-condensed mb20">
+			<thead>
+				<tr style="color: #a94442;background-color: #ebccd1">
+					<th class="text-center">
+						<p class="mb0">移動倉庫間</p>
+					</th>
+					<th class="text-center">
+						<p class="mb0">移動箱数</p>
+					</th>
+					<th class="text-center">
+						<p class="mb0">最終倉庫移動時刻</p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for betWeenWarehouse,warahouseData in warehouseBoxList %}
+				<tr>
+					<th class="col-xs-3" style="background-color: #f2dede">
+						<p class="mb0">{{ betWeenWarehouse }}</p>
+					</th>
+					<td>
+						<p class="mb0">{{ warahouseData.boxCount }}</p>
+					</td>
+					<td>
+						<p class="mb0">{{ warahouseData.lastUpdate }}</p>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		<p class="pull-right">最終倉庫間箱移動処理時刻: {{ lastTime2MoveBox }}</p>
+	</div>
+</div>
+{% endblock %}

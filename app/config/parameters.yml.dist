@@ -1,0 +1,445 @@
+# This file is a "template" of what your parameters.yml file should look like
+# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
+# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+parameters:
+    # ホスト名設定
+    host_main: starlight.plusnao.local
+    host_plusnao: forest.plusnao.local
+    auth_cookie_host: plusnao.local
+    host_sub: sub.plusnao.local
+
+    database_host:     127.0.0.1
+    database_port:     ~
+    database_name:     test_plusnao_db
+    database_user:     testuser
+    database_password: N9tgKzyA
+    # You should uncomment this if you want use pdo_sqlite
+    # database_path: "%kernel.root_dir%/data.db3"
+
+    log_database_host: 127.0.0.1
+    log_database_port: null
+    log_database_name: test_plusnao_log_db
+    log_database_user: testuser
+    log_database_password: N9tgKzyA
+
+    tmp_database_host: 127.0.0.1
+    tmp_database_port: null
+    tmp_database_name: test_plusnao_tmp_db
+    tmp_database_user: testuser
+    tmp_database_password: N9tgKzyA
+
+    # 開発環境では、DBSV03の代わりにd1の情報を記載
+    agn_database_host: 10.0.40.10
+    agn_database_port: null
+    agn_database_name: test_plusnao_db
+    agn_database_user: testuser
+    agn_database_password: N9tgKzyA
+
+    agnLog_database_host: 10.0.40.10
+    agnLog_database_port: null
+    agnLog_database_name: test_plusnao_log_db
+    agnLog_database_user: testuser
+    agnLog_database_password: N9tgKzyA
+
+    agnTmp_database_host: 10.0.40.10
+    agnTmp_database_port: null
+    agnTmp_database_name: test_plusnao_tmp_db
+    agnTmp_database_user: testuser
+    agnTmp_database_password: N9tgKzyA
+
+    ec_batch_database_host: 192.168.56.30
+    ec_batch_database_port: null
+    ec_batch_database_name: batch
+    ec_batch_database_user: plusnao
+    ec_batch_database_password: plusnao
+
+    ec01_database_host: 192.168.56.30
+    ec01_database_port: null
+    ec01_database_name: ec01
+    ec01_database_user: plusnao
+    ec01_database_password: plusnao
+
+    ec02_database_host: 192.168.56.30
+    ec02_database_port: null
+    ec02_database_name: ec02
+    ec02_database_user: plusnao
+    ec02_database_password: plusnao
+
+    ec_cube_database_host: 127.0.0.1
+    ec_cube_database_port: null
+    ec_cube_database_name: dummy_db
+    ec_cube_database_user: dummy_user
+    ec_cube_database_password: dummy
+
+    test_database_host: 127.0.0.1
+    test_database_port: null
+    test_database_name: test_plusnao_db
+    test_database_user: testuser
+    test_database_password: N9tgKzyA
+
+    test_log_database_host: 127.0.0.1
+    test_log_database_port: null
+    test_log_database_name: test_plusnao_log_db
+    test_log_database_user: testuser
+    test_log_database_password: N9tgKzyA
+
+    test_tmp_database_host: 127.0.0.1
+    test_tmp_database_port: null
+    test_tmp_database_name: test_plusnao_tmp_db
+    test_tmp_database_user: testuser
+    test_tmp_database_password: N9tgKzyA
+
+    #locale
+    locale: ja
+
+    # メールサーバ設定
+    mailer_transport:  smtp
+    mailer_host:       127.0.0.1
+    mailer_user:       ~
+    mailer_password:   ~
+
+    # メールアドレス
+    system_mail_from: workuser.forest@gmail.com
+    system_mail_error_to:
+        - workuser.forest@gmail.com
+    system_mail_bcc:
+        - workuser.forest@gmail.com
+
+    # メールアドレス：フロント
+    front_mail_from: workuser.forest@gmail.com
+    front_mail_from_name: フォレスト開発
+    front_mail_bcc:
+        - workuser.forest@gmail.com
+
+    # A secret key that's used to generate certain security-related tokens
+    secret: ThisTokenIsNotSoSecretChangeIt
+
+    # 通知サーバ
+    plusnao_notification_host: 'https://starlight.plusnao.local'
+    test_plusnao_notification_host: 'https://starlight.plusnao.local'
+    plusnao_notification_path: '/notify/'
+
+    # RedMine REST API URL, キー (エラーチケット自動作成 など)
+    redmine_api_url: 'http://tk2-217-18298.vs.sakura.ne.jp'
+    redmine_api_key: ~
+    # エラー全般
+    redmine_create_error_ticket: false
+    redmine_create_error_ticket_project: 4
+    redmine_create_error_ticket_user: 44
+    redmine_create_error_ticket_priority: 3
+    redmine_create_error_ticket_tracker: 1
+    # 商品在庫数差異通知
+    redmine_illegal_stock_ticket: false
+    redmine_illegal_stock_ticket_project: 4
+    redmine_illegal_stock_ticket_user: 44
+    redmine_illegal_stock_ticket_priority: 3
+    redmine_illegal_stock_ticket_tracker: 1
+    # 楽天レビュー 低評価通知
+    redmine_low_review_ticket: false
+    redmine_low_review_ticket_project: 9
+    redmine_low_review_ticket_user: 23
+    redmine_low_review_ticket_priority: 3
+    redmine_low_review_ticket_tracker: 17
+    # ピッキングNG
+    redmine_picking_ng_ticket: false
+    redmine_picking_ng_ticket_project: 8
+    redmine_picking_ng_ticket_user: 36
+    redmine_picking_ng_ticket_priority: 3
+    redmine_picking_ng_ticket_tracker: 17
+    # 商品ロケーション詳細編集 在庫現象
+    redmine_location_edit_change_num_ticket: false
+    redmine_location_edit_change_num_ticket_project: 4
+    redmine_location_edit_change_num_ticket_user: 44
+    redmine_location_edit_change_num_ticket_priority: 2
+    redmine_location_edit_change_num_ticket_tracker: 17
+    # WEB注残品質チェック
+    redmine_create_order_quality_check_ticket: false
+    redmine_create_order_quality_check_ticket_project: 4
+    redmine_create_order_quality_check_ticket_user: 44
+    redmine_create_order_quality_check_ticket_priority: 2
+    redmine_create_order_quality_check_ticket_tracker: 17
+
+    # Next Engine ログイン情報
+    ne_site_login_url: "https://base.next-engine.org/users/sign_in/"
+    ne_site_account:
+        api:
+            account: ~
+            password: ~
+    ne_api:
+        client_id: ~
+        client_secret: ~
+        redirect_url: ~
+        ec01_order_upload_pattern_id: ~
+        # EC01 Club Plus Nao(汎用) 受注一括登録パターンID
+        order_upload_pattern_id:
+          yahoo: ~
+          ec01: ~
+          ec02: ~
+
+    # RMS ログイン情報
+    rms_site_login_url: 'https://glogin.rms.rakuten.co.jp/?sp_id=1'
+    rms_site_account:
+        api:
+            account: ~
+            password: ~
+
+    # PPM ログイン情報
+    ppm_site_login_url: 'https://menu.ponparemall.com/shopauth/login/shop/'
+    ppm_site_account:
+        api:
+            account: ~
+            password: ~
+
+    # Amazon MWS ログイン情報
+    amazon_mws_account:
+        vogue:
+            service_url: 'https://mws.amazonservices.jp'
+            aws_access_key_id: ~
+            aws_secret_access_key: ~
+            application_name: ~
+            application_version: ~
+            merchant_id: ~
+            market_place_id: ~
+        us_plusnao:
+            service_url: 'https://mws.amazonservices.com'
+            aws_access_key_id: ~
+            aws_secret_access_key: ~
+            application_name: ~
+            application_version: ~
+            merchant_id: ~
+            market_place_id: ~
+        upgrade_pn:
+            service_url: 'https://mws.amazonservices.jp'
+            aws_access_key_id: ~
+            aws_secret_access_key: ~
+            application_name: ~
+            application_version: ~
+            merchant_id: ~
+            market_place_id: ~
+
+    # SHOPLIST ログイン情報
+    shoplist_login_url: 'https://service.shop-list.com/shopadmin/'
+    shoplist_account:
+        shop_code: ~
+        account: ~
+        password: ~
+
+    # 藪吉倉庫 ログイン情報
+    yabuyoshi_login_url: 'https://web01.lisa-c.jp/yabuyoshi/logininit.html'
+    yabuyoshi_site_account:
+        account: ~
+        password: ~
+
+    # NETSEA ログイン情報
+    netsea_site_login_url: 'https://www.netsea.jp/dap/sv/Login'
+    netsea_site_account:
+        web_checker:
+            account: ~
+            password: ~
+
+    # SUPER DELIVERY ログイン情報
+    super_delivery_site_login_url: 'https://www.superdelivery.com/p/do/clickMemberLogin'
+    super_delivery_site_account:
+        web_checker:
+            account: ~
+            password: ~
+
+    # AKF ログイン情報
+    akf_site_login_url: 'https://asahi-ak.ocnk.net/member-login'
+    akf_site_account:
+        web_checker:
+            account: ~
+            password: ~
+
+    # Vivica Duo ログイン情報
+    vivica_duo_site_login_url: 'https://members.shop-pro.jp/?mode=members&shop_id=PA01068244'
+    vivica_duo_site_account:
+        web_checker:
+            account: ~
+            password: ~
+
+    # Yahoo API 認証情報
+    yahoo_app_id: ~
+    yahoo_app_secret: ~
+    yahoo_api_url_shopping_download_request: ~
+    yahoo_api_url_shopping_download_list: ~
+    yahoo_api_url_shopping_download_submit: ~
+    yahoo_api_test_seller_id: ~
+
+    # スマレジ API認証情報
+    smaregi_api_url: 'https://webapi.smaregi.jp/access/'
+    smaregi_api_contract_id: ~
+    smaregi_api_access_token: ~
+
+    # スマレジへの更新処理をするか。（開発環境で基本OFFにする）
+    smaregi_api_do_update: 0
+
+    # アリババ(1688.com) API
+    alibaba_api:
+        app_key: ~
+        sec_key: ~
+        server_host: ~
+
+    # FTPサーバ
+    ftp_yahoo:
+        plusnao:
+            host: starlight.plusnao.local
+            user: yahoo_plusnao
+            password: 1234
+        kawaemon:
+            host: starlight.plusnao.local
+            user: yahoo_kawaemon
+            password: 1234
+        otoriyose:
+            host: starlight.plusnao.local
+            user: yahoo_otoriyose
+            password: 1234
+    ftp_rakuten:
+        image:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /cabinet/images
+        csv_download:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/download
+        csv_upload:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/batch
+    ftp_rakuten_laforest:
+        image:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /cabinet/images
+        csv_download:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/download
+        csv_upload:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/batch
+    ftp_rakuten_dolcissimo:
+        image:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /cabinet/images
+        csv_download:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/download
+        csv_upload:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/batch
+    ftp_rakuten_gekipla:
+        image:
+            host: starlight.plusnao.local 
+            user: rakuten_image
+            password: dummy
+            path: /cabinet/images
+        csv_download:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/download
+        csv_upload:
+            host: starlight.plusnao.local
+            user: rakuten_image
+            password: dummy
+            path: /ritem/batch
+    ftp_cube:
+        csv_upload:
+            host: starlight.plusnao.local
+            user: cube
+            password: dummy
+            path: /data/uploads
+        log_output:
+            host: starlight.plusnao.local
+            user: cube
+            password: dummy
+            path: /data/logs
+        image_upload:
+            host: starlight.plusnao.local
+            user: cube
+            password: dummy
+            path: /shop/html/upload/save_image
+    ftp_wowma:
+        csv_upload:
+            host: starlight.plusnao.local
+            user: wowma
+            password: 1234
+            path: /
+        image_upload:
+            host: starlight.plusnao.local
+            user: wowma
+            password: 1234
+            path: /
+    ftp_q10:
+        csv_upload:
+            host: starlight.plusnao.local
+            user: q10
+            password: 1234
+            path: /
+    ftp_ppm:
+        host: starlight.plusnao.local
+        user: ppm_image
+        password: 1234
+        is_ssl: false
+        path_image: /imageUpload/images
+        path_csv: /
+    ftp_shoplist:
+        image:
+            host: starlight.plusnao.local
+            user: shoplist
+            password: 1234
+            path: /upload/image
+        csv_upload:
+            host: starlight.plusnao.local
+            user: shoplist
+            password: 1234
+            path: /upload/csv
+
+    # 商品画像 ディレクトリ
+    product_image_dir: /home/workuser/product_images
+    product_image_original_dir: /home/workuser/product_images_original
+    product_image_thumbnail_dir: /home/workuser/product_images_thumbnail
+    product_image_amazon_dir: /home/workuser/product_images_amazon
+    product_image_variation_dir: /home/workuser/product_images_variation
+
+    # 商品画像リサイズ 最大幅・高さ
+    product_image_max_width: 1200
+    product_image_max_height: 1200
+
+    # 商品登録時 一時画像処理API 認証接続元IP
+    process_tmp_product_images_allowed_ips:
+        - 192.168.56.20
+        - 10.0.2.2
+        - 192.168.0.51
+        - 192.168.56.1
+        - 10.0.40.1
+        - 10.0.40.100
+
+    # アダルトチェック用画像 アーカイブディレクトリ
+    check_image_dir: /home/workuser/check_images
+
+    # security.yml で利用
+    default_logout_target: /index
+
+    # Amazon FBA受注取込用キー設定（OyrworksBundle の service.yml を上書き）
+    AmazonMWSAuthorizingInformation:
+      SELLER_ID: ~
+      AWS_ACCESS_KEY_ID: ~
+      AWS_SECRET_KEY: ~
+      MWS_Auth_Token: ~ # 開発者用アクセストークン（開発者アカウントでのアクセスの際必要）
+      isDeveloperAccount: FALSE # 開発者アカウントかどうか（TRUEまたはFALSE）

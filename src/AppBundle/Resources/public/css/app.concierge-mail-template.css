@@ -1,0 +1,35 @@
+html {
+  overflow-y: scroll;
+}
+
+.form-horizontal .control-label {
+  padding-top: 7px;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+#mailTemplateBody {
+  height: 340px;
+  font-size: 0.9em;
+}
+
+#mailTemplateListTable {
+  font-size: 0.8em;
+}
+
+#mailTemplateListTable th {
+  width: calc(100% / 7);
+}
+
+ol.levels {
+  white-space: nowrap;
+  overflow: auto;
+}
+
+#mailTemplateListPagination {
+  margin-bottom: 10px;
+}
+#mailTemplateListPagination ul.pagination {
+  margin-top: 0;
+  margin-bottom: 0;
+}

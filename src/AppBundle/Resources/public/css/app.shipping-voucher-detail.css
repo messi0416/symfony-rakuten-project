@@ -1,0 +1,55 @@
+.shippingVoucherDetailContents {
+  padding: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.border-bottom-solid {
+  border-bottom: 1px solid;
+}
+
+.border-bottom-dotted {
+  border-bottom: 1px dotted;
+}
+
+.shippingVoucherDetailContents > .loading {
+  position: absolute;
+  text-align: center;
+  display: none;
+  right:0;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  background-color: #000;
+  z-index: 1050;
+}
+
+.loading-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.skuFont {
+  font-size: calc(12px + 1.5vw);
+}
+
+.subLink {
+  position: relative;
+}
+
+.mainLink:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.positionStatic {
+  position: static;
+}

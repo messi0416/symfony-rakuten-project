@@ -1,0 +1,49 @@
+MiscBundle\Entity\TbSalesDetailVoucherNayoseSumChange2:
+    type: entity
+    table: tb_sales_detail_voucher_nayose_sum_change2
+    id:
+        idx:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+            generator:
+                strategy: IDENTITY
+#    fields:
+#        開始年月日:
+#            type: date
+#            nullable: false
+#        終了年月日:
+#            type: date
+#            nullable: false
+#        購入回数１回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        購入回数２回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        購入回数３回:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        購入回数４回以上:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+    lifecycleCallbacks: {  }

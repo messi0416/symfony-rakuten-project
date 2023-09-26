@@ -1,0 +1,14 @@
+diff --git src/Client.php src/Client.php
+index de4df8a..dd8d3a7 100644
+--- src/Client.php
++++ src/Client.php
+@@ -161,7 +161,8 @@ class Client implements ClientInterface
+             'allow_redirects' => RedirectMiddleware::$defaultSettings,
+             'http_errors'     => true,
+             'decode_content'  => true,
+-            'verify'          => true,
++            // 'verify'          => true,
++            'verify'          => false,
+             'cookies'         => false
+         ];
+ 

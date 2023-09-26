@@ -1,0 +1,42 @@
+MiscBundle\Entity\TbConciergeOperationLog:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbConciergeOperationLogRepository
+    table: tb_concierge_operation_log
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        tbConciergeOperationTaskId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: コンシェルジュ業務タスクID
+            default: '0'
+            column: tb_concierge_operation_task_id
+        note:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            comment: 備考
+        createAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 登録ユーザID
+            default: '999999'
+            column: create_account_id
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

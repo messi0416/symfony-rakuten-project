@@ -1,0 +1,15 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block title %}スーパーデリバリー商品情報管理画面-新規登録{% endblock %}
+ 
+{% block body %}
+<div class="container container-large">
+    <h3 class="header">商品を新規登録する</h3>
+    <div>
+        <a href="{{ path('sdexp_new') }}" class="btn btn-success">CSVファイルをダウンロードする</a>
+    </div>
+    <div>
+        <a href="{{ path('sdexp_img') }}" class="btn btn-success">画像ZIPファイルをダウンロードする</a>
+    </div>
+</div>
+{% endblock %}

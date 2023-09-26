@@ -1,0 +1,543 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/css/app.product-edit-mall-product.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.product-edit-mall-product.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  {% if is_granted('ROLE_PRODUCT_MANAGEMENT_UPDATING') %}
+    <script type="text/javascript">
+      const HAS_UPDATE_ROLE = true;
+    </script>
+  {% else %}
+    <script type="text/javascript">
+      const HAS_UPDATE_ROLE = false;
+    </script>
+  {% endif %}
+  <script type="text/javascript">
+    const MALL_PRODUCT = {{ mallProduct|raw }};
+    const TAX_RATE = {{ taxRate|raw }};
+  </script>
+
+  <div id="mall-product" class="container"
+    data-update-url="{{ path('product_edit_mall_product_update') }}"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_80_80'}) }}">
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>モール商品</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+
+    {# 結果 #}
+    <div v-if="info.main" class="panel panel-default">
+      <div class="panel-body">
+        <div>
+          <div class="pull-right">
+            <button class="btn btn-primary mb5" @click="save"
+              :disabled="!hasUpdateRole || (Object.keys(mainModifiedList).length === 0 && byShopModifiedNum === 0)">
+              保存
+            </button>
+          </div>
+
+          <table class="table table-bordered">
+            <tr>
+              {# 代表商品コード #}
+              <td v-text="info.main.daihyoSyohinCode" class="fz18 text-center vMiddle bold w200 px6 py2">
+              </td>
+              {# 商品画像 #}
+              <td class="w80">
+                <img :src="thumbnailUrl" class="img-responsive center-block" alt="商品画像" />
+              </td>
+              {# 代表商品名 #}
+              <td class="vMiddle b0 px6 py2">
+                <div class="d-flex flex-center">
+                  <input id="daihyo-syohin-name" type="text"
+                    class="inlineBlock vMiddle form-control input-sm"
+                    :class="modifiedClasses['daihyoSyohinName']"
+                    :value="info.main.daihyoSyohinName"
+                    @change="changeMainValue($event, 'daihyoSyohinName');">
+                  <button type="button" class="btn btn-info btn-sm ml5" @click="changeAllTitle">
+                    一括反映
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="vMiddle px6 py2" colspan="3">
+                <div class="form-inline">
+                  <div class="inlineBlock mr10">
+                    <input id="guerrilla-sall-flg" type="checkbox" class="checkbox"
+                      :class="modifiedClasses['guerrillaSaleFlg']"
+                      :checked="info.main.guerrillaSaleFlg"
+                      @change="changeMainValue($event, 'guerrillaSaleFlg')">
+                    <label for="guerrilla-sall-flg" class="checkbox-inline p0">
+                      手動ゲリラSALE
+                    </label>
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <label for="genka-tnk">
+                      基準原価(抜)
+                      <span data-toggle="tooltip" title="基準原価(抜)
+・・・ 「原価単価 genka_tnk」">
+                        <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                      </span>：
+                    </label>
+                    <input id="genka-tnk" type="number" min="0"
+                      class="text-right input-sm form-control w80"
+                      :class="modifiedClasses['genkaTnk']"
+                      :value="info.main.genkaTnk"
+                      @change="changeMainValue($event, 'genkaTnk')">
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <label for="baika-tnk">
+                      基準売価(抜)
+                      <span data-toggle="tooltip" title="基準売価(抜)
+・・・ 「売価単価 baika_tnk」">
+                        <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                      </span>：
+                    </label>
+                    <input id="baika-tnk" type="number" min="0"
+                      :disabled="!info.main.originalPriceFlg"
+                      class="text-right input-sm form-control w80"
+                      :class="modifiedClasses['baikaTnk']"
+                      :value="info.main.baikaTnk"
+                      @change="changeMainValue($event, 'baikaTnk')">
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <input id="original-price-flg" type="checkbox" class="checkbox"
+                      :class="modifiedClasses['originalPriceFlg']"
+                      :checked="info.main.originalPriceFlg"
+                      @change="changeMainValue($event, 'originalPriceFlg')">
+                    <label for="original-price-flg" class="checkbox-inline p0">
+                      価格非連動
+                    </label>
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <span v-show="info.main.mallPriceFlg" class="bg-warning text-danger border p6 bold"
+                      :class="modifiedClasses['mallPriceFlg']">
+                      モール別価格
+                    </span>
+                    {# OFFに変更になった時、要素の周りを光らせたいために空文字で用意 #}
+                    <span v-show="!info.main.mallPriceFlg" class="p6"
+                      :class="modifiedClasses['mallPriceFlg']">
+                    </span>
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <label>
+                      送料設定：
+                    </label>
+                    <span v-text="info.main.shippingDivission"></span>
+                  </div>
+                  <div class="inlineBlock mr10">
+                    <label for="adult-check-status">
+                      アダルト：
+                    </label>
+                    <span id="adult-check-status" v-text="info.main.adultCheckStatus"></span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="bg-w-smoke w100 px6 py2"></th>
+                <th class="bg-w-smoke vMiddle px6 py2">
+                  <div class="form-inline">
+                    <div class="inlineBlock mr20">
+                      <input id="registration-flg-all-selected" type="checkbox" class="checkbox"
+                        :checked="registrationFlgAllSelected"
+                        @change="selectAllRegistrationFlg">
+                      <label for="registration-flg-all-selected" class="checkbox-inline p0">
+                        出品 全チェック
+                      </label>
+                    </div>
+                    <div class="inlineBlock mr30">
+                      <label for="baika-tanka-all-inputed">
+                        非連動価格：
+                      </label>
+                      <input id="baika-tanka-all-inputed" type="number" min="0"
+                        class="text-right input-sm form-control w80"
+                        :value="nonLinkedPrice"
+                        @change="changeNonLinkedPrice($event)">
+                      <button type="button" class="btn btn-info btn-sm ml5" @click="changeAllBaikaTanka">
+                        一括反映
+                      </button>
+                    </div>
+                    <div class="inlineBlock mr20">
+                      <input id="original-price-flg-all-selected" type="checkbox" class="checkbox"
+                        :checked="originalPriceFlgAllSelected"
+                        @change="selectAllOriginalPriceFlg">
+                      <label for="original-price-flg-all-selected" class="checkbox-inline p0">
+                        価格非連動 全チェック
+                      </label>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody v-for="(item, index) in info.byShop" :key="item.mall + item.shop"
+              is="mall-product-by-shop-table" ref="byShop"
+              :item="item" :index="index" :set-flg="info.main.setFlg" :size="sizeInfo"
+              @change-original-price-flg="checkHasOriginalPriceFlg"
+              @change-value="changeByShopModifiedList">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script id="mallProductByShopTable" type="text/x-template">
+    <tbody>
+      {# 全モール共通項目 #}
+      <tr>
+        <td class="text-center vMiddle w100 bg-info b0 px6 py2" rowspan="3">
+          <span v-text="displayMallName"></span>
+          <template v-if="['rakuten', 'yahoo'].includes(item.mall)">
+            <br>
+            (<span v-text="item.shop"></span>)
+          </template>
+        </td>
+        <td class="vMiddle b0 px6 py2">
+          {# タイトル #}
+          <input type="text" class="form-control input-sm" :class="modifiedClasses['title']"
+            :value="item.title" @change="changeValue($event, 'title')">
+        </td>
+      </tr>
+      <tr>
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <input :id="'registration-flg-' + item.mall + item.shop" type="checkbox" class="checkbox"
+                :class="modifiedClasses['registrationFlg']"
+                :checked="item.registrationFlg"
+                @change="changeValue($event, 'registrationFlg')"
+                :disabled="!canChangeShoplistRegistrationFlg">
+              <label :for="'registration-flg-' + item.mall + item.shop" class="checkbox-inline p0">
+                出品
+                <span v-if="!canChangeShoplistRegistrationFlg"
+                  data-toggle="tooltip" title="セット商品はSHOPLISTでは販売できません">
+                  <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </span>
+              </label>
+            </div>
+            <div class="inlineBlock mr20">
+              <label :for="'baika-tanka-' + item.mall + item.shop">
+                売価単価：
+              </label>
+              <input :id="'baika-tanka-' + item.mall + item.shop" type="number" min="0"
+                class="text-right input-sm form-control w80" :disabled="!item.originalPriceFlg"
+                :class="modifiedClasses['baikaTanka']"
+                :value="item.baikaTanka" @change="changeValue($event, 'baikaTanka')">
+            </div>
+            <div class="inlineBlock mr20">
+              <label>
+                店舗販売価格：
+              </label>
+              <span class="mr20" v-text="displaySellingPrice"></span>
+            </div>
+            <div class="inlineBlock mr20">
+              <input :id="'is-original-price-' + item.mall + item.shop" type="checkbox" class="checkbox"
+                :class="modifiedClasses['originalPriceFlg']"
+                :checked="item.originalPriceFlg"
+                @change="changeValue($event, 'originalPriceFlg')">
+              <label class="checkbox-inline p0" :for="'is-original-price-' + item.mall + item.shop">
+                価格非連動
+              </label>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# モール独自項目 #}
+      {# 楽天 #}
+      <tr v-if="item.mall === 'rakuten'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <input :id="'cannot-warehouse-' + item.mall + item.shop" type="checkbox" class="checkbox"
+                :class="modifiedClasses['warehouseFlg']"
+                :checked="item.warehouseFlg" @change="changeValue($event, 'warehouseFlg')">
+              <label :for="'cannot-warehouse-' + item.mall + item.shop" class="checkbox-inline p0">
+                倉庫不可
+              </label>
+            </div>
+            <div v-if="item.warehouseStoredFlg" class="inlineBlock mr20">
+              <span class="bg-warning p6 bold">
+                倉庫格納中
+              </span>
+            </div>
+            <div class="inlineBlock mr20">
+              <label :for="'display-price-' + item.mall + item.shop">
+                表示価格
+                <span data-toggle="tooltip" title="表示価格
+空欄可。
+入力する場合、
+基本的に9桁までの半角数字で入力。
+0：二重価格解除
+open：「オープン価格」を表示する。">
+                  <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </span>：
+              </label>
+              <input :id="'display-price-' + item.mall + item.shop" type="text" max="9"
+                class="text-right input-sm form-control w80"
+                :class="modifiedClasses['displayPrice']"
+                :value="item.displayPrice" @change="changeValue($event, 'displayPrice')">
+            </div>
+            <div class="inlineBlock mr20">
+              {# プルダウンの方が望ましい。現在未使用とのことで一旦この形式で。 #}
+              <label :for="'dual-price-control-number-' + item.mall + item.shop">
+                二重価格管理番号
+                <span data-toggle="tooltip" title="二重価格管理番号
+空欄可。
+0：自動選択
+1：当店通常価格
+2：メーカー希望小売価格
+4：商品価格ナビのデータ参照
+空欄の場合は0。">
+                  <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </span>：
+              </label>
+              <input :id="'dual-price-control-number-' + item.mall + item.shop" type="text"
+                class="text-right input-sm form-control w80"
+                :class="modifiedClasses['dualPriceControlNumber']"
+                :value="item.dualPriceControlNumber" @change="changeValue($event, 'dualPriceControlNumber')">
+            </div>
+            <div class="inlineBlock mr20">
+              <button type="button" class="btn btn-success btn-sm"
+                :class="descriptionModifiedClass"
+                @click="openProductDescriptionModal">
+                商品説明文編集
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# Yahoo! #}
+      <tr v-if="item.mall === 'yahoo'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <label :for="'pr-rate-' + item.mall + item.shop">
+                PR率
+                <span data-toggle="tooltip" title="PR率
+・・・ 0％～30％（0.1%刻みで設定可能）">
+                  <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </span>：
+              </label>
+              <input :id="'pr-rate-' + item.mall + item.shop" type="number"
+                step="0.1" min="0" max="30"
+                class="text-right input-sm form-control w80"
+                :class="modifiedClasses['prRate']"
+                :value="item.prRate" @change="changeValue($event, 'prRate')">
+            </div>
+            <div class="inlineBlock mr20">
+              <button type="button" class="btn btn-success btn-sm"
+                :class="descriptionModifiedClass"
+                @click="openProductDescriptionModal">
+                商品説明文編集
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# Wowma #}
+      <tr v-if="item.mall === 'wowma'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <label :for="'search-keyword-' + item.mall + item.shop">
+                検索キーワード：
+              </label>
+              <input :id="'search-keyword-' + item.mall + item.shop" type="text"
+                class="input-sm form-control w150 mr5"
+                :class="modifiedClasses['searchKeyword1']"
+                :value="item.searchKeyword1" @change="changeValue($event, 'searchKeyword1')">
+              <input type="text" class="input-sm form-control w170 mr5"
+                :class="modifiedClasses['searchKeyword2']"
+                :value="item.searchKeyword2" @change="changeValue($event, 'searchKeyword2')">
+              <input type="text" class="input-sm form-control w170"
+                :class="modifiedClasses['searchKeyword3']"
+                :value="item.searchKeyword3" @change="changeValue($event, 'searchKeyword3')">
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# SHOPLIST #}
+      <tr v-if="item.mall === 'shoplist'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <span class="bg-warning">
+                ※ [仕様] SHOPLISTの売価単価は値下げ処理が反映された基準売価ではなく、常に基準原価から計算を行います（値下げなし）
+              </span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# ﾎﾟﾝﾊﾟﾚﾓｰﾙ #}
+      <tr v-if="item.mall === 'ppm'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <button type="button" class="btn btn-success btn-sm"
+                :class="descriptionModifiedClass"
+                @click="openProductDescriptionModal">
+                商品説明文編集
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# Amazon #}
+      <tr v-if="item.mall === 'amazon'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <label for="fba-price">
+                FBA価格(税抜)：
+              </label>
+              <span v-text="displayFbaBaika"></span>
+            </div>
+            <div class="inlineBlock mr20">
+              <label>
+                FBA価格(税込)：
+              </label>
+              <span v-text="displayFbaBaikaTaxed"></span>
+            </div>
+            <div class="inlineBlock mr20">
+              <input :id="'fba-flg-' + item.mall + item.shop" type="checkbox" class="checkbox"
+                :class="modifiedClasses['fbaFlg']"
+                :checked="item.fbaFlg" @change="changeValue($event, 'fbaFlg')">
+              <label :for="'fba-flg-' + item.mall + item.shop" class="checkbox-inline p0">
+                FBA出荷
+              </label>
+            </div>
+            <div class="inlineBlock mr20">
+              <label for="snl-price">
+                S&L価格(税抜)：
+              </label>
+              <span v-text="displaySnlBaika"></span>
+            </div>
+            <div class="inlineBlock mr20">
+              <label for="snl-price">
+                S&L価格(税込)：
+              </label>
+              <span v-text="displaySnlBaikaTaxed"></span>
+            </div>
+            <div class="inlineBlock mr20">
+              <input :id="'snl-flg-' + item.mall + item.shop" type="checkbox" class="checkbox"
+                :class="modifiedClasses['snlFlg']"
+                :checked="item.snlFlg" @change="changeValue($event, 'snlFlg')">
+              <label :for="'snl-flg-' + item.mall + item.shop" class="checkbox-inline p0">
+                S&L出荷
+              </label>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      {# Q10 #}
+      <tr v-if="item.mall === 'q10'">
+        <td class="vMiddle b0 px6 py2">
+          <div class="form-inline">
+            <div class="inlineBlock mr20">
+              <label :for="'q10-item-code-' + item.mall + item.shop">
+                Q10商品コード：
+              </label>
+              <input :id="'q10-item-code-' + item.mall + item.shop" type="text"
+                class="input-sm form-control w170 mr5"
+                :class="modifiedClasses['q10Itemcode']"
+                :value="item.q10Itemcode" @change="changeValue($event, 'q10Itemcode')">
+            </div>
+            <div class="inlineBlock mr20">
+              <button type="button" class="btn btn-success btn-sm"
+                :class="descriptionModifiedClass"
+                @click="openProductDescriptionModal">
+                商品説明文編集
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </script>
+
+  {# modals #}
+  <div class="modal" id="modal-product-description" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div :class="messageClass">
+              <div v-text="message"></div>
+            </div>
+          </div>
+          <div class="nowLoading" v-show="nowLoading">
+            <span>
+              <img src="{{ asset('img/loading.gif') }}" />
+            </span>
+          </div>
+          <div class="productDescription">
+            <ul class="nav nav-tabs" id="indexNavTab">
+              <li v-for="(value, key, index) in list.descriptions" :key="key"
+                :class="{ active: index === 0 }">
+                <a :href="'#'+key" data-toggle="tab" v-text="findDescriptionName(key)"
+                  :aria-expanded="index === 0">
+                </a>
+              <li>
+            </ul>
+            <div id="indexTabBlock" class="tab-content">
+              <div v-for="(value, key, index) in list.descriptions" :key="key" :id="key" class="tab-pane"
+                :class="{ active: index === 0 }">
+                <div class="panel-body">
+                  <textarea rows="20" class="form-control" :class="modifiedClasses[key]"
+                    :value="list.descriptions[key]" @change="changeDescription($event, key)">
+                  </textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">
+            閉じる
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

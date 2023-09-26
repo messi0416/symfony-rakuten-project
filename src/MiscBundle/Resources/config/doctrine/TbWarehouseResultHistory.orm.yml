@@ -1,0 +1,99 @@
+MiscBundle\Entity\TbWarehouseResultHistory:
+    type: entity
+    table: tb_warehouse_result_history
+    uniqueConstraints:
+        key_warehouse_date:
+            columns:
+                - warehouse_id
+                - target_date
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        warehouseId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 倉庫ID
+            default: '0'
+            column: warehouse_id
+        targetDate:
+            type: string
+            nullable: false
+            comment: 対象日
+            column: target_date
+        pickingSum:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ピッキング
+            default: '0'
+            column: picking_sum
+        warehousePickingSum:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 倉庫在庫ピッキング
+            default: '0'
+            column: warehouse_picking_sum
+        shippingSum:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 出荷数
+            default: '0'
+            column: shipping_sum
+        shippingSumShoplist:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLIST購入伝票の出荷数
+            default: '0'
+            column: shipping_sum_shoplist
+        shippingSumRsl:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "楽天RSLでの出荷数\nSHOPLIST購入伝票は除く"
+            default: '0'
+            column: shipping_sum_rsl
+        shippingSumSagawa:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "佐川での出荷数\nSHOPLIST購入伝票は除く"
+            default: '0'
+            column: shipping_sum_sagawa
+        shippingSumYamato:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "ヤマト(発払い)B2v6での出荷数\nSHOPLIST購入伝票は除く"
+            default: '0'
+            column: shipping_sum_yamato
+        operationTimeSum:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "稼働時間合計\n単位は分"
+            column: operation_time_sum
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\nバッチ登録は0"
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

@@ -1,0 +1,233 @@
+MiscBundle\Entity\TbPlusnaoproductdirectory:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbPlusnaoproductdirectoryRepository
+    table: tb_plusnaoproductdirectory
+    id:
+        # neディレクトリid:
+        ne_directory_id:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+            id: true
+            column: NEディレクトリID
+            generator:
+                strategy: IDENTITY
+
+    fields:
+        field01:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド1
+        field02:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド2
+        field03:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド3
+        field04:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド4
+        field05:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド5
+        field06:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: フィールド6
+
+        rakuten_directory_id:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+            column: 楽天ディレクトリID
+
+#        bidddersディレクトリid:
+#            type: string
+#            nullable: false
+#            length: 15
+#            options:
+#                fixed: false
+#            column: BIDDDERSディレクトリID
+#        yahooディレクトリid:
+#            type: string
+#            nullable: false
+#            length: 15
+#            options:
+#                fixed: false
+#            column: YAHOOディレクトリID
+#        q10ディレクトリid:
+#            type: string
+#            nullable: false
+#            length: 15
+#            options:
+#                fixed: false
+#            column: Q10ディレクトリID
+#        amazon商品タイプ:
+#            type: string
+#            nullable: false
+#            length: 100
+#            options:
+#                fixed: false
+#            column: AMAZON商品タイプ
+#        amazon検索キーワード1:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#            column: AMAZON検索キーワード1
+#        amazon推奨ブラウズノード1:
+#            type: string
+#            nullable: false
+#            length: 30
+#            options:
+#                fixed: false
+#            column: AMAZON推奨ブラウズノード1
+#        ssディレクトリid:
+#            type: string
+#            nullable: false
+#            length: 30
+#            options:
+#                fixed: false
+#                comment: ショップサーブディレクトリID
+#            column: SSディレクトリID
+#        ssディレクトリ名:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#                comment: ショップサーブディレクトリ名
+#            column: SSディレクトリ名
+#        ppmディレクトリid:
+#            type: string
+#            nullable: false
+#            length: 15
+#            options:
+#                fixed: false
+#                comment: ポンパレモールディレクトリID
+#            column: PPMディレクトリID
+#        rakutencategories1:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: rakutencategories_1
+#        rakutencategories1Order:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: rakutencategories_1_order
+#        rakutencategories2:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: rakutencategories_2
+#        gmoCategoryMain:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: gmo_category_main
+#        gmoCategorySub:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: gmo_category_sub
+#        yahooCategory:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#                comment: YAHOOプロダクトカテゴリ
+#            column: yahoo_category
+#        itemCount:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#                default: '0'
+#            column: item_count
+#        makeshopCat1:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: makeshop_cat1
+#        makeshopCat2:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: makeshop_cat2
+#        biddersBunrui:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: bidders_bunrui
+#        clothingtype:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        gender:
+#            type: string
+#            nullable: false
+#            length: 1
+#            options:
+#                fixed: false
+#                comment: 性別
+#        generation:
+#            type: string
+#            nullable: false
+#            length: 1
+#            options:
+#                fixed: false
+#                comment: 世代
+    lifecycleCallbacks: {  }

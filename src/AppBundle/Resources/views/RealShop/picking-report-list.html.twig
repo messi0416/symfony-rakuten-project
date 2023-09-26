@@ -1,0 +1,120 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{#{% block javascripts %}#}
+  {#{{ parent() }}#}
+
+  {#&#123;&#35; pagination コンポーネント&#35;&#125;#}
+  {#{% include 'AppBundle::parts/pagination.html.twig' %}#}
+
+  {#{% javascripts#}
+  {#'@AppBundle/Resources/public/js/app.real-shop-product-stock-list.js'#}
+  {#%}#}
+  {#<script src="{{ asset_url }}"></script>#}
+  {#{% endjavascripts %}#}
+{#{% endblock %}#}
+
+{% block body %}
+
+  <div id="realShopPickingReportList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>実店舗 配送リスト</h2>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" class="hidden">
+        <div v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="realShopPickingReportListTable"
+         class="table-responsive"
+      >
+
+      {% if pagination.count() > 0 %}
+
+        <div class="navigation text-right">
+          <p class="paginationInfo">
+            {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+            /
+            {{ paginationInfo.totalCount | number_format }}
+          </p>
+          {{ knp_pagination_render(pagination) }}
+        </div>
+
+        <table class="table table-border table-condensed">
+          <tr>
+            <th class="text-center">日付</th>
+            <th class="text-center">番号</th>
+            <th class="text-center">作成者</th>
+            <th class="text-center">商品件数</th>
+            <th class="text-center">数量</th>
+            <th class="text-center">ラベルCSV</th>
+            <th>&nbsp;</th>
+          </tr>
+
+          {% for row in pagination.getItems() %}
+            <tr>
+              <td class="text-center">{{ row.picking_date.format('Y-m-d') }}</td>
+              <td class="text-center">{{ row.number }}</td>
+              <td class="text-center">{{ row.account_name }}</td>
+              <td class="text-center">{{ row.product_count }}</td>
+              <td class="text-center">{{ row.move_num }}</td>
+              <td class="text-center">
+                {% for labelType in row.label_types|split('/') %}
+                  <a href="{{ path('real_shop_download_label_csv', {
+                                          'date'   : row.picking_date.format('Y-m-d')
+                                        , 'number' : row.number
+                                        , 'type'   : labelType
+                                      }
+                              )}}"
+                     download="real_shop_label_{{ row.picking_date.format('Y-m-d') }}_{{ row.number }}_{{ labelType }}.csv">
+                    <i class="fa {{ labelTypes[labelType].icon }} text-success"></i> {{ labelTypes[labelType].name }}
+                  </a>
+                {% endfor %}
+              </td>
+              <td class="text-center">
+                <a href="{{ path('real_shop_picking_report_detail', { date: row.picking_date.format('Y-m-d'), number: row.number }) }}">詳細</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+
+      {% else %}
+        <div class="panel panel-default">
+          <div class="panel-body">
+            データがありません。
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}

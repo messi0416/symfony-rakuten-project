@@ -1,0 +1,59 @@
+MiscBundle\Entity\BaseRakutenMallInformation:
+  type: mappedSuperclass
+  indexes:
+    Index_2:
+      columns:
+        - rand_no
+        - rand_link1_no
+  fields:
+    title:
+      type: string
+      nullable: true
+      length: 255
+      fixed: false
+      column: 楽天タイトル
+    warehouseFlg:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "倉庫不可フラグ\n0:倉庫可\n0以外:倉庫不可（常に表示）\nACCESSから手動設定"
+      default: "0"
+      column: warehouse_flg
+    warehouseStoredFlg:
+      type: boolean
+      nullable: false
+      comment: "倉庫格納フラグ\n0: 倉庫に入れない（表示）\n1:倉庫に入れる（非表示）\nそのままCSVに出力するため、非表示は-1ではなく必ず1\nRPPとの関係で、0が5万件を超えてはならない。バッチ処理で自動設定"
+      default: "1"
+      column: warehouse_stored_flg
+    displayPrice:
+      type: string
+      nullable: false
+      length: 11
+      fixed: false
+      column: 表示価格
+    dualPriceControlNumber:
+      type: string
+      nullable: true
+      length: 1
+      fixed: false
+      default: "0"
+      column: 二重価格文言管理番号
+    productDescriptionPC:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_PC商品説明文
+    productDescriptionSP:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_SP商品説明文
+    salesDescriptionPC:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_PC販売説明文
+  lifecycleCallbacks: {}

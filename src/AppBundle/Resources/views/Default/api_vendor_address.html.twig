@@ -1,0 +1,68 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{#{% extends 'AppBundle::base.html.twig' %}#}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.api_vendor_addres.css' filter='cssrewrite'
+  %}
+
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.api_vendor_address.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="searchVendorAddress"
+       data-url="{{ path('api_search_vendor_address') }}"
+  >
+    <div>
+      <div>
+        <h2>
+          仕入先アドレス検索
+        </h2>
+      </div>
+
+      <div>
+        <div v-if="message" v-bind:class="messageClass" v-text="message"></div>
+      </div>
+
+      <div class="loading" v-if="nowLoading">
+        <img src="{{ asset('img/loading-large.gif') }}" />
+      </div>
+
+      <div v-if="!(nowLoading)">
+        <div class="form-group">
+          <label>仕入先アドレス</label>
+          <input type="text" class="form-control" v-model="searchVendorAddress" v-on:keypress="keyPress" v-on:change="search" />
+        </div>
+
+        <ul class="list-group">
+          <li class="list-group-item" v-for="address in addresses">
+            <div class="clearfix">
+              <p class="pull-left" v-text="address.daihyo_syohin_code"></p>
+              <p class="pull-right">
+                <a v-bind:href="address.sire_adress" target="_blank" v-text="address.sire_adress"></a>
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      {% if is_granted('ROLE_USER') %}
+        <div class="pull-right">
+          <a href="{{ path('homepage') }}">トップ画面に戻る</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

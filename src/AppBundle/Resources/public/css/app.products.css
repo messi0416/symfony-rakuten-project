@@ -1,0 +1,15 @@
+
+#missingAmazonImageListTable table td {
+  font-size: 24px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+#notWhiteListTable table td {
+  vertical-align: middle;
+}
+
+#notWhiteListTable table td.big {
+  font-size: 24px;
+  font-weight: bold;
+}

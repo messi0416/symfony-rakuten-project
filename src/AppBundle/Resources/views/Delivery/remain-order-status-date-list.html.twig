@@ -1,0 +1,304 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  'bundles/app/css/app.delivery.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/moment/moment-with-locales.min.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.delivery-remain-order-status-date-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div class="container container-large">
+
+    <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+      <div class="row">
+        <div class="pull-left">
+          <h2>注残ステータス変更日付 集計表</h2>
+        </div>
+
+      </div>
+      <div class="row" v-show="message && message.length > 0">
+        <div class="pull-left">
+          <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+        </div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <script type="text/javascript">
+      var REMAIN_ORDER_STATUS_DATE_LIST = {{ dataJson | raw }};
+    </script>
+
+    <div id="deliveryRemainOrderStatusDateListTable"
+         v-bind:class="cursorCss"
+         data-init-agent-code="{{ agentCode }}"
+         data-load-person-url="{{ loadPersonUrl }}"
+      >
+
+      {# このへんにフォーム #}
+      <div class="panel panel-default mb0">
+        <div class="panel-body">
+          <form class="form-inline" action="{{ submitUrl }}" method="get">
+            <input type="hidden" name="all_flag" value="{{ allFlag }}">
+          
+            <div class="form-group mr5 mb5">
+              <select class="form-control" name="agent" v-model="filterAgentCode" v-on:change="resetTotal">
+                {% for agent in agentList %}
+                  {% if (allFlag) or (agentCode == agent.getId()) %}
+                    <option value="{{ agent.getId() }}">{{ agent.getName() }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start" class="form-control" id="filterDateStart" placeholder="FROM" value="{{ conditions.dateStart }}"/>
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end" class="form-control" id="filterDateEnd" placeholder="TO" value="{{ conditions.dateEnd }}"/>
+              </div>
+            </div>
+            <div class="form-group mr5 mb5">
+              <div class="input-group pull-left">
+                <button type="submit" class="btn btn-success">取得</button>
+              </div>
+            </div>
+{#
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" vi-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+#}
+          </form>
+        </div>
+      </div>
+
+      {# pagination (Vue component) #}
+      <div
+        is="parts-table-pagination"
+        :init-page-item-num="pageItemNum"
+        :init-page-item-num-list="pageItemNumList"
+        :item-num="totalItemNum"
+        :page="page"
+        v-on:change-page="showPage"
+        ></div>
+
+      <table class="table table-bordered" id="remainOrderStatusDateList">
+        <thead>
+          <tr>
+            <th rowspan="2" class="w100">日付</th>
+            <th rowspan="2" class="w100">依頼先</th>
+            <th colspan="4">発注済</th>
+            <th colspan="4">入荷済</th>
+            <th colspan="4">出荷待</th>
+            <th colspan="4">出荷済</th>
+            <th colspan="4">欠品</th>
+          </tr>
+          <tr>
+            <th>明細</th>
+            <th>SKU</th>
+            <th>個数</th>
+            <th>原価</th>
+
+            <th>明細</th>
+            <th>SKU</th>
+            <th>個数</th>
+            <th>原価</th>
+
+            <th>明細</th>
+            <th>SKU</th>
+            <th>個数</th>
+            <th>原価</th>
+
+            <th>明細</th>
+            <th>SKU</th>
+            <th>個数</th>
+            <th>原価</th>
+
+            <th>明細</th>
+            <th>SKU</th>
+            <th>個数</th>
+            <th>原価</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="info">
+            <th colspan="2" class="text-right">
+              <p class="inlineBlock mr5">合計</p>
+              <button class="btn btn-default btn-sm inlineBlock"
+                      v-bind:class="cursorCss"
+                      v-on:click="showPersonListTotal"
+                ><i class="fa fa-users"></i></button>
+            </th>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedRowNumTotal')" v-text="numberFormat('orderedRowNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedSkuNumTotal')" v-text="numberFormat('orderedSkuNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedOrderNumTotal')" v-text="numberFormat('orderedOrderNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedPriceTotal')" v-text="numberFormat('orderedPriceTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedRowNumTotal')" v-text="numberFormat('arrivedRowNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedSkuNumTotal')" v-text="numberFormat('arrivedSkuNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedOrderNumTotal')" v-text="numberFormat('arrivedOrderNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedPriceTotal')" v-text="numberFormat('arrivedPriceTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingRowNumTotal')" v-text="numberFormat('waitingRowNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingSkuNumTotal')" v-text="numberFormat('waitingSkuNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingOrderNumTotal')" v-text="numberFormat('waitingOrderNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingPriceTotal')" v-text="numberFormat('waitingPriceTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingRowNumTotal')" v-text="numberFormat('shippingRowNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingSkuNumTotal')" v-text="numberFormat('shippingSkuNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingOrderNumTotal')" v-text="numberFormat('shippingOrderNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingPriceTotal')" v-text="numberFormat('shippingPriceTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutRowNumTotal')" v-text="numberFormat('stockoutRowNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutSkuNumTotal')" v-text="numberFormat('stockoutSkuNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutOrderNumTotal')" v-text="numberFormat('stockoutOrderNumTotal')"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutPriceTotal')" v-text="numberFormat('stockoutPriceTotal')"></td>
+          </tr>
+
+          <tr class="success" v-for="person in personListTotal" v-show="personListTotalVisible">
+            <td colspan="2" class="text-right" v-text="person.person" colspan="2"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedRowNum', person)" v-text="numberFormat('orderedRowNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedSkuNum', person)" v-text="numberFormat('orderedSkuNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedOrderNum', person)" v-text="numberFormat('orderedOrderNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('orderedPrice', person)" v-text="numberFormat('orderedPrice', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedRowNum', person)" v-text="numberFormat('arrivedRowNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedSkuNum', person)" v-text="numberFormat('arrivedSkuNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedOrderNum', person)" v-text="numberFormat('arrivedOrderNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedPrice', person)" v-text="numberFormat('arrivedPrice', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingRowNum', person)" v-text="numberFormat('waitingRowNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingSkuNum', person)" v-text="numberFormat('waitingSkuNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingOrderNum', person)" v-text="numberFormat('waitingOrderNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('waitingPrice', person)" v-text="numberFormat('waitingPrice', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingRowNum', person)" v-text="numberFormat('shippingRowNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingSkuNum', person)" v-text="numberFormat('shippingSkuNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingOrderNum', person)" v-text="numberFormat('shippingOrderNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('shippingPrice', person)" v-text="numberFormat('shippingPrice', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutRowNum', person)" v-text="numberFormat('stockoutRowNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutSkuNum', person)" v-text="numberFormat('stockoutSkuNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutOrderNum', person)" v-text="numberFormat('stockoutOrderNum', person)"></td>
+            <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutPrice', person)" v-text="numberFormat('stockoutPrice', person)"></td>
+          </tr>
+        </tbody>
+        <tbody
+            v-for="item in pageData"
+            is="result-item"
+            :item="item"
+            :cursorCss="cursorCss"
+            v-on:show-person-list="showPersonList"
+            >
+          {#<tr v-for="item in pageData"#}
+              {#is="result-item"#}
+              {#:item="item"#}
+              {#v-on:show-person-list="showPersonList"#}
+          {#></tr>#}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateDeliveryRemainOrderStatusDateListTableRow">
+    <tbody>
+      <tr class="text-center">
+        <td>
+          <div class="clearfix w120">
+            <p class="pull-left mb0 inputHeightSm" v-text="displayDate"></p>
+            <button class="btn btn-sm pull-right"
+                    v-bind:class="buttonCss"
+                    v-on:click="showPersonList"
+              ><i class="fa fa-users"></i></button>
+          </div>
+        </td>
+        <td class="text-left" v-text="item.agentName"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedRowNum')" v-text="displayOrderedRowNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedSkuNum')" v-text="displayOrderedSkuNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedOrderNum')" v-text="displayOrderedOrderNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedPrice')" v-text="displayOrderedPrice"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedRowNum')" v-text="displayArrivedRowNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedSkuNum')" v-text="displayArrivedSkuNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedOrderNum')" v-text="displayArrivedOrderNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedPrice')" v-text="displayArrivedPrice"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingRowNum')" v-text="displayWaitingRowNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingSkuNum')" v-text="displayWaitingSkuNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingOrderNum')" v-text="displayWaitingOrderNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingPrice')" v-text="displayWaitingPrice"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingRowNum')" v-text="displayShippingRowNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingSkuNum')" v-text="displayShippingSkuNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingOrderNum')" v-text="displayShippingOrderNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingPrice')" v-text="displayShippingPrice"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutRowNum')" v-text="displayStockoutRowNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutSkuNum')" v-text="displayStockoutSkuNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutOrderNum')" v-text="displayStockoutOrderNum"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutPrice')" v-text="displayStockoutPrice"></td>
+      </tr>
+
+      <tr class="success" v-for="person in item.personList" v-show="item.personListVisible">
+        <td class="text-right" v-text="person.person" colspan="2"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedRowNum', person)" v-text="numberFormat('orderedRowNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedSkuNum', person)" v-text="numberFormat('orderedSkuNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedOrderNum', person)" v-text="numberFormat('orderedOrderNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('orderedPrice', person)" v-text="numberFormat('orderedPrice', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedRowNum', person)" v-text="numberFormat('arrivedRowNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedSkuNum', person)" v-text="numberFormat('arrivedSkuNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedOrderNum', person)" v-text="numberFormat('arrivedOrderNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('arrivedPrice', person)" v-text="numberFormat('arrivedPrice', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingRowNum', person)" v-text="numberFormat('waitingRowNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingSkuNum', person)" v-text="numberFormat('waitingSkuNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingOrderNum', person)" v-text="numberFormat('waitingOrderNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('waitingPrice', person)" v-text="numberFormat('waitingPrice', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingRowNum', person)" v-text="numberFormat('shippingRowNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingSkuNum', person)" v-text="numberFormat('shippingSkuNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingOrderNum', person)" v-text="numberFormat('shippingOrderNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('shippingPrice', person)" v-text="numberFormat('shippingPrice', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutRowNum', person)" v-text="numberFormat('stockoutRowNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutSkuNum', person)" v-text="numberFormat('stockoutSkuNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutOrderNum', person)" v-text="numberFormat('stockoutOrderNum', person)"></td>
+        <td class="text-right" v-bind:class="numberZeroGrayCss('stockoutPrice', person)" v-text="numberFormat('stockoutPrice', person)"></td>
+      </tr>
+    </tbody>
+  </script>
+
+{% endblock %}
+

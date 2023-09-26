@@ -1,0 +1,22 @@
+MiscBundle\Entity\TbItemClass:
+    type: entity
+    table: tb_item_class
+    id:
+        classCd:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            id: true
+            column: class_cd
+            generator:
+                strategy: IDENTITY
+    fields:
+        className:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: class_name
+    lifecycleCallbacks: {  }

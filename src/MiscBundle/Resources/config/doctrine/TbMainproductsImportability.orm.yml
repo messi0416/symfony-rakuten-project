@@ -1,0 +1,60 @@
+MiscBundle\Entity\TbMainproductsImportability:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbMainproductsImportabilityRepository
+    table: tb_mainproducts_importability
+    indexes:
+        importability_status:
+            columns:
+                - importability_status
+    id:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            default: ''
+            id: true
+            column: daihyo_syohin_code
+            generator:
+                strategy: NONE
+    fields:
+        importabilityStatus:
+            type: integer
+            nullable: false
+            comment: "輸出入可否ステータス\n0:未設定,1:可,2:不可,3:保留"
+            default: '0'
+            column: importability_status
+        statusUpdateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "ステータス更新者ID\nsymfony_users.id。システム自動設定の場合は0"
+            default: '0'
+            column: status_update_account_id
+        statusUpdated:
+            type: datetime
+            nullable: true
+            comment: ' ステータス更新日時'
+            column: status_updated
+        note:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            comment: 備考
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新者ID\nsymfony_users.id。システム自動設定の場合は0"
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

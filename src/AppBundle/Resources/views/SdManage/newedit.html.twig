@@ -1,0 +1,82 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+    'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+    'bundles/app/css/app.admin.css' filter='cssrewrite'
+    'bundles/app/css/app.sdmanage.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.sd-manage.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}スーパーデリバリー商品情報管理画面-新規登録{% endblock %}
+ 
+{% block body %}
+{% include 'AppBundle:SdManage:_navbar.html.twig' %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+      {% include 'AppBundle:SdManage:_sidebar.html.twig' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">新規管理データ編集</h1>
+          <div class="well">
+            <p class="lead">代表商品コード：{{ tbsd.daihyoSyohinCode }}</p>
+            <p class="lead">商品タイトル：{{ tbsd.syohinTitle }}</p>
+            <div class="panel panel-default">
+              <div class="panel-body">
+            {{ form_start(form) }}
+                <div class="form-group">
+                {{ form_widget(form) }}
+                </div>
+                <input type="submit" class="btn btn-success" value="更新" />
+            {{ form_end(form) }}
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">SKU情報</h3>
+              </div>
+              <div class="panel-body">
+                <form name="registFlagForm" method="POST" class="form-group">
+                  <table class="table table-hover" style="table-layout:fixed;">
+                    <tr>
+                      <th style="width:20px;"><input type="checkbox" name="check_all" class="check_all"></th>
+                      <th>貴社品番</th>
+                      <th>内訳</th>
+                      <th>セット毎数量</th>
+                      <th>販売単価</th>
+                    </tr>
+                    {% for list in tbsdsku %}
+                    <tr>
+                      <td><input type="checkbox" name="registFlag[]" value="{{ list.setBango }}" class="check"></td>
+                      <td>{{ list.kisyaHinban }}</td>
+                      <td>{{ list.Uchiwake }}</td>
+                      <td>{{ list.setGotoSuryo }}</td>
+                      <td>{{ list.hanbaiTanka }}</td>
+                    </tr>
+                    {% endfor %}
+                  </table>
+                  <input type="submit" value="選択したSKUデータを削除する" class="btn btn-danger">
+                </form>
+              </div>
+            </div>
+          </div>
+          <a class="btn btn-default" href="{{ path('sdnew_list') }}">一覧に戻る</a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

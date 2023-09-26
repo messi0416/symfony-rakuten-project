@@ -1,0 +1,118 @@
+MiscBundle\Entity\TbSdInformation:
+    type: entity
+    table: tb_sd_information
+    repositoryClass: MiscBundle\Entity\Repository\TbSdInformationRepository
+    fields:
+        daihyoSyohinCode:
+            id: true
+            type: string
+            length: '30'
+            column: daihyo_syohin_code
+        daihyoSyohinName:
+            type: string
+            length: '255'
+            column: daihyo_syohin_name
+        baseSize:
+            type: string
+            column: base_size
+        baseSozai:
+            type: string
+            column: base_sozai
+        baseChuiJiko:
+            type: string
+            column: base_chui_jiko
+        baseComment:
+            type: string
+            column: base_comment
+        sdBango:
+            id: true
+            type: integer
+            column: sd_bango
+        registrationState:
+            type: smallint
+            column: registration_state
+        syohinTitle:
+            type: string
+            length: '100'
+            column: syohin_title
+        brandName:
+            type: string
+            length: '200'
+            column: brand_name
+        genre:
+            type: integer
+        target:
+            type: integer
+        syohinZokusei:
+            type: string
+            column: syohin_zokusei
+        size:
+            type: string
+            length: '2000'
+        sozai:
+            type: string
+            length: '1000'
+        seisanchi:
+            type: string
+            length: '60'
+        naiyoRyo:
+            type: string
+            length: '2000'
+            column: naiyo_ryo
+        genzaiRyo:
+            type: string
+            length: '1000'
+            column: genzai_ryo
+        hozonHoho:
+            type: string
+            length: '400'
+            column: hozon_hoho
+        kikakuHosoku:
+            type: string
+            length: '800'
+            column: kikaku_hosoku
+        package:
+            type: string
+            length: '200'
+        seizoNen:
+            type: integer
+            column: seizo_nen
+        syohinFuda:
+            type: integer
+            column: syohin_fuda
+        tokuteiHoken:
+            type: integer
+            column: tokutei_hoken
+        chuiJiko:
+            type: string
+            length: '2000'
+            column: chui_jiko
+        comment:
+            type: string
+            length: '3000'
+        kyokaBango:
+            type: string
+            length: '2000'
+            column: kyoka_bango
+        syukkaNoki:
+            type: integer
+            column: syukka_noki
+        syukkaYotei:
+            type: string
+            length: '10'
+            column: syukka_yotei
+        zaikoKagiri:
+            type: integer
+            column: zaiko_kagiri
+        bettoSoryo:
+            type: integer
+            column: betto_soryo
+        syuppinDate:
+            type: string
+            length: '10'
+            column: syuppin_date
+        lastUpdate:
+            type: string
+            length: '10'
+            column: last_update
+    lifecycleCallbacks: {  }

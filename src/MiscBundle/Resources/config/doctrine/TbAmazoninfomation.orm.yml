@@ -1,0 +1,32 @@
+MiscBundle\Entity\TbAmazoninfomation:
+  type: entity
+  table: tb_amazoninfomation
+  fields:
+    title:
+      type: string
+      nullable: true
+      length: 255
+      fixed: false
+      column: amazon_title
+    fbaBaika:
+      type: integer
+      nullable: false
+      unsigned: false
+      default: "0"
+      column: fba_baika
+    fbaFlg:
+      type: boolean
+      nullable: false
+      default: "0"
+      column: fba_flg
+    snlBaika:
+      type: integer
+      nullable: false
+      unsigned: false
+      default: "0"
+      column: snl_baika
+    snlFlg:
+      type: boolean
+      nullable: false
+      default: "0"
+      column: snl_flg

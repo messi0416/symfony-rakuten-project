@@ -1,0 +1,731 @@
+# 継承: MappedSuperClassTbMainproducts
+MiscBundle\Entity\TbMainproducts:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbMainproductsRepository
+  table: tb_mainproducts
+
+#  indexes:
+#    Index_5:
+#      columns:
+#        - 登録日時
+#    pic_check_datetime:
+#      columns:
+#        - pic_check_datetime
+#  id:
+#    daihyoSyohinCode:
+#      type: string
+#      nullable: false
+#      length: 30
+#      options:
+#        fixed: false
+#      id: true
+#      column: daihyo_syohin_code
+#      generator:
+#        strategy: IDENTITY
+#  fields:
+#
+#    sire_code:
+#      type: string
+#      nullable: true
+#      length: 10
+#      options:
+#        fixed: false
+#      column: sire_code
+#
+##    janCode:
+##      type: string
+##      nullable: true
+##      length: 50
+##      options:
+##        fixed: false
+##      column: jan_code
+#    syohin_kbn:
+#      type: string
+#      nullable: true
+#      length: 10
+#      options:
+#        fixed: false
+#        default: '10'
+#      column: syohin_kbn
+#    genka_tnk:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: true
+#      column: genka_tnk
+#    daihyo_syohin_name:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: daihyo_syohin_name
+##    在庫変動チェックフラグ:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    価格非連動チェック:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    バリエーション変更チェック:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    価格変更チェック:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    備考:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+#    order_comment:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: 仕入備考
+#
+##    楽天削除:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    登録日時:
+##      type: datetime
+##      nullable: true
+##    販売開始日:
+##      type: date
+##      nullable: true
+##    送料設定:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    入荷予定日:
+##      type: date
+##      nullable: true
+##    入荷アラート日数:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+##    優先表示修正値:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: false
+##        default: '0'
+##    優先表示順位:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: false
+##        default: '0'
+##    手動ゲリラsale:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##      column: 手動ゲリラSALE
+##    入荷遅延日数:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+##    総在庫数:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+##    総在庫金額:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+#    image_p1_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P1Cption
+#    image_p2_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P2Cption
+#    image_p3_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P3Cption
+#    image_p4_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P4Cption
+#    image_p5_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P5Cption
+#    image_p6_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P6Cption
+#    image_p7_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P7Cption
+#    image_p8_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P8Cption
+#    image_p9_caption:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 商品画像P9Cption
+##    商品画像m1caption:
+##      type: string
+##      nullable: true
+##      length: 50
+##      options:
+##        fixed: false
+##      column: 商品画像M1Caption
+##    商品画像m2caption:
+##      type: string
+##      nullable: true
+##      length: 50
+##      options:
+##        fixed: false
+##      column: 商品画像M2Caption
+##    商品画像m3caption:
+##      type: string
+##      nullable: true
+##      length: 50
+##      options:
+##        fixed: false
+##      column: 商品画像M3Caption
+#    image_p1_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P1Adress
+#    image_p2_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P2Adress
+#    image_p3_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P3Adress
+#    image_p4_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P4Adress
+#    image_p5_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P5Adress
+#    image_p6_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P6Adress
+#    image_p7_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P7Adress
+#    image_p8_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P8Adress
+#    image_p9_address:
+#      type: string
+#      nullable: true
+#      length: 200
+#      options:
+#        fixed: false
+#      column: 商品画像P9Adress
+##    商品画像m1adress:
+##      type: string
+##      nullable: true
+##      length: 200
+##      options:
+##        fixed: false
+##      column: 商品画像M1Adress
+##    商品画像m2adress:
+##      type: string
+##      nullable: true
+##      length: 200
+##      options:
+##        fixed: false
+##      column: 商品画像M2Adress
+##    商品画像m3adress:
+##      type: string
+##      nullable: true
+##      length: 200
+##      options:
+##        fixed: false
+##      column: 商品画像M3Adress
+##    商品コメントpc:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##      column: 商品コメントPC
+##    一言ポイント:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    補足説明pc:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##      column: 補足説明PC
+##    必要補足説明:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    b固有必要補足説明:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##      column: B固有必要補足説明
+##    r固有必要補足説明:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##      column: R固有必要補足説明
+##    ne更新カラム:
+##      type: string
+##      nullable: true
+##      length: 10
+##      options:
+##        fixed: false
+##      column: NE更新カラム
+##    gmoタイトル:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: GMOタイトル
+##    サイズについて:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    カラーについて:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    素材について:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    ブランドについて:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    使用上の注意:
+##      type: text
+##      nullable: true
+##      length: 65535
+##      options:
+##        fixed: false
+##    実勢価格:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+#    col_type_name:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 横軸項目名
+#    row_type_name:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: 縦軸項目名
+#    ne_directory_id:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#      column: NEディレクトリID
+##    yahooディレクトリid:
+##      type: string
+##      nullable: true
+##      length: 20
+##      options:
+##        fixed: false
+##      column: YAHOOディレクトリID
+##    標準出荷日数:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+##    stockreview:
+##      type: boolean
+##      nullable: true
+##      options:
+##        default: '0'
+##    stockinfomation:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##    stockreviewinfomation:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##    productchoiceitemsCount:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##        default: '0'
+##      column: productchoiceitems_count
+#    image_p1_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP1
+#    image_p2_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP2
+#    image_p3_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP3
+#    image_p4_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP4
+#    image_p5_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP5
+#    image_p6_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP6
+#    image_p7_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP7
+#    image_p8_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP8
+#    image_p9_filename:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picnameP9
+##    picname_m1:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picnameM1
+##    picname_m2:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picnameM2
+##    picname_m3:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picnameM3
+#    image_p1_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP1
+#    image_p2_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP2
+#    image_p3_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP3
+#    image_p4_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP4
+#    image_p5_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP5
+#    image_p6_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP6
+#    image_p7_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP7
+#    image_p8_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP8
+#    image_p9_directory:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: picfolderP9
+##    picfolder_m1:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picfolderM1
+##    picfolder_m2:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picfolderM2
+##    picfolder_m3:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##      column: picfolderM3
+##    person:
+##      type: string
+##      nullable: true
+##      length: 255
+##      options:
+##        fixed: false
+##    checkPrice:
+##      type: integer
+##      nullable: true
+##      options:
+##        unsigned: true
+##      column: check_price
+##    weight:
+##      type: integer
+##      nullable: false
+##      options:
+##        unsigned: true
+##        comment: 重量(g)
+##        default: '0'
+##    additionalCost:
+##      type: integer
+##      nullable: false
+##      options:
+##        unsigned: true
+##        comment: 仕入付加費用
+##        default: '0'
+##      column: additional_cost
+##    picCheckDatetime:
+##      type: datetime
+##      nullable: true
+##      options:
+##        comment: 画像チェック日時
+##      column: pic_check_datetime
+##    picCheckDatetimeSort:
+##      type: datetime
+##      nullable: false
+##      column: pic_check_datetime_sort
+##    notfoundImageNoRakuten:
+##      type: integer
+##      nullable: false
+##      options:
+##        unsigned: false
+##        default: '0'
+##      column: notfound_image_no_rakuten
+##    notfoundImageNoDena:
+##      type: integer
+##      nullable: false
+##      options:
+##        unsigned: false
+##        default: '0'
+##      column: notfound_image_no_dena
+##    dummy:
+##      type: integer
+##      nullable: false
+##      options:
+##        unsigned: false
+##        default: '0'
+#  lifecycleCallbacks: {  }
+#
+  oneToOne:
+    cal:
+      targetEntity: TbMainproductsCal
+      mappedBy: product
+      fetch: EAGER
+    english:
+      targetEntity: TbMainproductsEnglish
+      mappedBy: product
+      fetch: LAZY
+
+  oneToMany:
+    choiceItems:
+      targetEntity: TbProductchoiceitems
+      mappedBy: product
+      # orderBy: displayOrder
+      orderBy:
+        displayOrder : ASC
+
+  manyToOne:
+    vendor:
+      targetEntity: TbVendormasterdata
+      # inversedBy: products
+      joinColumn:
+        name: sire_code
+        referencedColumnName: sire_code
+      fetch: EAGER
+    shippingdivision:
+      targetEntity: TbShippingdivision
+      joinColumn:
+        name: 送料設定
+        referencedColumnName: id
+      fetch: EAGER

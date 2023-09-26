@@ -1,0 +1,3092 @@
+# トップページ
+homepage:
+  path:     /
+  defaults: { _controller: AppBundle:Default:index }
+
+homepage_index:
+  path:     /index
+  defaults: { _controller: AppBundle:Default:index }
+
+
+# ログイン
+login:
+    path: /login
+    defaults: { _controller: AppBundle:Default:login }
+
+# ログイン確認
+login_check:
+    path: /login_check
+
+# ログアウト
+logout:
+    path: /logout
+
+# ユーザ名取得
+get_username:
+  path: /get_username
+  defaults: { _controller: AppBundle:Default:getUsername }
+
+# 在庫データ取込 キュー追加
+queue_update_stock_list:
+  path:   /queue/update_stock_list
+  defaults: { _controller: AppBundle:Default:queueUpdateStockList }
+
+# 受注明細取込 キュー追加
+queue_update_order_list:
+  path:   /queue/update_order_list
+  defaults: { _controller: AppBundle:Default:queueUpdateOrderList }
+
+# 受注明細差分更新 キュー追加
+queue_update_order_list_incremental:
+  path:   /queue/update_order_list_incremental
+  defaults: { _controller: AppBundle:Default:queueUpdateOrderListIncremental }
+
+# 伝票毎利益再集計
+queue_aggregate_sales_detail:
+  path:   /queue/aggregate_sales_detail
+  defaults: { _controller: AppBundle:Default:queueAggregateSalesDetail }
+
+# 伝票毎利益再集計設定 取得
+get_aggregate_sales_detail_setting:
+  path:   /aggregate_sales_detail/setting/get
+  defaults: { _controller: AppBundle:Default:getAggregateSalesDetailSetting }
+
+# 入出庫データ取込 キュー追加
+queue_update_stock_in_out:
+  path:   /queue/update_stock_in_out
+  defaults: { _controller: AppBundle:Default:queueUpdateStockInOut }
+
+# 閲覧ランキング取込 キュー追加
+queue_update_view_ranking:
+  path:   /queue/update_view_ranking
+  defaults: { _controller: AppBundle:Default:queueUpdateViewRanking }
+
+# 楽天レビュー取込 キュー追加
+queue_update_rakuten_review:
+  path:   /queue/update_rakuten_review
+  defaults: { _controller: AppBundle:Default:queueUpdateRakutenReview }
+
+# Amazon在庫取込 キュー追加
+queue_import_amazon_stock:
+  path:   /queue/import_amazon_stock
+  defaults: { _controller: AppBundle:Default:queueImportAmazonStock }
+
+# 外部倉庫在庫取込 キュー追加
+queue_external_warehouse_stock:
+  path:   /queue/external_warehouse_stock
+  defaults: { _controller: AppBundle:Default:queueExternalWarehouseStock }
+
+# 倉庫間箱移動設定 キュー追加
+queue_external_warehouse_box_move:
+  path:   /queue/external_warehouse_box_move
+  defaults: { _controller: AppBundle:Default:queueExternalWarehouseBoxMove }
+
+# 発送方法一括変換 キュー追加
+queue_delivery_method_conversion:
+  path:   /queue/delivery_method_conversion
+  defaults: { _controller: AppBundle:Default:queueDeliveryMethodConversion }
+
+# ロケーション更新 キュー追加
+queue_refresh_location:
+  path:   /queue/refresh_location
+  defaults: { _controller: AppBundle:Default:queueRefreshLocation }
+
+# ロケーション並べ替え キュー追加
+queue_sort_location_order:
+  path:   /queue/sort_location_order
+  defaults: { _controller: AppBundle:Default:queueSortLocationOrder }
+
+# モール受注CSV 強制変換処理 キュー追加
+queue_convert_mall_order_csv:
+  path:   /queue/convert_mall_order
+  defaults: { _controller: AppBundle:Default:queueConvertMallOrderCsv }
+
+# CSV出力＆アップロード NextEngine
+queue_export_csv_next_engine:
+  path:   /queue/export_csv_next_engine
+  defaults: { _controller: AppBundle:Default:queueExportCsvNextEngine }
+
+# CSV出力＆アップロード NextEngine在庫同期
+queue_export_csv_next_engine_update_stock:
+  path:   /queue/export_csv_next_engine/update_stock
+  defaults: { _controller: AppBundle:Default:queueExportCsvNextEngineUpdateStock }
+
+# CSV出力 ＆ アップロード Yahoo (plus-nao, kawa-e-mon)
+queue_export_csv_yahoo:
+  path:   /queue/export_csv_yahoo
+  defaults: { _controller: AppBundle:Default:queueExportCsvYahoo }
+
+# CSV出力 Yahoo 設定 取得
+get_csv_yahoo_setting:
+  path:   /csv_yahoo/setting/get
+  defaults:
+    _controller: AppBundle:Default:getYahooCsvSetting
+
+# CSV出力 Yahoo kawa-e-mon設定  更新
+update_csv_yahoo_setting:
+  path:   /csv_yahoo/setting/update
+  defaults:
+    _controller: AppBundle:Default:updateCsvYahooSetting
+
+# CSV出力 ＆ アップロード Amazon
+queue_export_csv_amazon:
+  path:   /queue/export_csv_amazon
+  defaults: { _controller: AppBundle:Default:queueExportCsvAmazon }
+
+# CSV出力 ＆ アップロード Amazon.com
+queue_export_csv_amazon_com:
+  path:   /queue/export_csv_amazon_com
+  defaults: { _controller: AppBundle:Default:queueExportCsvAmazonCom }
+
+# CSV出力 ＆ アップロード SHOPLIST
+queue_export_csv_shoplist:
+  path:   /queue/export_csv_shoplist
+  defaults: { _controller: AppBundle:Default:queueExportCsvShoplist }
+
+# CSV出力＆アップロード NextEngineモール商品
+queue_export_csv_ne_mall_product:
+  path:   /queue/export_csv_ne_mall_product
+  defaults: { _controller: AppBundle:Default:queueExportCsvNeMallProduct }
+
+# CSV出力 ＆ アップロード 楽天
+queue_export_csv_rakuten:
+  path:   /queue/export_csv_rakuten
+  defaults: { _controller: AppBundle:Default:queueExportCsvRakuten }
+
+# CSV出力 楽天 motto-motto設定 取得
+get_csv_rakuten_motto_setting:
+  path:   /csv_rakuten_motto/setting/get
+  defaults:
+    _controller: AppBundle:Default:getCsvRakutenMottoSetting
+
+# CSV出力 楽天 motto-motto設定  更新
+update_csv_rakuten_motto_setting:
+  path:   /csv_rakuten_motto/setting/update
+  defaults:
+    _controller: AppBundle:Default:updateCsvRakutenMottoSetting
+
+# CSV出力 ＆ アップロード 楽天在庫更新
+queue_export_csv_rakuten_update_stock:
+  path:   /queue/export_csv_rakuten_update_stock
+  defaults: { _controller: AppBundle:Default:queueExportCsvRakutenUpdateStock }
+  
+# 楽天RPP除外設定 即時実行
+queue_export_csv_rakuten_rpp_exclude:
+  path:   /queue/export_csv_rakuten_rpp_exclude
+  defaults: { _controller: AppBundle:Default:queueExportCsvRakutenRppExclude }
+  
+# 楽天RPP除外設定 保存
+update_rakuten_rpp_exclude:
+  path:   /rakuten_rpp_exclude/update
+  defaults: { _controller: AppBundle:Default:updateRakutenRppExclude }
+  
+# 楽天RPP除外設定 現在データ取得
+get_rakuten_rpp_exclude_list:
+  path:   /rakuten_rpp_exclude/get
+  defaults: { _controller: AppBundle:Default:getRakutenRppExcludeList }
+
+# 楽天GOLD CSV出力 設定取得
+get_csv_rakuten_gold_setting:
+  path:   /csv_rakuten_gold/setting/get
+  defaults:
+    _controller: AppBundle:Default:getCsvRakutenGoldSetting
+
+# 楽天GOLD CSV出力 設定更新
+update_csv_rakuten_gold_setting:
+  path:   /csv_rakuten_gold/setting/update
+  defaults:
+    _controller: AppBundle:Default:updateCsvRakutenGoldSetting
+
+# 楽天GOLD CSV出力 CSV出力＆アップロード
+queue_export_csv_rakuten_gold:
+  path:   /queue/export_csv_rakuten_gold
+  defaults: { _controller: AppBundle:Default:queueExportCsvRakutenGold }
+
+# CSV出力 Amazon FBA出荷用CSV出力
+queue_export_csv_amazon_fba_order:
+  path:   /queue/export_csv_amazon_fba_order
+  defaults: { _controller: AppBundle:Default:queueExportCsvAmazonFbaOrder }
+
+# CSV出力 Yahoo おとりよせ設定 取得
+get_csv_yahoo_otoriyose_setting:
+  path:   /csv_yahoo_otoriyose/setting/get
+  defaults:
+    _controller: AppBundle:Default:getCsvYahooOtoriyoseSetting
+
+# CSV出力 Yahoo おとりよせ設定  更新
+update_csv_yahoo_otoriyose_setting:
+  path:   /csv_yahoo_otoriyose/setting/update
+  defaults:
+    _controller: AppBundle:Default:updateCsvYahooOtoriyoseSetting
+
+# CSV出力 Yahoo おとりよせ.com CSV出力
+queue_export_csv_yahoo_otoriyose:
+  path:   /queue/export_csv_yahoo_otoriyose
+  defaults: { _controller: AppBundle:Default:queueExportCsvYahooOtoriyose }
+
+# CSV入力 Yahoo おとりよせ.com 購買データCSVアップロード
+upload_purchase_csv_yahoo_otoriyose:
+  path:   /upload/purchase_csv/yahoo_otoriyose
+  defaults:
+    _controller: AppBundle:Default:uploadYahooOtoriyosePurchaseCsv
+
+# CSV出力 PPM 画像削除用 CSV出力
+get_delete_images_csv_ppm:
+  path:   /csv_ppm/delete_images
+  defaults: { _controller: AppBundle:Default:getDeleteImagesCsvPpm }
+
+# PPM CSVアップロード完了後 PPMテーブル更新
+update_is_upload_image_ppm:
+  path:   /csv_ppm/update_ppm
+  defaults: { _controller: AppBundle:Default:updateIsUploadImagePpm }
+
+# ===========================================
+# キュー管理
+# ===========================================
+queue_job_list:
+  path:   /queue/job/list
+  defaults:
+    _controller: AppBundle:Queue:getJobList
+
+queue_remove_process_lock:
+  path:   /queue/remove_process_lock
+  defaults:
+    _controller: AppBundle:Queue:removeProcessLock
+
+# ジョブ順変更モーダル
+queue_change_places:
+  path: /queue/job/change_places
+  defaults:
+    _controller: AppBundle:Queue:queueChangePlaces
+
+# ワーカーが停止しているか
+is_stop_worker:
+  path: /queue/job/is_stop_worker
+  defaults:
+    _controller: AppBundle:Queue:isStopWorker
+
+# ジョブ順変更 保存
+save_queue_changed_places:
+  path: /queue/job/save_change_places
+  defaults:
+    _controller: AppBundle:Queue:saveQueueChangedPlaces
+
+# コマンドのキュー存在チェック
+queue_check_existence:
+  path: /queue/check_existence
+  defaults:
+    _controller: AppBundle:Queue:checkExistenceQueue
+
+# ===========================================
+# その他
+# ===========================================
+# NextEngine在庫同期 出力済みCSVダウンロード
+export_csv_next_engine_update_stock_download_csv:
+  path:   /export/ne/update_stock/download_csv
+  defaults:
+    _controller: AppBundle:Default:exportCsvNextEngineUpdateStockDownloadCsv
+
+# Amazon FBA出荷用CSV データCSVアップロード処理
+upload_amazon_fba_order_session_csv:
+  path:   /upload/amazon_fba_order/session_csv
+  defaults:
+    _controller: AppBundle:Default:uploadAmazonFbaOrderSessionCsv
+
+# Amazon FBA出荷用CSV 出力済みCSVダウンロード
+export_csv_amazon_fba_order_download_csv:
+  path:   /export/amazon_fba_order/download_csv
+  defaults:
+    _controller: AppBundle:Default:exportCsvAmazonFbaOrderDownloadCsv
+
+# Amazon S&L出荷用CSV 在庫データCSVアップロード処理
+upload_amazon_snl_stock_csv:
+  path:   /upload/amazon_snl_order/stock_csv
+  defaults:
+    _controller: AppBundle:Default:uploadAmazonSnlOrderStockCsv
+
+# Amazon S&L出荷用CSV 出力済みCSVダウンロード
+export_csv_amazon_snl_download_csv:
+  path:   /export/amazon_snl_order/download_csv
+  defaults:
+    _controller: AppBundle:Default:exportCsvAmazonSnlOrderDownloadCsv
+
+# SHOPLIST スピード便出荷用集計処理
+aggregate_shoplist_speedbin_delivery:
+  path:   /aggregate/shoplist_speedbin_delivery
+  defaults:
+    _controller: AppBundle:Default:aggregateShoplistSpeedbinDelivery
+
+# SHOPLIST スピード便出荷用CSV CSVダウンロード
+download_shoplist_speedbin_delivery_csv:
+  path:   /download/shoplist_speedbin_delivery_csv
+  defaults:
+    _controller: AppBundle:Default:downloadShoplistSpeedbinDeliveryCsv
+
+# SHOPLIST スピード便出荷用 確定ファイルテンプレートCSVアップロード
+upload_shoplist_speedbin_approved_csv:
+  path:   /upload/shoplist_speedbin_approved_csv
+  defaults:
+    _controller: AppBundle:Default:uploadShoplistSpeedbinApprovedCsv
+
+# Wowma ロットナンバーCSV データCSVアップロード処理
+upload_wowma_lot_number_csv:
+  path:   /upload/wowma_lot_number/csv
+  defaults:
+    _controller: AppBundle:Default:uploadWowmaLotNumberCsv
+
+
+# 外部倉庫在庫取得設定 取得
+get_external_warehouse_stock_fetch_setting:
+  path:   /external_warehouse_stock/fetch_setting/get
+  defaults:
+    _controller: AppBundle:Default:getExternalWarehouseStockFetchSetting
+
+# 受注明細差分更新 取得
+get_order_list_setting:
+  path:   /order_list/setting/get
+  defaults:
+    _controller: AppBundle:Default:getOrderListSetting
+
+# 出荷向け平均明細数取得
+get_detail_num_average:
+  path:   /detail_num_average/get
+  defaults:
+    _controller: AppBundle:Default:getDetailNumAverage
+
+# 倉庫間箱移動設定 取得
+get_external_warehouse_box_move_setting:
+  path:   /external_warehouse/box_move/get
+  defaults:
+    _controller: AppBundle:Default:getExternalWarehouseBoxMoveSetting
+
+# 外部倉庫在庫取得設定 更新
+update_external_warehouse_stock_fetch_setting:
+  path:   /external_warehouse_stock/fetch_setting/update
+  defaults:
+    _controller: AppBundle:Default:updateExternalWarehouseStockFetchSetting
+
+# 受注明細差分更新 更新
+update_order_list_setting:
+  path:   /order_list/setting/update
+  defaults:
+    _controller: AppBundle:Default:updateOrderListSetting
+
+# 外部倉庫在庫取得設定 更新
+update_external_warehouse_box_move_setting:
+  path:   /external_warehouse/box_move/update
+  defaults:
+    _controller: AppBundle:Default:updateExternalWarehouseBoxMoveSetting
+
+# ===========================================
+# 商品管理
+# ===========================================
+# 削除対象外商品管理 一覧
+products_delete_exclusion:
+  path: /products/delete_exclusion/list
+  defaults: { _controller: AppBundle:Products:deleteExclusion }
+
+# 削除対象外商品管理 登録
+products_delete_exclusion_create:
+  path: /products/delete_exclusion/create
+  defaults: { _controller: AppBundle:Products:deleteExclusionCreate }
+
+# 削除対象外商品管理 編集
+products_delete_exclusion_edit:
+  path: /products/delete_exclusion/edit/{id}
+  defaults: { _controller: AppBundle:Products:deleteExclusionEdit }
+
+products_delete_exclusion_delete:
+  path: /products/delete_exclusion/delete/{id}
+  defaults: { _controller: AppBundle:Products:deleteExclusionDelete }
+
+# 値下げ対象一覧
+products_discount_list:
+  path: /products/discount/list
+  defaults: { _controller: AppBundle:Products:discountList }
+
+# 値下げ処理
+products_price_down_process:
+  path: /products/discount/process
+  defaults: { _controller: AppBundle:Products:discountProcess }
+
+# 値下げ許可フラグ更新
+products_update_pricedown_flg:
+  path: /products/update/pricedown_flg
+  defaults: { _controller: AppBundle:Products:updatePricedownFlg }
+
+# 値下げシーズン設定更新
+products_update_pricedown_settings:
+  path: /products/update/pricedown_settings
+  defaults: { _controller: AppBundle:Products:updatePricedownSettings }
+
+# 値下げ対象一覧
+products_discount_list_copy:
+  path: /products/discount/list_copy
+  defaults: { _controller: AppBundle:Products:discountListCopy }
+
+# 値下げ処理
+products_price_down_process_copy:
+  path: /products/discount/process_copy
+  defaults: { _controller: AppBundle:Products:discountProcessCopy }
+
+# 値下げ許可フラグ更新
+products_update_pricedown_flg_copy:
+  path: /products/update/pricedown_flg_copy
+  defaults: { _controller: AppBundle:Products:updatePricedownFlgCopy }
+
+# 値下げシーズン設定更新
+products_update_pricedown_settings_copy:
+  path: /products/update/pricedown_settings_copy
+  defaults: { _controller: AppBundle:Products:updatePricedownSettingsCopy }
+
+# 商品別原価率 一覧
+products_cost_rate_list:
+  path: /products/cost_rate/list/{page}
+  defaults:
+    _controller: AppBundle:Products:costRateList
+    page: 1
+
+# 商品別原価率 一時テーブル 再計算
+products_cost_rate_list_update:
+  path: /products/cost_rate/update
+  defaults: { _controller: AppBundle:Products:updateCostRateList }
+
+# 商品別原価率 一時テーブル 揺さぶり
+products_cost_rate_list_unsettle:
+  path: /products/cost_rate/unsettle
+  defaults: { _controller: AppBundle:Products:unsettleCostRateList }
+
+# 商品別原価率 一時テーブル リセット
+products_cost_rate_list_reset:
+  path: /products/cost_rate/reset
+  defaults: { _controller: AppBundle:Products:resetCostRateList }
+
+# 商品別原価率 更新処理（キュー追加）
+products_cost_rate_process:
+  path: /products/cost_rate/process
+  defaults: { _controller: AppBundle:Products:updateCostRateProcess }
+
+# 商品別原価率 一時テーブル原価率更新
+products_update_list_cost_rate:
+  path: /products/update/list_cost_rate
+  defaults: { _controller: AppBundle:Products:updateListCostRate }
+
+# Amazon メイン画像未登録商品一覧
+products_missing_amazon_image_list:
+  path: /products/missing_amazon_image/list/{page}
+  defaults:
+    _controller: AppBundle:Products:productListNoAmazonMainImage
+    page: 1
+  requirements:
+    page:  \d+
+
+# 未審査・ブラック・グレー商品一覧
+products_not_white_list:
+  path: /products/not_white/list/{page}
+  defaults:
+    _controller: AppBundle:Products:productListNotWhite
+    page: 1
+  requirements:
+    page:  \d+
+
+# 商品計測 商品一覧
+products_size_check_list:
+  path: /products/size_check/list/{page}
+  defaults:
+    _controller: AppBundle:Products:productSizeCheckList
+    page: 1
+  requirements:
+    page:  \d+
+
+# SHOPLIST 登録価格一覧（モール価格一覧）
+products_mall_price_list:
+  path: /products/mall_price/list
+  defaults:
+    _controller: AppBundle:Products:mallPriceList
+
+# SHOPLIST 一覧データ取得（モール価格一覧）
+products_mall_price_get_list_data:
+  path: /products/mall_price/get/list_data
+  defaults:
+    _controller: AppBundle:Products:mallPriceGetListData
+
+# SHOPLIST 登録価格更新CSVアップロード
+products_mall_price_shoplist_upload:
+  path: /products/mall_price/shoplist/upload
+  defaults:
+    _controller: AppBundle:Products:mallPriceShoplistUpload
+
+# SHOPLIST 価格修正CSVダウンロード
+products_mall_price_shoplist_price_download:
+  path: /products/mall_price/shoplist/download
+  defaults:
+    _controller: AppBundle:Products:mallPriceShoplistDownload
+
+# 商品ロケーション履歴ログ一覧
+products_location_log_list:
+  path: /products/location/log/list
+  defaults:
+    _controller: AppBundle:Products:locationLogList
+
+# SKU別　送料設定画面 初期表示
+products_sku_shippingdivision_index:
+  path: /products/skuShippingdivision/index
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionIndex
+
+# SKU別　送料設定画面 検索・確認
+products_sku_shippingdivision_search:
+  path: /products/skuShippingdivision/search
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionSearch
+
+# SKU別　送料設定画面 更新実行
+products_sku_shippingdivision_update:
+  path: /products/skuShippingdivision/update
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionUpdate
+
+# SKU別　送料設定保留一覧画面 初期表示
+products_sku_shippingdivision_pending_index:
+  path: /products/skuShippingdivisionPending/index
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionPendingIndex
+    
+# SKU別　送料設定保留一覧画面 商品情報取得（Ajax）
+products_sku_shippingdivision_pending_find:
+  path: /products/skuShippingdivisionPending/find
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionPendingFind
+    
+# SKU別　送料設定保留一覧画面 更新実行
+products_sku_shippingdivision_pending_update:
+  path: /products/skuShippingdivisionPending/update
+  defaults:
+    _controller: AppBundle:Products:skuShippingdivisionPendingUpdate
+
+# 商品ディレクトリ集計画面
+products_directory_count:
+  path: /products/directory/count
+  defaults:
+    _controller: AppBundle:Products:directoryCount
+
+# 画像のサムネイルを作成({resizeFile} = 元ファイル名_横最大px_縦最大px)
+product_view_thumbnail:
+  path: /products/view_thumbnail/{dir}/{resizeFile}.jpg
+  defaults:
+    _controller: AppBundle:Products:viewThumbnail
+  requirements:
+    resizeFile: ".+_\d+_\d+"
+    
+# 代表商品情報ページ
+main_products_info:
+  path: /mainproducts/productsinfo
+  defaults:
+    _controller: AppBundle:MainProducts:mainInfo
+
+# 代表商品コードによる検索
+main_products_search:
+  path: /mainproducts/searchinfo
+  defaults:
+    _controller: AppBundle:MainProducts:searchInfo
+# ===========================================
+# ロケーション管理
+# ===========================================
+# トップページ
+location_index:
+  path: /location/index
+  defaults:
+    _controller: AppBundle:Location:index
+
+# 選択倉庫切り替え（Ajax）
+location_change_current_warehouse:
+  path: /location/change/current_warehouse
+  defaults:
+    _controller: AppBundle:Location:changeCurrentWarehouse
+
+# 倉庫へ
+location_warehouse_to:
+  path: /location/warehouse/to/{page}
+  defaults:
+    _controller: AppBundle:Location:warehouseTo
+    page: 1
+  requirements:
+    page:  \d+
+
+# 倉庫へ 再集計
+location_warehouse_to_recalculate:
+  path: /location/warehouse/to/recalc
+  defaults:
+    _controller: AppBundle:Location:warehouseToRecalculate
+
+# 倉庫へ ピッキングリストページ
+location_warehouse_to_picking_list:
+  path: /location/warehouse/to/picking
+  defaults:
+    _controller: AppBundle:Location:warehouseToPickingList
+
+# 倉庫へ ピッキングリスト データ取得
+location_warehouse_to_picking_list_get_data:
+  path: /location/warehouse/to/picking/data
+  defaults:
+    _controller: AppBundle:Location:warehouseToPickingListData
+
+# 倉庫へ ピッキングリスト OK / PASS
+location_warehouse_to_picking_list_submit:
+  path: /location/warehouse/to/picking/submit
+  defaults:
+    _controller: AppBundle:Location:warehouseToPickingListSubmit
+
+
+# 商品一覧画面
+location_product_list:
+  path: /location/product/list/{keyword}
+  defaults:
+    _controller: AppBundle:Location:productList
+    keyword: ~
+
+# 商品SKU一覧画面
+location_product_sku_list:
+  path: /location/product/sku/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Location:productSkuList
+
+# ロケーション一覧画面
+location_location_list:
+  path: /location/location/list/{page}/{keyword}
+  defaults:
+    _controller: AppBundle:Location:locationList
+    page: 1
+    keyword: ~
+  requirements:
+    page: \d+
+
+# ロケーション一覧画面 倉庫移動
+location_warehouse_move:
+  path: /location/warehouse/move
+  defaults:
+    _controller: AppBundle:Location:warehouseMove
+
+# ロケーション一覧画面 ロケーション統合処理
+location_location_merge:
+  path: /location/location/merge
+  defaults:
+    _controller: AppBundle:Location:mergeLocation
+
+# ロケーション一覧画面 棚番号一括変更前確認
+location_location_validate_change_rack_code:
+  path: /location/location/rack_code/validate
+  defaults:
+    _controller: AppBundle:Location:validateChangeRackCode
+
+# ロケーション一覧画面 棚番号一括変更処理
+location_location_change_rack_code:
+  path: /location/location/rack_code/change
+  defaults:
+    _controller: AppBundle:Location:changeRackCode
+
+# ロケーション一覧画面 棚番号・位置コード一括削除前確認
+location_location_validate_remove_rack_code:
+  path: /location/location/rack_code/remove/validate
+  defaults:
+    _controller: AppBundle:Location:validateRemoveRackCode
+
+# ロケーション一覧画面 棚番号・位置コード一括削除処理
+location_location_remove_rack_code:
+  path: /location/location/rack_code/remove
+  defaults:
+    _controller: AppBundle:Location:removeRackCode
+
+
+
+
+# 商品ロケーション 詳細・編集画面
+location_product_detail:
+  path: /location/product/detail/{syohinCode}
+  defaults: { _controller: AppBundle:Location:productDetail }
+
+location_product_detail_with_slash:
+  path: /location/product/detail/{syohinCode}/
+  defaults: { _controller: AppBundle:Location:productDetail }
+
+# 商品ロケーション 詳細・編集画面（バーコード遷移）
+location_product_barcode_detail:
+  path: /location/product/barcode/detail/{barcode}
+  defaults: { _controller: AppBundle:Location:productBarcodeDetail }
+
+# 商品ロケーション 詳細・編集 確定処理
+location_product_update:
+  path: /location/product/update/{syohinCode}
+  defaults: { _controller: AppBundle:Location:productDetailUpdate }
+
+# ロケーション 詳細・編集画面
+location_location_detail:
+  path: /location/location/detail/{locationId}
+  defaults: { _controller: AppBundle:Location:locationDetail }
+
+# ロケーション 詳細・編集 確定処理
+location_location_update:
+  path: /location/location/update/{locationId}
+  defaults: { _controller: AppBundle:Location:locationDetailUpdate }
+
+# ロケーション 詳細 一括削除機能 ※出荷確定戻しのロケーション削除用
+location_location_delete:
+  path: /location/location/delete/{locationId}
+  defaults: { _controller: AppBundle:Location:locationDetailDelete }
+
+
+# RFID連動 ロケーション編集画面
+location_rfid_location_editor:
+  path: /location/rfid/location_editor
+  defaults: { _controller: AppBundle:Location:rfidLocationEditor }
+
+# RFID連動 ロケーション編集画面 検索
+location_rfid_location_editor_search:
+  path: /location/rfid/location_editor/search
+  defaults: { _controller: AppBundle:Location:rfidLocationEditorSearch }
+
+
+# ロケーション管理 重量・メール便枚数 未設定商品一覧
+location_missing_weight_product_list:
+  path: /location/missing_weight/list/{page}
+  defaults:
+    _controller: AppBundle:Location:missingWeightProductList
+    page: 1
+  requirements:
+    page:  \d+
+
+# ロケーション管理 発送方法・重量・メール便枚数更新処理
+location_delivery_info_update:
+  path: /location/delivery_info/update/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Location:deliveryInfoUpdate
+
+# ロケーション管理 入荷箱振り画面 バーコード遷移
+location_import_products_barcode:
+  path: /location/import_products/barcode/{barcode}
+  defaults:
+    _controller: AppBundle:Location:storeImportProductsWithBarcode
+
+# ロケーション 箱振り画面
+location_import_products_store:
+  path: /location/import_products/store/{syohinCode}
+  defaults:
+    _controller: AppBundle:Location:storeImportProducts
+    syohinCode: index
+
+# ロケーション 箱振り画面 保存処理
+location_import_products_store_submit:
+  path: /location/import_products/store_submit
+  defaults:
+    _controller: AppBundle:Location:storeImportProductsSubmit
+
+# ロケーション 空棚一覧
+location_empty_rack_list:
+  path: /location/empty_rack/list
+  defaults:
+    _controller: AppBundle:Location:emptyRackList
+
+# ロケーション 空棚一覧取得 (Ajax)
+location_empty_rack_find:
+  path: /location/empty_rack/find
+  defaults:
+    _controller: AppBundle:Location:getEmptyRackList
+
+# ロケーション 空棚箱移動 確認 (Ajax)
+location_empty_rack_move_confirm:
+  path: /location/empty_rack/move/confirm
+  defaults:
+    _controller: AppBundle:Location:emptyRackMoveLocationConfirm
+
+# ロケーション 空棚箱移動 更新 (Ajax)
+location_empty_rack_move_submit:
+  path: /location/empty_rack/move/submit
+  defaults:
+    _controller: AppBundle:Location:emptyRackMoveLocationSubmit
+
+# 古市倉庫に移動するロケーション一覧画面
+location_furuichi_warehouse_move_list:
+  path: /location/furuichi_warehouse_move/list/{page}/{keyword}
+  defaults:
+    _controller: AppBundle:Location:furuichiWarehouseMoveList
+    page: 1
+    keyword: ~
+  requirements:
+    page: \d+
+
+# 倉庫状況の報告 一覧
+location_status_of_warehouse_list:
+  path: /location/status_of_warehouse/list
+  defaults:
+    _controller: AppBundle:Location:statusOfWarehouseList
+
+# ===========================================
+# ピッキングリスト
+# ===========================================
+# ピッキング ピッキングリスト 一覧
+picking_list:
+  path:   /picking/list
+  defaults: { _controller: AppBundle:Picking:list }
+
+# ピッキング ピッキング商品一覧
+picking_product_list:
+  path:   /picking/product/list/{date}/{number}
+  defaults: { _controller: AppBundle:Picking:productList }
+
+# ピッキング ピッキング開始処理
+picking_product_start:
+  path:   /picking/product/start/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:productStart
+
+
+# ピッキング ピッキング商品詳細
+picking_product_detail:
+  path:   /picking/product/detail/{id}
+  defaults:
+    _controller: AppBundle:Picking:productDetail
+  requirements:
+    id:  \d+
+
+# ピッキング ピッキング商品詳細 OK / NG クリック時処理
+picking_product_detail_submit:
+  path:   /picking/product/detail/{id}/submit/{button}
+  defaults:
+    _controller: AppBundle:Picking:productDetailSubmit
+  requirements:
+    id:  \d+
+    button: (ok)|(ng)|(pass)
+
+# ピッキング ピッキングリスト削除
+picking_list_delete:
+  path:   /picking/list/delete
+  defaults:
+    _controller: AppBundle:Picking:listDelete
+
+# ピッキング ピッキングリスト結合
+picking_list_marge:
+  path:   /picking/list/marge
+  defaults:
+    _controller: AppBundle:Picking:listMarge
+
+# 実店舗 ピッキングリストページ
+picking_real_shop_picking_list:
+  path: /picking/real_shop/list
+  defaults:
+    _controller: AppBundle:Picking:realShopPickingList
+
+# 実店舗 ピッキングリスト データ取得
+picking_real_shop_picking_list_get_data:
+  path: /picking/real_shop/data
+  defaults:
+    _controller: AppBundle:Picking:realShopPickingData
+
+# 実店舗 ピッキングリスト ロケーション一覧取得処理 （セット商品と共通）
+picking_real_shop_get_location_list:
+  path: /picking/real_shop/location/get
+  defaults:
+    _controller: AppBundle:Picking:getPickingLocationList
+
+# 実店舗 ピッキングリスト OK / PASS
+picking_real_shop_picking_list_submit:
+  path: /picking/real_shop/submit
+  defaults:
+    _controller: AppBundle:Picking:realShopPickingSubmit
+
+# 実店舗 ピッキングリスト更新処理
+picking_real_shop_refresh_picking_list:
+  path: /picking/real_shop/refresh_list
+  defaults:
+    _controller: AppBundle:Picking:realShopRefreshPickingList
+
+# 実店舗 ピッキングリスト全削除処理
+picking_real_shop_clear_picking_list:
+  path: /picking/real_shop/clear_list
+  defaults:
+    _controller: AppBundle:Picking:realShopClearPickingList
+
+# 実店舗 ピッキング確定処理
+picking_real_shop_finish_picking_list:
+  path: /picking/real_shop/finish_list
+  defaults:
+    _controller: AppBundle:Picking:realShopFinishPickingList
+
+
+# セット商品 作成リスト一覧
+picking_set_product_create_list:
+  path: /picking/set_product/create_list/list
+  defaults:
+    _controller: AppBundle:Picking:setProductCreateList
+
+# セット商品 作成リスト詳細
+picking_set_product_create_list_detail:
+  path: /picking/set_product/create_list/detail/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:setProductCreateListDetail
+
+# セット商品 作成リスト削除処理(Ajax)
+picking_set_product_create_list_delete:
+  path: /picking/set_product/create_list/delete
+  defaults:
+    _controller: AppBundle:Picking:setProductDeleteCreateList
+
+# セット商品 ピッキングリストページ
+picking_set_product_picking_list:
+  path: /picking/set_product/list/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:setProductPickingList
+
+# セット商品 ピッキングリスト データ取得
+picking_set_product_picking_list_get_data:
+  path: /picking/set_product/data/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:setProductPickingData
+
+# セット商品 ピッキングリスト ロケーション更新処理
+picking_set_product_refresh_location:
+  path: /picking/set_product/refresh_location/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:setProductRefreshLocation
+
+# セット商品 ピッキングリスト ロケーション一覧取得処理 （実店舗と共通）
+picking_set_product_get_location_list:
+  path: /picking/set_product/location/get
+  defaults:
+    _controller: AppBundle:Picking:getPickingLocationList # （実店舗と共通）
+
+# セット商品 ピッキングリスト OK / PASS
+picking_set_product_picking_list_submit:
+  path: /picking/set_product/submit/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:setProductPickingSubmit
+
+
+# 在庫倉庫移動ピッキング 一覧
+picking_warehouse_stock_move_list:
+  path: /picking/warehouse_stock_move/list
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMoveList
+
+# 在庫倉庫移動ピッキング 削除
+picking_warehouse_stock_move_list_remove:
+  path: /picking/warehouse_stock_move/list_remove
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMoveListRemove
+
+# 在庫倉庫移動 ピッキングリストページ
+picking_warehouse_stock_move_picking_list:
+  path: /picking/warehouse_stock_move/list/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMovePickingList
+
+# 在庫倉庫移動 ピッキングリスト データ取得
+picking_warehouse_stock_move_picking_list_get_data:
+  path: /picking/warehouse_stock_move/data/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMovePickingData
+
+# 在庫倉庫移動 ピッキングリスト ロケーション更新処理
+picking_warehouse_stock_move_refresh_location:
+  path: /picking/warehouse_stock_move/refresh_location/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMoveRefreshLocation
+
+# 在庫倉庫移動 ピッキングリスト ロケーション一覧取得処理 （実店舗・セット商品と共通）
+picking_warehouse_stock_move_get_location_list:
+  path: /picking/warehouse_stock_move/location/get
+  defaults:
+    _controller: AppBundle:Picking:getPickingLocationList # （実店舗と共通）
+
+# 在庫倉庫移動 ピッキングリスト OK / PASS
+picking_warehouse_stock_move_picking_list_submit:
+  path: /picking/warehouse_stock_move/submit/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMovePickingSubmit
+
+# 在庫倉庫移動 ピッキングリスト ロケーション作成（完了処理）
+picking_warehouse_stock_move_create_location:
+  path: /picking/warehouse_stock_move/create/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMoveCreateLocation
+
+# 在庫倉庫移動 ピッキングリスト 移動伝票反映処理（完了処理：FBA移動伝票からの場合）
+picking_warehouse_stock_move_apply_transport_detail:
+  path: /picking/warehouse_stock_move/apply_transport/{date}/{number}
+  defaults:
+    _controller: AppBundle:Picking:warehouseStockMoveApplyTransportDetail
+
+# ピッキング（出荷・在庫倉庫移動） 在庫修正
+picking_update_stock:
+  path: /picking/update_stock
+  defaults:
+    _controller: AppBundle:Picking:updateStock
+
+# ピッキング 残件数取得
+picking_get_picking_list_remain_number:
+  path: /picking/picking_list_remain_number
+  defaults:
+    _controller: AppBundle:Picking:pickingListRemainNumber
+
+
+# ===========================================
+# 梱包・出荷 （管理画面）
+# ===========================================
+# 納品書印刷 商品件数順伝票リスト
+delivery_statement_detail_product_num_list:
+  path: /delivery/statement/detail_num
+  defaults: { _controller: AppBundle:Delivery:statementDetailProductNumList }
+
+# 納品書印刷 商品件数順伝票リスト
+delivery_statement_detail_product_num_list_shoplist:
+  path: /delivery/statement/detail_num/shoplist
+  defaults: { _controller: AppBundle:Delivery:statementDetailProductNumListShoplist }
+
+# 納品書印刷 商品件数順伝票リスト 更新処理(Ajax)
+delivery_statement_detail_refresh_product_num_list:
+  path: /delivery/statement/refresh/detail_num/{settingId}
+  defaults:
+    _controller: AppBundle:Delivery:enqueueRefreshStatementDetailProductNumList
+    settingId: 1
+  requirements:
+    settingId: (1|2)
+
+# 納品書印刷 倉庫在庫移動ピッキングリスト更新処理（Ajax）
+delivery_warehouse_stock_move_list_refresh:
+  path: /delivery/warehouse_stock_move_list/refresh
+  defaults:
+    _controller: AppBundle:Delivery:enqueueRefreshWarehouseStockMoveList
+
+# 納品書印刷 出荷リストを一括生成
+delivery_enqueue_csv_download_and_update_shipping_voucher:
+  path: /delivery/enqueue_csv_download_and_update_shipping_voucher
+  defaults:
+    _controller: AppBundle:Delivery:enqueueCsvDownloadAndUpdateShippingVoucher
+
+# 出荷リスト自動生成履歴 表示
+delivery_shipping_voucher_auto_generate_history_list:
+  path: /delivery/shipping_voucher_auto_generate_history/list
+  defaults:
+    _controller: AppBundle:Delivery:shippingVoucherAutoGenerateHistoryList
+
+# 出荷リスト自動生成履歴 検索
+delivery_shipping_voucher_auto_generate_history_find:
+  path: /delivery/shipping_voucher_auto_generate_history/find
+  defaults:
+    _controller: AppBundle:Delivery:shippingVoucherAutoGenerateHistoryFind
+
+# 出荷リスト自動生成履歴 再実行
+delivery_shipping_voucher_auto_generate_history_retry:
+  path: /delivery/shipping_voucher_auto_generate_history/retry/{id}
+  defaults:
+    _controller: AppBundle:Delivery:shippingVoucherAutoGenerateHistoryRetry
+
+# ピッキングリスト インポート処理
+delivery_import_picking_list:
+  path:   /delivery/import/picking_list
+  defaults: { _controller: AppBundle:Delivery:importPickingList }
+
+# ピッキングリスト 作成処理（伝票番号から）
+delivery_create_picking_list_by_order_number:
+  path:   /delivery/create/picking_list_by_order_number
+  defaults: { _controller: AppBundle:Delivery:createPickingListByOrderNumber }
+  
+# ピッキングリスト 作成処理（伝票番号から）
+delivery_stock_move_warehouse_remain_number:
+  path:   /delivery/stock_move_warehouse_remain_number
+  defaults: { _controller: AppBundle:Delivery:stockMoveWarehouseRemainNumber }
+
+# 注残一覧 注残ステータス設定日付 集計一覧
+delivery_remain_order_status_date_list:
+  path:   /delivery/remain_order_status/date_list
+  defaults: { _controller: AppBundle:Delivery:remainOrderStatusDateList }
+
+# 注残一覧 注残ステータス設定日付 作業者別集計一覧
+delivery_remain_order_status_person_list:
+  path:   /delivery/remain_order_status/person_list
+  defaults: { _controller: AppBundle:Delivery:remainOrderStatusDateListByPerson }
+
+
+# 出荷リスト 一覧画面
+delivery_shipping_voucher_list:
+  path:   /delivery/shipping_voucher/list
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherList }
+
+# 出荷リスト 一覧画面 初期化
+delivery_shipping_voucher_shipping_voucher_list_initial_data:
+  path: /delivery/shipping_voucher/shipping_voucher_list_initial_data
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherListInitialData }
+
+delivery_shipping_voucher_recreate_picking_list:
+  path:   /delivery/shipping_voucher/recreate_picking_list
+  defaults:
+    _controller: AppBundle:Delivery:shippingVoucherRecreatePickingList
+
+delivery_shipping_voucher_edit_comment:
+  path:   /delivery/shipping_voucher/edit/comment
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherEditComment }
+
+delivery_shipping_voucher_merge_packing_group:
+  path:   /delivery/shipping_voucher/merge/packing/group
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherMergePackingGroup }
+
+# 納品書CSV取り込み処理
+delivery_shipping_voucher_import_csv:
+  path:   /delivery/shipping_voucher/import/csv
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherImportCsv }
+  
+# 梱包グループごとの配送業者ラベル生成用CSVダウンロード
+delivery_shipping_voucher_download_label_csv:
+  path:   /delivery/shipping_voucher/download/label_csv
+  defaults: { _controller: AppBundle:Delivery:shippinVoucherDownloadLabelCsv }
+
+# 梱包グループごとの配送業者ラベルPDFダウンロード
+delivery_shipping_voucher_download_label_pdf:
+  path:   /delivery/shipping_voucher/download/label_pdf
+  defaults: { _controller: AppBundle:Delivery:shippinVoucherDownloadLabelPdf }
+  
+# 納品書PDFダウンロード
+delivery_shipping_voucher_download_pdf:
+  path:   /delivery/shipping_voucher/download/pdf
+  defaults: { _controller: AppBundle:Delivery:shippingVoucherDownloadPdf }
+
+# 在庫移動一覧
+delivery_shipping_stock_move_list:
+  path:   /delivery/shipping_stock/move/list
+  defaults: { _controller: AppBundle:Delivery:shippingStockMoveList }
+
+# 発送方法変更伝票 一覧画面
+delivery_change_shipping_method_list:
+  path:   /delivery/change/shipping_method/list
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodList }
+
+# 発送方法変更伝票 一覧画面
+delivery_change_shipping_method_get_list:
+  path:   /delivery/change/shipping_method/get_list
+  defaults: { _controller: AppBundle:Delivery:getChangeShippingMethodList }
+
+# 発送方法変更 伝票追加確認
+delivery_change_shipping_method_add_confirm:
+  path:   /delivery/change/shipping_method/add_confirm
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodAddConfirm }
+
+# 発送方法変更 伝票追加
+delivery_change_shipping_method_add:
+  path:   /delivery/change/shipping_method/add
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodAdd }
+
+# 発送方法変更 伝票削除
+delivery_change_shipping_method_delete:
+  path:   /delivery/change/shipping_method/delete
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodDelete }
+
+# 発送方法変更 NextEngine差分更新＆更新反映
+delivery_change_shipping_method_update_voucher_list:
+  path:   /delivery/change/shipping_method/update_voucher_list
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodUpdateVoucherList }
+
+# 発送方法変更 配送情報CSVダウンロード（宛名CSV）
+delivery_change_shipping_method_download_csv:
+  path:   /delivery/change/shipping_method/download_csv
+  defaults: { _controller: AppBundle:Delivery:changeShippingMethodDownloadCsv }
+
+# 配送情報CSVダウンロード画面表示
+delivery_create_shipping_info_csv:
+  path:   /delivery/create_shipping_info_csv
+  defaults: { _controller: AppBundle:Delivery:createShippingInfoCsv }
+  
+# 配送情報CSVダウンロード
+delivery_create_shipping_info_csv_download:
+  path:   /delivery/create_shipping_info_csv_download
+  defaults: { _controller: AppBundle:Delivery:createShippingInfoCsvDownload }
+
+# 配送情報PDFダウンロード
+delivery_create_shipping_info_pdf_download:
+  path:   /delivery/create_shipping_info_pdf_download
+  defaults: { _controller: AppBundle:Delivery:createShippingInfoPdfDownload }
+
+# FBA出荷商品 出荷依頼データダウンロード
+delivery_fba_multi_download_service_request_csv:
+  path:   /delivery/fba_multi/download/service_request_csv
+  defaults: { _controller: AppBundle:Delivery:fbaMultiDownloadServiceRequestCsv }
+
+# 藪吉倉庫出荷商品 出荷依頼データダウンロード
+delivery_yabuyoshi_download_service_request_csv:
+  path:   /delivery/yabuyoshi/download/service_request_csv
+  defaults: { _controller: AppBundle:Delivery:yabuyoshiDownloadServiceRequestCsv }
+
+# ===========================================
+# 入荷・発注その他 ロジ全般
+# ===========================================
+# 仕入・注残一覧
+#logistics_purchase_list:
+#  path:   /logistics/purchase/list
+#  defaults:
+#    _controller: AppBundle:Logistics:purchaseList
+
+# 仕入・注残一覧
+logistics_purchase_list_light:
+  path:   /logistics/purchase/list_light
+  defaults:
+    _controller: AppBundle:Logistics:purchaseListLight
+
+# 仕入・注残一覧 取得処理(Ajax)
+logistics_purchase_list_find:
+  path: /logistics/purchase/find
+  defaults:
+    _controller: AppBundle:Logistics:findPurchaseList
+
+# 仕入・注残一覧 入力確定処理(Ajax) 簡易版
+logistics_purchase_list_submit_light:
+  path: /logistics/purchase/submit_light
+  defaults:
+    _controller: AppBundle:Logistics:submitPurchaseListLight
+
+# 仕入・注残一覧 注残ダウンロード
+logistics_purchase_list_download_xls:
+  path: /logistics/purchase/download/xls
+  defaults:
+    _controller: AppBundle:Logistics:downloadXls
+
+# 移動伝票一覧
+logistics_stock_transport_list:
+  path:   /logistics/stock_transport/list
+  defaults: { _controller: AppBundle:Logistics:stockTransportList }
+
+# 移動伝票作成・更新画面
+logistics_stock_transport_edit:
+  path:   /logistics/stock_transport/edit/{id}
+  defaults:
+   _controller: AppBundle:Logistics:stockTransportEdit
+  requirements:
+    id:  "(\d+)|(new)"
+
+# 移動伝票作成・更新 保存処理
+logistics_stock_transport_update:
+  path:   /logistics/stock_transport/update/{id}
+  defaults:
+   _controller: AppBundle:Logistics:stockTransportUpdate
+  requirements:
+    id:  "(\d+)|(new)"
+
+# 移動伝票削除
+logistics_stock_transport_delete:
+  path:   /logistics/stock_transport/delete
+  defaults: { _controller: AppBundle:Logistics:stockTransportDelete }
+
+# 移動伝票 Amazon FBA移動伝票作成
+logistics_stock_transport_create_fba_list:
+  path:   /logistics/stock_transport/create_fba_list
+  defaults: { _controller: AppBundle:Logistics:stockTransportCreateFbaList }
+
+# 移動伝票 Amazon FBA納品ラベルCSVアップロード
+logistics_stock_transport_fba_label_upload:
+  path: /logistics/stock_transport/fba_label/upload
+  defaults: { _controller: AppBundle:Logistics:stockTrasnportFbaLabelUpload }
+
+# 移動伝票 SHOPLISTスピード便移動伝票作成
+logistics_stock_transport_create_shoplist_speed_bin_list:
+  path: /logistics/stock_transport/create_shoplist_speed_bin_list
+  defaults: { _controller: AppBundle:Logistics:stockTrasnportCreateShoplistSpeedBinList }
+
+
+# 移動伝票 南京終移動伝票作成
+logistics_stock_transport_create_main_warehouse_list:
+  path:   /logistics/stock_transport/create_main_list
+  defaults: { _controller: AppBundle:Logistics:stockTransportCreateMainWarehouseList }
+
+
+# 移動伝票 在庫移動ピッキングリスト作成
+logistics_stock_transport_create_picking_list:
+  path:   /logistics/stock_transport/create_picking_list
+  defaults: { _controller: AppBundle:Logistics:stockTransportCreatePickingList }
+
+# 移動伝票 完了処理（ロケーション作成、その他）
+logistics_stock_transport_complete:
+  path:   /logistics/stock_transport/complete
+  defaults: { _controller: AppBundle:Logistics:stockTransportComplete }
+
+# 移動伝票 FBA納品プラン ダウンロード
+logistics_stock_transport_download_fba_plan:
+  path:   /logistics/stock_transport/download/fba_plan/{id}
+  defaults: { _controller: AppBundle:Logistics:stockTransportDownloadFbaPlan }
+
+# 未引当　発送伝票番号リスト画面
+logistics_unallocated_shipping_slip_number_list:
+  path:   /logistics/unallocated/shipping_slip_number/list
+  defaults: { _controller: AppBundle:Logistics:unallocatedShippingSlipNumberList }
+
+# 発送伝票画面リスト画面 連絡事項更新
+logistics_update_unallocated_list:
+  path:   /logistics/update/unallocated_list
+  defaults: { _controller: AppBundle:Logistics:updateUnallocatedList }
+
+  # 発送伝票画面リスト画面 CSVダウンロード
+logistics_download_unallocated_csv:
+  path:   /logistics/download/unallocated_csv
+  defaults: { _controller: AppBundle:Logistics:downloadUnallocatedCsv }
+
+# 楽天Express用配送情報CSV変換 一覧
+logistics_rakuten_express_convert_csv_list:
+  path:   /logistics/rakuten_express/convert/csv/list
+  defaults: { _controller: AppBundle:Logistics:rakutenExpressConvertCsvList }
+
+# 楽天Express用配送情報CSVへ変換
+logistics_rakuten_express_convert_csv:
+  path:   /logistics/rakuten_express/convert/csv
+  defaults: { _controller: AppBundle:Logistics:rakutenExpressConvertCsv }
+
+# 楽天Express用配送情報CSV ダウンロード
+logistics_rakuten_express_download:
+  path:   /logistics/rakuten_express/download
+  defaults: { _controller: AppBundle:Logistics:rakutenExpressDownload }
+
+# 楽天Express用配送情報CSV ダウンロード回数取得
+logistics_rakuten_express_get_download_count:
+  path:   /logistics/rakuten_express/get/download_count
+  defaults: { _controller: AppBundle:Logistics:getRakutenExpressdDownloadCount }
+
+# 出荷実績レビュー 画面
+logistics_warehouse_result_history_list:
+  path:   /logistics/warehouse_result_history/list
+  defaults: { _controller: AppBundle:Logistics:warehouseResultHistoryList }
+
+# 出荷実績一覧 取得処理(Ajax)
+logistics_warehouse_result_history_list_find:
+  path: /logistics/warehouse_result_history/find
+  defaults: { _controller: AppBundle:Logistics:findWarehouseResultHistoryList }
+
+# 出荷実績一覧 更新処理(Ajax)
+logistics_warehouse_result_history_list_update:
+  path: /logistics/warehouse_result_history/update
+  defaults: { _controller: AppBundle:Logistics:updateWarehouseResultHistoryList }
+
+# ===========================================
+# 倉庫管理
+# ===========================================
+# 倉庫マスタ 一覧画面
+warehouse_list:
+  path:   /warehouse/list
+  defaults: { _controller: AppBundle:Warehouse:list }
+
+warehouse_save:
+  path:   /warehouse/save
+  defaults: { _controller: AppBundle:Warehouse:save }
+
+warehouse_remove:
+  path:   /warehouse/remove
+  defaults:
+    _controller: AppBundle:Warehouse:remove
+
+# ===========================================
+# 会社管理
+# ===========================================
+# 会社マスタ 一覧画面
+company_list:
+  path:   /company/list
+  defaults: { _controller: AppBundle:Company:list }
+
+company_save:
+  path:   /company/save
+  defaults: { _controller: AppBundle:Company:save }
+
+company_remove:
+  path:   /company/remove
+  defaults:
+    _controller: AppBundle:Company:remove
+
+# 会社一覧取得（Ajax）
+location_get_company_list:
+  path: /location/get/company_list
+  defaults:
+    _controller: AppBundle:Location:getCompanyList
+
+# 選択会社切り替え（Ajax）
+location_change_current_company:
+  path: /location/change/current_company
+  defaults:
+    _controller: AppBundle:Location:changeCurrentCompany
+
+# ===========================================
+# 在庫管理
+# ===========================================
+# 総在庫情報一覧画面
+stock_history:
+  path:   /stock/history
+  defaults: { _controller: AppBundle:Stock:history }
+
+# 在庫数手動変更履歴 表示
+stock_manual_change_history:
+  path:   /stock/manual_change_history
+  defaults: { _controller: AppBundle:Stock:manualChangeHistory }
+
+# 在庫数手動変更履歴 検索
+stock_manual_change_history_search:
+  path:   /stock/manual_change_history/search
+  defaults: { _controller: AppBundle:Stock:manualChangeHistorySearch }
+
+# 在庫数手動変更履歴 除外商品設定取得
+stock_manual_change_history_exclude_products_find:
+  path:   /stock/manual_change_history/exclude_products/find
+  defaults: { _controller: AppBundle:Stock:manualChangeHistoryExcludeProductsFind }
+
+# 在庫数手動変更履歴 除外商品設定保存
+stock_manual_change_history_exclude_products_save:
+  path:   /stock/manual_change_history/exclude_products/save
+  defaults: { _controller: AppBundle:Stock:manualChangeHistoryExcludeProductsSave }
+
+# ===========================================
+# モール受注CSV変換
+# ===========================================
+# 取込済データ一覧画面（メイン画面）
+mall_order_list:
+  path: /mall_order/list/{page}
+  defaults:
+    _controller: AppBundle:MallOrder:list
+    page: 1
+  requirements:
+    page:  \d+
+
+# 受注CSVアップロード処理
+mall_order_csv_upload:
+  path: /mall_order/csv/upload
+  defaults: { _controller: AppBundle:MallOrder:csvUpload }
+
+# 汎用CSVダウンロード処理
+mall_order_csv_download:
+  path: /mall_order/csv/download/{shopCode}/{converted}
+  defaults: { _controller: AppBundle:MallOrder:csvDownload }
+
+# Q10発送処理 CSV出力用 アップロード
+mall_order_csv_q10_delivery_upload:
+  path: /mall_order/csv/q10/delivery/upload
+  defaults: { _controller: AppBundle:MallOrder:csvQ10DeliveryUpload }
+
+# 汎用CSV NextEngineアップロード処理
+mall_order_csv_ne_upload:
+  path: /mall_order/csv/ne_upload/{shopCode}/{converted}
+  defaults: { _controller: AppBundle:MallOrder:csvNextEngineUpload }
+
+# EC-CUBE汎用CSV変換処理 実行
+mall_order_convert_ec_cube_order:
+  path: /mall_order/csv/convert/ec_cube
+  defaults: { _controller: AppBundle:MallOrder:convertEcCubeOrder }
+
+
+# ===========================================
+# 商品管理
+# ===========================================
+# 商品 商品一覧 表示
+goods_list:
+  path: /goods/list
+  defaults:
+    _controller: AppBundle:Goods:list
+
+# 商品 商品一覧 検索
+goods_find:
+  path: /goods/find
+  defaults:
+    _controller: AppBundle:Goods:find
+
+# 商品 英語情報一覧画面
+goods_list_english:
+  path: /goods/list/english_data
+  defaults:
+    _controller: AppBundle:Goods:listEnglishData
+
+# 商品 英語情報 一覧データ取得 (Ajax)
+goods_list_english_find:
+  path: /goods/list/find_english_data
+  defaults:
+    _controller: AppBundle:Goods:findEnglishDataList
+
+# 商品 英語情報入力画面
+goods_edit_english:
+  path: /goods/edit/english_data
+  defaults:
+    _controller: AppBundle:Goods:editEnglishData
+
+# 商品コピー画面
+goods_copy_product_input:
+  path: /goods/copy_product/input
+  defaults:
+    _controller: AppBundle:Goods:copyProduct
+
+# 商品コピー画面
+goods_copy_product_process:
+  path: /goods/copy_product/process
+  defaults:
+    _controller: AppBundle:Goods:processCopyProduct
+
+# 商品在庫確認画面
+goods_stock_list:
+  path: /goods/stock/list
+  defaults:
+    _controller: AppBundle:Goods:stockList
+
+# 商品在庫確認画面
+goods_stock_download_csv:
+  path: /goods/stock/download
+  defaults:
+    _controller: AppBundle:Goods:stockListCsvDownload
+
+# 商品ロケーション在庫原価一覧
+goods_location_purchase_price_list:
+  path: /goods/location/purchase_price/list
+  defaults:
+    _controller: AppBundle:Goods:locationPurchasePriceList
+
+# 商品画像管理
+goods_image_edit:
+  path: /goods/image/edit/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Goods:imageEdit
+
+# 商品画像管理 保存処理
+goods_image_save:
+  path: /goods/image/save/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Goods:imageSave
+
+# 商品画像管理 全更新処理
+goods_image_touch_all:
+  path: /goods/image/touch_all/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Goods:imageTouchAll
+
+# 商品画像削除　フォルダ一覧画面表示
+goods_image_delete_folders:
+  path: /goods/imageDelete
+  defaults:
+    _controller: AppBundle:Goods:imageDeleteFolders
+
+# 商品画像削除　フォルダデータ取得（ajax）
+goods_image_folders_find:
+  path: /goods/imageDelete/foldersFind
+  defaults:
+    _controller: AppBundle:Goods:imageDeleteFoldersFind
+
+# 商品画像削除　フォルダ一覧画面表示
+goods_image_delete_files:
+  path: /goods/imageDelete/folders/{folderId}
+  defaults:
+    _controller: AppBundle:Goods:imageDeleteFiles
+
+# 商品画像削除　フォルダ内ファイルデータ取得（ajax）
+goods_image_files_find:
+  path: /goods/imageDelete/folders/{folderId}/filesFind
+  defaults:
+    _controller: AppBundle:Goods:imageDeleteFilesFind
+
+# 商品画像削除　フォルダ内ファイルデータ削除（ajax）
+goods_image_files_delete:
+  path: /goods/imageDelete/filesDelete
+  defaults:
+    _controller: AppBundle:Goods:imageDeleteFilesDelete
+
+# 商品画像アテンション画像管理　画面表示
+goods_attention_image_list:
+  path: /goods/attentionImage/list
+  defaults:
+    _controller: AppBundle:Goods:attentionImageList
+
+# 商品画像アテンション画像管理　アテンション画像データ取得（ajax）
+goods_attention_image_find:
+  path: /goods/attentionImage/find
+  defaults:
+    _controller: AppBundle:Goods:attentionImageFind
+
+# 商品画像アテンション画像管理　更新
+goods_attention_image_update:
+  path: /goods/attentionImage/update
+  defaults:
+    _controller: AppBundle:Goods:attentionImageUpdate
+
+# SKU別重量サイズ 編集画面
+goods_weight_size_edit:
+  path: /goods/weight_size/edit
+  defaults:
+    _controller: AppBundle:Goods:weightSizeEdit
+
+goods_weight_size_update_desc:
+  path: /goods/weight_size/update_desc
+  defaults:
+    _controller: AppBundle:Goods:updateDesc
+
+goods_weight_size_create_desc:
+  path: /goods/weight_size/create_desc
+  defaults:
+    _controller: AppBundle:Goods:createDesc
+
+goods_weight_size_create_description:
+  path: /goods/weight_size/create_description
+  defaults:
+    _controller: AppBundle:Goods:createDescription
+
+goods_weight_size_create_hint:
+  path: /goods/weight_size/create_hint
+  defaults:
+    _controller: AppBundle:Goods:createHint
+
+goods_weight_size_delete_desc:
+  path: /goods/weight_size/delete_desc
+  defaults:
+    _controller: AppBundle:Goods:deleteDesc
+
+goods_weight_size_delete_description:
+  path: /goods/weight_size/delete_description
+  defaults:
+    _controller: AppBundle:Goods:deleteDescription
+
+goods_weight_size_delete_hint:
+  path: /goods/weight_size/delete_hint
+  defaults:
+    _controller: AppBundle:Goods:deleteHint
+
+# SKU別重量バーコード遷移
+goods_weight_size_barcode:
+  path: /goods/weight_size/barcode/{barcode}
+  defaults:
+    _controller: AppBundle:Goods:weightSizeBarcode
+
+# SKU別重量サイズ データ取得
+goods_weight_size_get:
+  path: /goods/weight_size/get
+  defaults:
+    _controller: AppBundle:Goods:weightSizeGet
+
+# SKU別重量サイズ 更新処理
+goods_weight_size_update:
+  path: /goods/weight_size/update
+  defaults:
+    _controller: AppBundle:Goods:weightSizeUpdate
+
+# SKU別重量サイズ 編集画面 設定値更新処理
+goods_weight_size_setting_set:
+  path: /goods/weight_size/setting/set
+  defaults:
+    _controller: AppBundle:Goods:weightSizeLimitSet
+
+# 商品倉庫在庫一覧
+goods_warehouse_stock_list:
+  path: /goods/warehouse_stock/list
+  defaults:
+    _controller: AppBundle:Goods:warehouseStockList
+
+# 商品倉庫在庫一覧 ダウンロード
+goods_warehouse_stock_download_csv:
+  path: /goods/warehouse_stock/download
+  defaults:
+    _controller: AppBundle:Goods:warehouseStockListCsvDownload
+
+# 商品簡易登録画面
+goods_simple_product_register:
+  path: /goods/simple_product/register
+  defaults:
+    _controller: AppBundle:Goods:registerSimpleProduct
+
+# 商品簡易登録  置換文字取得
+goods_simple_product_fetch_replace_word_list:
+  path: /goods/simple_product/replace_word_list
+  defaults:
+    _controller: AppBundle:Goods:fetchReplaceWordList
+
+# 商品レビュー一覧画面
+goods_list_review:
+  path: /goods/list/review
+  defaults:
+    _controller: AppBundle:Goods:listReview
+
+# 商品レビュー一覧データ取得 (Ajax)
+goods_list_review_find:
+  path: /goods/list/find_review
+  defaults:
+    _controller: AppBundle:Goods:findReviewList
+
+# 商品レビューCSVアップロード処理
+goods_list_yahoo_review_csv_upload:
+  path: /goods/list/yahoo_review_csv_upload
+  defaults:
+    _controller: AppBundle:Goods:yahooReviewCsvUpload
+
+# Yahoo商品レビューCSVデータ登録処理
+goods_list_yahoo_review_csv_register:
+  path: /goods/list/yahoo_review_csv_register
+  defaults:
+    _controller: AppBundle:Goods:yahooReviewCsvRegister
+    
+# 商品CSVフォーマット
+goods_csv_format:
+  path: /goods/csv_format
+  defaults:
+    _controller: AppBundle:Goods:csvFormat
+    
+# 商品CSVフォーマット：楽天 dl-select.csv ⇒ NE
+goods_csv_format_rakuten_dlselect_ne:
+  path: /goods/csv_format/rakuten_dlselect_ne
+  defaults:
+    _controller: AppBundle:Goods:csvFormatRakutenDlselectNe
+
+# 商品 縦横軸コード管理 初期表示
+goods_axis_code_index:
+  path: /goods/axisCode
+  defaults:
+    _controller: AppBundle:Goods:axisCodeIndex
+
+# 商品 縦横軸コード管理 検索
+goods_axis_code_search:
+  path: /goods/axisCode/search
+  defaults:
+    _controller: AppBundle:Goods:axisCodeSearch
+
+# 商品 縦横軸コード管理 更新
+goods_axis_code_update:
+  path: /goods/axisCode/update
+  defaults:
+    _controller: AppBundle:Goods:axisCodeUpdate
+
+# 商品 縦横軸コード管理 軸追加
+goods_axis_code_insert:
+  path: /goods/axisCode/insert
+  defaults:
+    _controller: AppBundle:Goods:axisCodeInsert
+
+# 商品 縦横軸コード管理 軸削除
+goods_axis_code_delete:
+  path: /goods/axisCode/delete
+  defaults:
+    _controller: AppBundle:Goods:axisCodeDelete
+
+# 商品 縦横軸コード管理 並び順 更新
+goods_axis_code_order_save:
+  path: /goods/axisCode/orderUpdate
+  defaults:
+    _controller: AppBundle:Goods:axisCodeOrderUpdate
+
+# 商品情報・仕入備考 初期表示
+goods_info_index:
+  path: /goods/info
+  defaults:
+    _controller: AppBundle:Goods:goodsInfoIndex
+
+# 商品情報・仕入備考 検索
+goods_info_search:
+  path: /goods/info/search
+  defaults:
+    _controller: AppBundle:Goods:goodsInfoSearch
+
+# 商品情報・仕入備考 更新
+goods_info_update:
+  path: /goods/info/update
+  defaults:
+    _controller: AppBundle:Goods:goodsInfoUpdate
+
+# 商品 商品売上推移
+goods_analyze_sales_transition:
+  path: /goods/analyze/salesTransition/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:Goods:analyzeSalesTransition
+
+# 商品編集 楽天属性設定 表示
+product_edit_rakuten_attribute:
+  path: /product/edit/rakuten_attribute
+  defaults:
+    _controller: AppBundle:ProductEdit:rakutenAttribute
+
+# 商品編集 楽天属性設定 検索
+product_edit_rakuten_attribute_search:
+  path: /product/edit/rakuten_attribute/search
+  defaults:
+    _controller: AppBundle:ProductEdit:rakutenAttributeSearch
+
+# 商品編集 楽天属性設定 更新
+product_edit_rakuten_attribute_update:
+  path: /product/edit/rakuten_attribute/update
+  defaults:
+    _controller: AppBundle:ProductEdit:rakutenAttributeUpdate
+
+# モール商品 表示
+product_edit_mall_product:
+  path: /product_edit/mall_product/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:ProductEdit:mallProduct
+
+# モール商品 更新
+product_edit_mall_product_update:
+  path: /product_edit/mall_product_update
+  defaults:
+    _controller: AppBundle:ProductEdit:mallProductUpdate
+
+# 商品編集 サイズ登録 表示
+product_edit_size_register:
+  path: /productEdit/sizeRegister
+  defaults:
+    _controller: AppBundle:ProductEdit:sizeRegister
+
+# 商品編集 サイズ登録 検索
+product_edit_size_register_search:
+  path: /productEdit/sizeRegister/search
+  defaults:
+    _controller: AppBundle:ProductEdit:sizeRegisterSearch
+
+# 商品編集 サイズ登録 更新
+product_edit_size_register_update:
+  path: /productEdit/sizeRegisterUpdate
+  defaults:
+    _controller: AppBundle:ProductEdit:sizeRegisterUpdate
+
+# 商品編集 輸出入可否 表示
+product_edit_importability:
+  path: /product/edit/importability
+  defaults:
+    _controller: AppBundle:ProductEdit:importability
+
+# 商品編集 輸出入可否 検索
+product_edit_importability_search:
+  path: /product/edit/importability/search
+  defaults:
+    _controller: AppBundle:ProductEdit:importabilitySearch
+
+# 商品編集 輸出入可否 更新
+product_edit_importability_update:
+  path: /product/edit/importability/update
+  defaults:
+    _controller: AppBundle:ProductEdit:importabilityUpdate
+
+# 商品編集 シーズン設定 表示
+product_edit_season_setting:
+  path: /product/edit/season_setting
+  defaults:
+    _controller: AppBundle:ProductEdit:seasonSetting
+
+# 商品編集 シーズン設定 検索
+product_edit_season_setting_search:
+  path: /product/edit/season_setting/search
+  defaults:
+    _controller: AppBundle:ProductEdit:seasonSettingSearch
+
+# 商品編集 シーズン設定 更新
+product_edit_season_setting_update:
+  path: /product/edit/season_setting/update
+  defaults:
+    _controller: AppBundle:ProductEdit:seasonSettingUpdate
+    
+# 商品編集 削除 画面表示
+product_edit_delete:
+  path: /product/edit/delete
+  defaults:
+    _controller: AppBundle:ProductEdit:delete
+    
+# 商品編集 削除 確認
+product_edit_delete_search:
+  path: /product/edit/delete_search
+  defaults:
+    _controller: AppBundle:ProductEdit:deleteSearch
+
+# 商品編集 削除 実行
+product_edit_delete_execute:
+  path: /product/edit/delete_execute
+  defaults:
+    _controller: AppBundle:ProductEdit:deleteExecute
+    
+# 商品Ngワードホームページ
+product_edit_ng_word_index:
+  path: /product/edit/ng_word
+  defaults:
+    _controller: AppBundle:ProductEdit:ngWordIndex
+
+# 商品Ngワード検索
+product_edit_ng_word_search:
+  path: /product/edit/ng_word/search
+  defaults:
+    _controller: AppBundle:ProductEdit:ngWordSearch
+
+# 商品Ngワード登録
+product_edit_ng_word_create:
+  path: /product/edit/ng_word/create
+  defaults:
+    _controller: AppBundle:ProductEdit:ngWordCreate
+
+# 商品Ngワード更新
+product_edit_ng_word_update:
+  path: /product_ng_word/update
+  defaults:
+    _controller: AppBundle:ProductEdit:ngWordUpdate
+
+# 商品Ngワード削除
+product_edit_ng_word_delete:
+  path: /product/edit/ng_word/delete
+  defaults:
+    _controller: AppBundle:ProductEdit:ngWordDelete
+
+# ===========================================
+# 実店舗管理
+# ===========================================
+# 実店舗 商品在庫
+real_shop_product_stock_list:
+  path: /real_shop/product_stock/list
+  defaults: { _controller: AppBundle:RealShop:productStockList }
+
+# 実店舗 一覧取得処理(Ajax)
+real_shop_product_find:
+  path: /real_shop/product/find
+  defaults: { _controller: AppBundle:RealShop:findProductList }
+
+# 実店舗 SKU一覧取得処理(Ajax)
+real_shop_product_sku_find:
+  path: /real_shop/product/sku/find
+  defaults:
+    _controller: AppBundle:RealShop:findProductSkuList
+
+# 実店舗 SKU一覧 在庫依頼保存処理(Ajax)
+real_shop_product_sku_update:
+  path: /real_shop/product/sku/update
+  defaults:
+    _controller: AppBundle:RealShop:updateProductSkuList
+
+# 実店舗 SKU一覧 価格更新処理(Ajax)
+real_shop_product_price_update:
+  path: /real_shop/product/price/update
+  defaults:
+    _controller: AppBundle:RealShop:updateProductPrice
+
+# 実店舗 SKU一覧 ラベル種別更新処理(Ajax)
+real_shop_product_label_type_update:
+  path: /real_shop/product/label_type/update
+  defaults:
+    _controller: AppBundle:RealShop:updateProductLabelType
+
+# 実店舗 配送リスト（確定済みピッキングリスト）
+real_shop_picking_report_list:
+  path: /real_shop/picking_report/list/{page}
+  defaults:
+    _controller: AppBundle:RealShop:pickingReportList
+    page: 1
+  requirements:
+    page:  \d+
+
+# 実店舗 配送リスト 詳細
+real_shop_picking_report_detail:
+  path: /real_shop/picking_report/list/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:pickingReportDetail
+  requirements:
+    date  : \d{2,4}-\d{1,2}-\d{1,2}
+    number: \d+
+
+# 実店舗 配送リスト 詳細更新
+real_shop_picking_report_update:
+  path: /real_shop/picking_report/update/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:pickingReportUpdate
+  requirements:
+    date  : \d{2,4}-\d{1,2}-\d{1,2}
+    number: \d+
+
+# 実店舗 入庫確定処理
+real_shop_picking_report_submit_import:
+  path: /real_shop/picking_report/submit/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:pickingReportSubmitImport
+  requirements:
+    date  : \d{2,4}-\d{1,2}-\d{1,2}
+    number: \d+
+
+# 実店舗 スマレジ在庫取込処理
+real_shop_import_smaregi_stock:
+  path: /real_shop/import/smaregi_stock
+  defaults:
+    _controller: AppBundle:RealShop:importSmaregiStock
+
+# 実店舗 配送リスト ラベルCSVダウンロード処理
+real_shop_download_label_csv:
+  path: /real_shop/csv/download/label/{date}/{number}/{type}
+  defaults:
+    _controller: AppBundle:RealShop:downloadLabelCsv
+
+# 実店舗 配送リスト ラベルCSV 単品ダウンロード処理
+real_shop_download_label_csv_each_product:
+  path: /real_shop/csv/download/label_each
+  defaults:
+    _controller: AppBundle:RealShop:downloadLabelCsvEachProduct
+
+real_shop_download_label_csv_raberuyasan:
+  path: /real_shop/csv/download/label_return/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:downloadLabelCsvReturn
+
+# 実店舗 簡易商品登録
+real_shop_register_simple_product:
+  path: /real_shop/simple_product/register
+  defaults: { _controller: AppBundle:RealShop:registerSimpleProduct }
+
+# 実店舗 返品リスト一覧画面
+real_shop_return_goods_list:
+  path: /real_shop/return_goods/list/{page}
+  defaults:
+    _controller: AppBundle:RealShop:returnGoodsList
+    page: 1
+  requirements:
+    page:  \d+
+
+# 実店舗 返品入力画面
+real_shop_return_goods_input:
+  path: /real_shop/return_goods/input
+  defaults:
+    _controller: AppBundle:RealShop:returnGoodsInput
+
+# 実店舗 返品リスト 詳細
+real_shop_return_goods_detail:
+  path: /real_shop/return_goods/list/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:returnGoodsDetail
+  requirements:
+    date  : \d{2,4}-\d{1,2}-\d{1,2}
+    number: \d+
+
+# 実店舗 返品確定処理
+real_shop_return_goods_submit_import:
+  path: /real_shop/return_goods/submit/{date}/{number}
+  defaults:
+    _controller: AppBundle:RealShop:returnGoodsSubmitImport
+  requirements:
+    date  : \d{2,4}-\d{1,2}-\d{1,2}
+    number: \d+
+
+# ===========================================
+# コンシェルジュ関連
+# ===========================================
+# コンシェルジュ 作業ログ画面 表示
+concierge_operation_log:
+  path: /concierge/operationLog
+  defaults:
+    _controller: AppBundle:Concierge:operationLog
+
+# コンシェルジュ 作業ログ画面 タスクリスト取得
+concierge_operation_log_find_task:
+  path: /concierge/operationLog/findTask
+  defaults:
+    _controller: AppBundle:Concierge:operationLogFindTask
+
+# コンシェルジュ 作業ログ画面 タスク追加
+concierge_operation_log_add_task:
+  path: /concierge/operationLog/addTask
+  defaults:
+    _controller: AppBundle:Concierge:operationLogAddTask
+
+# コンシェルジュ 作業ログ画面 タスク削除
+concierge_operation_log_delete_task:
+  path: /concierge/operationLog/deleteTask
+  defaults:
+    _controller: AppBundle:Concierge:operationLogDeleteTask
+
+# コンシェルジュ 作業ログ画面 タスク並び替え
+concierge_operation_log_sort_task:
+  path: /concierge/operationLog/sortTask
+  defaults:
+    _controller: AppBundle:Concierge:operationLogSortTask
+
+# コンシェルジュ 作業ログ画面 登録
+concierge_operation_log_register:
+  path: /concierge/operationLog/register
+  defaults:
+    _controller: AppBundle:Concierge:operationLogRegister
+
+# コンシェルジュ 未入金一覧画面
+concierge_unpaid_list:
+  path: /concierge/unpaid/list
+  defaults:
+    _controller: AppBundle:Concierge:unpaidList
+
+# コンシェルジュ 未入金一覧取得処理(Ajax)
+concierge_unpaid_list_find:
+  path: /concierge/unpaid/find
+  defaults: { _controller: AppBundle:Concierge:findUnpaidList }
+
+# コンシェルジュ 未入金 更新処理(Ajax)
+concierge_unpaid_list_update:
+  path: /concierge/unpaid/update
+  defaults:
+    _controller: AppBundle:Concierge:updateUnpaidList
+
+# コンシェルジュ 欠品商品一覧画面
+concierge_shortage_list:
+  path: /concierge/shortage/list
+  defaults:
+    _controller: AppBundle:Concierge:shortageList
+
+# コンシェルジュ 欠品商品一覧取得処理(Ajax)
+concierge_shortage_list_find:
+  path: /concierge/shortage/find
+  defaults: { _controller: AppBundle:Concierge:findShortageList }
+
+# コンシェルジュ 出荷遅延一覧画面
+concierge_shipping_delay_list:
+  path: /concierge/shipping_delay/list
+  defaults:
+    _controller: AppBundle:Concierge:shippingDelayList
+
+# コンシェルジュ 出荷遅延一覧取得処理(Ajax)
+concierge_shipping_delay_list_find:
+  path: /concierge/shipping_delay/find
+  defaults: { _controller: AppBundle:Concierge:findShippingDelayList }
+
+# コンシェルジュ Accessにない商品一覧画面
+concierge_unknown_product_list:
+  path: /concierge/unknown_product/list
+  defaults:
+    _controller: AppBundle:Concierge:unknownProductList
+
+# コンシェルジュ Accessにない商品一覧取得処理(Ajax)
+concierge_unknown_product_list_find:
+  path: /concierge/unknown_product/find
+  defaults: { _controller: AppBundle:Concierge:findUnknownProductList }
+
+# コンシェルジュ 楽天未処理問い合わせ件数画面
+concierge_rakuten_inquiry_count:
+  path: /concierge/rakuten_inquiry/count
+  defaults:
+    _controller: AppBundle:Concierge:rakutenInquiry
+
+# コンシェルジュ 楽天未処理問い合わせ件数取得
+concierge_find_rakuten_inquiry:
+  path: /concierge/find_rakuten_inquiry
+  defaults:
+    _controller: AppBundle:Concierge:findRakutenInquiry
+
+# コンシェルジュ メールテンプレート画面
+concierge_mail_template:
+  path: /concierge/mail_template/{type}/list
+  defaults:
+    _controller: AppBundle:Concierge:mailTemplate
+    type: 'a'
+  requirements:
+    type: "[a-zA-Z0-9_-]+"
+
+# コンシェルジュ メールテンプレート一覧取得
+concierge_mail_template_find_list:
+  path: /concierge/mail_template/{type}/find/list
+  defaults:
+    _controller: AppBundle:Concierge:findMailTemplate
+    type: 'a'
+  requirements:
+    type: "[a-zA-Z0-9_-]+"
+
+# コンシェルジュ メールテンプレート一件取得
+concierge_mail_template_find_one:
+  path: /concierge/mail_template/{type}/find/one
+  defaults:
+    _controller: AppBundle:Concierge:findMailTemplateOne
+    type: 'a'
+  requirements:
+    type: "[a-zA-Z0-9_-]+"
+
+# コンシェルジュ メールテンプレート一件保存
+concierge_mail_template_save:
+  path: /concierge/mail_template/{type}/save
+  defaults:
+    _controller: AppBundle:Concierge:saveMailTemplate
+    type: 'a'
+  requirements:
+    type: "[a-zA-Z0-9_-]+"
+
+# コンシェルジュ 未同梱受注一覧
+concierge_uncombined_order_list:
+  path: /concierge/uncombined_order/list
+  defaults: { _controller: AppBundle:Concierge:uncombinedOrderList }
+
+# コンシェルジュ FBAマルチ商品 混合受注一覧
+concierge_fba_multi_included_order_list:
+  path: /concierge/fba_multi_included_order/list
+  defaults: { _controller: AppBundle:Concierge:fbaMultiIncludedOrderList }
+
+# コンシェルジュ 伝票商品 在庫状況画面 （緊急出荷可否判定用）
+concierge_urgent_shipping_stock_list:
+  path: /concierge/urgent_shipping/stock_list
+  defaults:
+    _controller: AppBundle:Concierge:urgentShippingStockList
+
+# コンシェルジュ 出荷STOP画面 表示
+concierge_shipping_stop:
+  path: /concierge/shippingStop
+  defaults: 
+    _controller: AppBundle:Concierge:shippingStopIndex
+
+# コンシェルジュ 出荷STOP画面 検索
+concierge_shipping_stop_find:
+  path: /concierge/shippingStop/find
+  defaults: 
+    _controller: AppBundle:Concierge:shippingStopFind
+
+# コンシェルジュ 出荷STOP画面 出荷STOP
+concierge_shipping_stop_waiting:
+  path: /concierge/shippingStop/waiting
+  defaults: 
+    _controller: AppBundle:Concierge:shippingStopWaiting
+
+# コンシェルジュ 伝票番号検索 トップ
+concierge_voucher_number_list:
+  path: /concierge/voucherNumber/list
+  defaults: 
+    _controller: AppBundle:Concierge:voucherNumberList
+    
+# コンシェルジュ 伝票番号検索 検索実行
+concierge_voucher_number_find:
+  path: /concierge/voucherNumber/find
+  defaults: 
+    _controller: AppBundle:Concierge:voucherNumberFind  
+
+# ===========================================
+# セット商品管理
+# ===========================================
+# セット商品 一覧画面
+set_product_list:
+  path: /set_product/list
+  defaults:
+    _controller: AppBundle:SetProduct:list
+
+# セット商品一覧取得処理(Ajax)
+set_product_list_find:
+  path: /set_product/find
+  defaults: { _controller: AppBundle:SetProduct:findList }
+
+# セット商品 詳細画面（SKU一覧）
+set_product_detail:
+  path: /set_product/detail/{daihyoSyohinCode}
+  defaults:
+    _controller: AppBundle:SetProduct:detail
+
+# セット商品 内訳設定 設定取得処理(Ajax)
+set_product_sku_detail_find:
+  path: /set_product/sku_detail/find/{syohinCode}
+  defaults:
+    _controller: AppBundle:SetProduct:getSkuDetail
+
+
+# セット商品 内訳設定 一括更新処理(Ajax)
+set_product_sku_detail_update:
+  path: /set_product/sku_detail/update
+  defaults:
+    _controller: AppBundle:SetProduct:updateSkuDetail
+
+
+# セット商品 作成対対象一覧画面
+set_product_required_list:
+  path: /set_product/required/list
+  defaults:
+    _controller: AppBundle:SetProduct:requiredList
+
+# セット商品 作成リスト登録処理
+set_product_add_create_list:
+  path: /set_product/create_list/add
+  defaults:
+    _controller: AppBundle:SetProduct:addCreateList
+
+# セット商品 作成確定
+set_product_create_list_submit:
+  path: /set_product/create_list/submit/{date}/{number}
+  defaults:
+    _controller: AppBundle:SetProduct:submitCreateList
+
+# ===========================================
+# 複合出品設定
+# ===========================================
+# 複合出品設定 一覧画面
+mixed_product_list:
+  path: /mixed_product/list
+  defaults:
+    _controller: AppBundle:Goods:mixedProductList
+
+# 複合出品設定 一覧画面
+mixed_product_list_find:
+  path: /mixed_product/find
+  defaults:
+    _controller: AppBundle:Goods:findMixedProductList
+
+mixed_product_save:
+  path: /mixed_product/save
+  defaults:
+    _controller: AppBundle:Goods:saveMixedProduct
+
+# ===========================================
+# 仕入先管理
+# ===========================================
+# アリババ・タオバオ登録店舗一覧
+vendor_foreign_vendor_list:
+  path: /vendor/foreign_vendor/list
+  defaults: { _controller: AppBundle:Vendor:foreignVendorList }
+
+# アリババ・タオバオ登録店舗 一覧データ取得処理（Ajax）
+vendor_foreign_vendor_find:
+  path: /vendor/foreign_vendor/find
+  defaults: { _controller: AppBundle:Vendor:findForeignVendorList }
+
+# ===========================================
+# 統計・調査
+# ===========================================
+# 仕入先別原価率 一覧
+sales_research_cost_rate_list:
+  path: /sales/cost_rate_list
+  defaults: { _controller: AppBundle:SalesResearch:costRateList }
+
+# 仕入先別原価率 一括更新処理
+sales_research_cost_rate_list_update:
+  path: /sales/cost_rate_list_update
+  defaults: { _controller: AppBundle:SalesResearch:costRateListUpdate }
+
+# 仕入先別原価率 データ取得処理
+sales_research_cost_rate_load_data:
+  path: /sales/cost_rate_list_load_data/{mode}
+  defaults:
+    _controller: AppBundle:SalesResearch:costRateListLoadData
+    mode: 'costRate'
+  requirements:
+    mode: (costRate)|(allProducts)
+
+# 楽天キーワード 一覧初期表示
+sales_rakuten_keyword_ranking_index:
+  path: /sales/rakuten_keyword/index
+  defaults: { _controller: AppBundle:SalesResearch:rakutenKeywordRankingIndex }
+
+# 楽天キーワード 一覧日付比較検索（Ajax）
+sales_rakuten_keyword_ranking_date_comparison_search:
+  path: /sales/rakuten_keyword/date_comparison_search:
+  defaults: { _controller: AppBundle:SalesResearch:rakutenKeywordDateComparisonSearch }
+
+# 楽天キーワード 一覧キーワード検索（Ajax）
+sales_rakuten_keyword_ranking_keyword_search:
+  path: /sales/rakuten_keyword/keyword_search:
+  defaults: { _controller: AppBundle:SalesResearch:rakutenKeywordRankingKeywordSearch }
+
+# キャンセル率 一括更新処理
+sales_research_vendor_stockout_list:
+  path: /sales/vendor_stockout_list
+  defaults: { _controller: AppBundle:SalesResearch:vendorStockoutList }
+
+# ===========================================
+# WEBサービス認証
+# ===========================================
+# Yahoo API コールバック
+service_auth_yahoo:
+  path: /service_auth/yahoo
+  defaults: { _controller: AppBundle:ServiceAuth:yahooAuth }
+
+# Yahoo API コールバック
+service_auth_yahoo_callback:
+  path: /service_auth/yahoo_callback
+  defaults: { _controller: AppBundle:ServiceAuth:yahooAuthCallback }
+
+
+# Yahoo代理店 Yahoo API コールバック (メインBundle内処理用URL)
+service_auth_yahoo_agent:
+  path: /service_auth/yahoo_agent/{shopCode}
+  defaults: { _controller: AppBundle:ServiceAuth:yahooAgentAuth }
+
+# Yahoo代理店 API コールバック (メインBundle内処理用URL)
+service_auth_yahoo_agent_callback:
+  path: /service_auth/yahoo_agent_callback/{shopCode}
+  defaults: { _controller: AppBundle:ServiceAuth:yahooAgentAuthCallback }
+
+# ------------------------------------------
+
+
+
+
+# 接続テスト（実験用）
+check_connection:
+  path:   /check_connection
+  defaults: { _controller: AppBundle:Default:checkConnection }
+
+# DB接続確認（テスト）
+test_db:
+  path:   /test_db
+  defaults: { _controller: AppBundle:Default:testDbConnection }
+
+# テスト用フォーム
+test_form:
+  path:   /test_form
+  defaults: { _controller: AppBundle:Default:testForm }
+
+# テスト用フォーム
+test_vue_router:
+  path:   /test_vue_router
+  defaults: { _controller: AppBundle:Default:testVueRouter }
+
+test_info:
+  path:   /test_info
+  defaults: { _controller: AppBundle:Default:testInfo }
+
+# その他テスト表示
+test_view:
+  path:   /test_view
+  defaults: { _controller: AppBundle:Default:testView }
+
+# 通知テスト
+test_notify:
+  path:   /test_notify
+  defaults: { _controller: AppBundle:Default:testNotify }
+
+
+# WEB API
+# API URL作成用 ダミーRoute
+api_home:
+  path: /api/
+  defaults: ~
+
+# 通知一覧取得処理
+api_get_notification_list:
+  path:   /api/notification_list
+  defaults: { _controller: AppBundle:Api:getNotificationList }
+
+# 通知一覧 もっと取得処理
+api_get_notification_list_more:
+  path:   /api/notification_list_more
+  defaults: { _controller: AppBundle:Api:getNotificationListMore }
+
+# 通知一覧 １件取得
+api_get_notification:
+  path:   /api/notification
+  defaults: { _controller: AppBundle:Api:getNotification }
+
+# 通知一覧取得絞込(リアルタイムOFF)処理
+api_get_notification_search_list:
+  path:   /api/notification_search_list
+  defaults: { _controller: AppBundle:Api:getNotificationSearchList }
+
+# バッチロック一覧取得
+api_batch_lock_list:
+  path: /api/batch_lock_list
+  defaults: { _controller: AppBundle:Api:batchLockList }
+
+# バッチロック解除
+api_unlock_batch_lock:
+  path: /api/unlock_batch_lock
+  defaults: { _controller: AppBundle:Api:unlockBatchLock }
+
+# ワーカー再起動
+api_job_worker_reboot:
+  path: /api/job/worker_reboot
+  defaults: { _controller: AppBundle:Api:jobWorkerReboot }
+
+# ワーカー一時停止
+api_job_worker_stop:
+  path: /api/job/worker_stop
+  defaults: { _controller: AppBundle:Api:jobWorkerStop }
+
+# ワーカー一時停止キャンセル
+api_job_worker_cancel:
+  path: /api/job/worker_cancel
+  defaults: { _controller: AppBundle:Api:jobWorkerCancel }
+
+# ワーカーを起動させるかチェック
+worker_check_status:
+  path: /api/job/worker_check
+  defaults: { _controller: AppBundle:Api:workerCheckStatus }
+
+# キュー登録前チェック
+api_verify_enqueue:
+  path:   /api/verify_enqueue
+  defaults: { _controller: AppBundle:Api:verifyEnqueue }
+  
+# 受注明細差分チェック
+api_check_print_diff:
+  path:   /api/check_print_diff
+  defaults: { _controller: AppBundle:Api:checkPrintDiff }
+
+# 仕入先別原価率 揺さぶり対象データ取得
+api_get_settled_cost_rate_vendors:
+  path:   /api/get_settled_cost_rate_vendors
+  defaults: { _controller: AppBundle:Api:getSettledCostRateVendors }
+
+# 仕入先別原価率 設定値保存処理
+api_save_cost_rate_vendors_setting:
+  path:   /api/save_cost_rate_vendors_setting
+  defaults: { _controller: AppBundle:Api:saveCostRateVendorsSetting }
+
+# ログインアカウント取得
+api_get_login_user:
+  path:   /api/get_login_user
+  defaults: { _controller: AppBundle:Api:getLoginUser }
+
+# 仕入先 検索処理
+api_search_vendor_address:
+  path:   /api/search/vendor_address
+  defaults: { _controller: AppBundle:Api:searchVendorAddress }
+
+# 納期管理番号 取得処理
+api_get_rakuten_noki_kanri:
+  path:   /api/get/rakuten_noki_kanri
+  defaults: { _controller: AppBundle:Api:getRakutenNokiKanri }
+
+# 仕入先 注残一覧URL取得処理
+api_get_vendor_order_list_urls:
+  path:   /api/get_vendor_order_list_urls
+  defaults: { _controller: AppBundle:Api:getVendorOrderListUrls }
+
+# Yahoo代理店 一覧URL取得処理
+api_get_yahoo_agent_list_urls:
+  path:   /api/get_yahoo_agent_list_urls
+  defaults: { _controller: AppBundle:Api:getYahooAgentListUrls }
+
+# 商品検索
+api_find_product_list:
+  path:   /api/find/product_list
+  defaults: { _controller: AppBundle:Api:findProductList }
+
+# 商品SKU検索
+api_find_product_sku_list:
+  path:   /api/find/product_sku_list
+  defaults: { _controller: AppBundle:Api:findProductSkuList }
+
+# 商品SKU 1件取得
+api_find_product_sku_one:
+  path:   /api/find/product_sku_one
+  defaults: { _controller: AppBundle:Api:findProductSkuOne }
+
+# 倉庫一覧取得
+api_find_warehouse_list:
+  path: /api/find/warehouse_list
+  defaults: { _controller: AppBundle:Api:findWarehouseList }
+
+# 商品SKU一覧 倉庫指定取得
+api_find_product_warehouse_stock_list:
+  path:   /api/find/product_warehouse_stock_list
+  defaults: { _controller: AppBundle:Api:findProductWarehouseStockList }
+
+
+# 超簡易 価格計算
+api_calculate_simple_price:
+  path:   /api/price/simple
+  defaults: { _controller: AppBundle:Api:calculateSimplePrice }
+
+# 入力無しログイン
+api_login:
+  path:   /api/login
+  defaults: { _controller: AppBundle:Api:apiLogin }
+
+# 仕入先アドレス検索画面 ログインなし
+api_search_address:
+  path:   /api/search_address
+  defaults: { _controller: AppBundle:Api:searchAddress }
+
+# Flashメッセージのセット
+api_set_flash_message:
+  path:   /api/set_flash
+  defaults: { _controller: AppBundle:Api:setFlash }
+
+# ----------------------------------------------
+# 汎用
+# ----------------------------------------------
+# ラベルシール印刷PDFダウンロード
+label_csv_download:
+  path:     /label/csv/download
+  defaults: { _controller: AppBundle:Default:downloadLabelCsv }
+
+# ----------------------------------------------
+# 認証なし API (/pub/api/)
+
+# ----------------------------------------------
+# 商品登録・編集時 画像更新処理
+#   商品画像
+#   Amazonメイン画像
+#   商品バリエーション画像
+# ----------------------------------------------
+pub_api_process_tmp_product_images:
+  path:   /pub/api/process_tmp_product_images
+  defaults: { _controller: AppBundle:Api:processTmpProductImages }
+
+# ----------------------------------------------
+# 商品登録・編集時 楽天タグ情報取得処理
+# ----------------------------------------------
+pub_api_find_rakuten_tag_info:
+  path:   /pub/api/rakuten_tag/info
+  defaults: { _controller: AppBundle:Api:findRakutenTagInfo }
+
+# ----------------------------------------------
+# Job Request
+# ----------------------------------------------
+api_job_request:
+  path:   /pub/api/job_request/{key}
+  defaults:
+    _controller: AppBundle:Api:processJobRequest
+  requirements:
+    key: "^[A-Za-z0-9_-]*[a-f0-9\.]{20,64}"
+
+api_job_request_status:
+  path:   /pub/api/job_request_status/{key}
+  defaults:
+    _controller: AppBundle:Api:jobRequestStatus
+  requirements:
+    key: "^[A-Za-z0-9_-]*[a-f0-9\.]{20,64}"
+
+# ----------------------------------------------
+# 管理画面
+# ----------------------------------------------
+# トップ
+admin_index:
+  path:   /admin/index
+  defaults: { _controller: AppBundle:Admin:index }
+
+# アカウント管理
+admin_account:
+  path:   /admin/account
+  defaults: { _controller: AppBundle:Admin:account }
+
+# アカウント情報取得
+admin_account_find:
+  path:   /admin/account/find
+  defaults: { _controller: AppBundle:Admin:findAccount }
+
+# アカウント更新
+admin_account_update:
+  path:   /admin/account/update
+  defaults: { _controller: AppBundle:Admin:updateAccount }
+
+# アカウント削除
+admin_account_delete:
+  path:   /admin/account/delete
+  defaults: { _controller: AppBundle:Admin:deleteAccount }
+
+#スーパーデリバリーデータ管理画面
+sd_manage:
+  resource: "@AppBundle/Controller/SdManageController.php"
+  type:     annotation
+  prefix:   /
+
+#モールデザイン変更画面
+mall_design:
+  resource: "@AppBundle/Controller/MallDesignController.php"
+  type:     annotation
+  prefix:   /
+
+# 発注依頼先 一覧
+purchasing_agent_list:
+  path:   /purchasing_agent/list
+  defaults: { _controller: AppBundle:PurchasingAgent:list }
+
+# 発注依頼先 更新
+purchasing_agent_save:
+  path:   /purchasing_agent/save
+  defaults: { _controller: AppBundle:PurchasingAgent:save }
+
+# 発注依頼先 削除
+purchasing_agent_remove:
+  path:   /purchasing_agent/remove
+  defaults: { _controller: AppBundle:PurchasingAgent:remove }
+
+# 発注依頼先 ユーザ一覧
+purchasing_agent_user_list:
+  path:   /purchasing_agent/{agentId}/user/list
+  defaults:
+    _controller: AppBundle:PurchasingAgent:userList
+  requirements:
+    agentId:  \d+
+
+
+# 発注依頼先 ユーザ更新
+purchasing_agent_user_save:
+  path:   /purchasing_agent/{agentId}/user/save
+  defaults:
+    _controller: AppBundle:PurchasingAgent:userSave
+  requirements:
+    agentId:  \d+
+
+
+# 発注依頼先 ユーザ削除
+purchasing_agent_user_remove:
+  path:   /purchasing_agent/{agentId}/user/remove
+  defaults:
+    _controller: AppBundle:PurchasingAgent:userRemove
+  requirements:
+    agentId:  \d+
+
+# My箱詰めスコア画面
+boxed_score_index:
+  path:   /operation_score/boxed_score/
+  defaults: { _controller: AppBundle:OperationScore:boxedScoreIndex }
+
+# ユーザーの箱詰めスコア(AJAX)
+boxed_score_user_logs:
+  path: /operation_score/boxed_score/user/logs
+  defaults: { _controller: AppBundle:OperationScore:boxedScoreFindUserLogs }
+
+# 全体箱詰めスコア画面
+boxed_score_user_list:
+  path:   /operation_score/boxed_score/user/list
+  defaults: { _controller: AppBundle:OperationScore:boxedScoreListUser }
+
+# ユーザー毎の箱詰めスコア(AJAX)
+boxed_score_user_find:
+  path: /operation_score/boxed_score/user/find
+  defaults: { _controller: AppBundle:OperationScore:boxedScoreFindUserList }
+
+# Myピッキングスコア画面
+picking_score_index:
+  path:   /operation_score/picking_score/
+  defaults: { _controller: AppBundle:OperationScore:pickingScoreindex }
+
+# ユーザーのピッキングスコア(AJAX)
+picking_score_logs:
+  path: /operation_score/picking_score/user/find
+  defaults: { _controller: AppBundle:OperationScore:pickingScoreFindUserLogs }
+
+# 全体ピッキングスコア画面
+picking_score_user_list:
+  path:   /operation_score/picking_score/user/list
+  defaults: { _controller: AppBundle:OperationScore:pickingScoreListUser }
+
+# ユーザー毎のピッキングスコア(AJAX)
+picking_score_user_find:
+  path: /operation_score/piking_score/user/find
+  defaults: { _controller: AppBundle:OperationScore:pickingScoreFindUserList }
+
+# 出荷量一覧取得（Ajax）
+delivery_get_calculate_shipment_list:
+  path: /delivery/get/calculate_shipment_list
+  defaults:
+    _controller: AppBundle:Delivery:getCalculateShipmentList
+
+# ===========================================
+# 倉庫管理
+# ===========================================
+# 倉庫マスタ 一覧画面
+unused_box_number_list:
+  path:   /unused_box_number/list
+  defaults: { _controller: AppBundle:UnusedBoxNumber:list }
+
+duplicate_box_code_list:
+  path:   /duplicate_box_code/list
+  defaults: { _controller: AppBundle:UnusedBoxNumber:getDulicateBoxcode }
+
+# ===========================================
+# 倉庫管理
+# ===========================================
+# 倉庫マスタ 一覧画面
+delivery_method_conversion:
+  path:   /delivery_method_conversion
+  defaults: { _controller: AppBundle:DeliveryMethodConversion:list }
+
+ 
+# ===========================================
+# 送料設定
+# ===========================================
+setting_shippingdivision:
+    path:     /setting_shippingdivision
+    defaults: { _controller: "AppBundle:TbShippingdivision:index" }
+
+setting_shippingdivision_save:
+  path:   /setting_shippingdivision/save
+  defaults: { _controller: AppBundle:TbShippingdivision:save }
+
+# ===========================================
+# 送料ルール分け
+# ===========================================
+setting_delivery_split_rule:
+    path:     /setting_delivery_split_rule
+    defaults: { _controller: "AppBundle:TbDeliverySplitRule:index" }
+
+setting_delivery_split_rule_save:
+  path:   /setting_delivery_split_rule/save
+  defaults: { _controller: AppBundle:TbDeliverySplitRule:save }
+  
+# 送料ルール分け 削除
+setting_delivery_split_rule_remove:
+  path:   /setting_delivery_split_rule/remove
+  defaults: { _controller: AppBundle:TbDeliverySplitRule:remove }
+
+# ===========================================
+# 各種設定
+# ===========================================
+# 各種設定　一覧
+setting_setting_index:
+  path: /setting/setting/index
+  defaults:
+    _controller: AppBundle:Setting:settingIndex
+setting_setting_save:
+  path:   /setting/setting/save
+  defaults:
+    _controller: AppBundle:Setting:settingSave
+# 店舗情報　一覧
+setting_mall_index:
+  path: /setting/mall
+  defaults:
+    _controller: AppBundle:Setting:mallIndex
+# 店舗情報　保存
+setting_mall_save:
+  path:   /setting/mall/save
+  defaults:
+    _controller: AppBundle:Setting:mallSave
+# チーム 一覧
+setting_team_index:
+  path: /setting/team
+  defaults:
+    _controller: AppBundle:Setting:teamIndex
+# チーム　保存
+setting_team_save:
+  path: /setting/team/save
+  defaults:
+    _controller: AppBundle:Setting:teamSave
+# メンテナンススケジュール　一覧
+setting_maintenance_schedule_index:
+  path: /setting/maintenanceSchedule/index
+  defaults:
+    _controller: AppBundle:Setting:maintenanceScheduleIndex
+# メンテナンススケジュール　検索
+setting_maintenance_schedule_find:
+  path: /setting/maintenanceSchedule/find
+  defaults:
+    _controller: AppBundle:Setting:maintenanceScheduleFind
+# メンテナンススケジュール　更新
+setting_maintenance_schedule_save:
+  path: /setting/maintenanceSchedule/save
+  defaults:
+    _controller: AppBundle:Setting:maintenanceScheduleSave
+    
+# ===========================================
+# 商品売上管理
+# ===========================================
+# 商品売上担当者一覧 検索
+product_sales_account_find:
+  path: /productSales/account/find
+  defaults:
+    _controller: AppBundle:ProductSales:accountFind
+# 商品売上担当者一覧 変更
+product_sales_account_change:
+  path: /productSales/account/change
+  defaults:
+    _controller: AppBundle:ProductSales:accountChange
+# 商品売上担当者一覧 削除
+product_sales_account_delete:
+  path: /productSales/account/delete
+  defaults:
+    _controller: AppBundle:ProductSales:accountDelete
+# 商品売上担当者一覧 戻す
+product_sales_account_restore:
+  path: /productSales/account/restore
+  defaults:
+    _controller: AppBundle:ProductSales:accountRestore
+# 商品売上担当者一覧 表示
+product_sales_account:
+  path: /productSales/account
+  defaults:
+    _controller: AppBundle:ProductSales:account
+# 商品売上担当者更新履歴 表示
+product_sales_account_history:
+  path: /productSales/accountHistory
+  defaults:
+    _controller: AppBundle:ProductSales:accountHistory
+# 商品売上担当者更新履歴 検索
+product_sales_account_history_find:
+  path: /productSales/accountHistory/find
+  defaults:
+    _controller: AppBundle:ProductSales:accountHistoryFind
+# 担当者別売上一覧画面 表示
+product_sales_index:
+  path: /productSales/index
+  defaults:
+    _controller: AppBundle:ProductSales:index
+# 担当者別売上一覧 検索
+product_sales_find:
+  path: /productSales/find
+  defaults:
+    _controller: AppBundle:ProductSales:find
+# 担当者別売上明細一覧 検索
+product_sales_user_detail:
+  path: /productSales/user/detail
+  defaults:
+    _controller: AppBundle:ProductSales:userDetail
+# 商品売上担当者追加 対象商品確認
+product_sales_add_account_confirm:
+  path: /productSales/addAccount/confirm
+  defaults:
+    _controller: AppBundle:ProductSales:addAccountConfirm
+# 商品売上担当者追加 登録
+product_sales_add_account_register:
+  path: /productSales/addAccount/register
+  defaults:
+    _controller: AppBundle:ProductSales:addAccountRegister
+# 商品売上担当者追加 表示
+product_sales_add_account:
+  path: /productSales/addAccount
+  defaults:
+    _controller: AppBundle:ProductSales:addAccount
+# 商品売上担当者向け 在庫定数設定 表示
+product_sales_inventory_constant_index:
+  path: /productSales/inventoryConstant/index
+  defaults:
+    _controller: AppBundle:ProductSales:inventoryConstantIndex
+# 商品売上担当者向け 在庫定数設定 検索
+product_sales_inventory_constant_list:
+  path: /productSales/inventoryConstant/list
+  defaults:
+    _controller: AppBundle:ProductSales:inventoryConstantList
+# 商品売上担当者向け 在庫定数設定 更新
+product_sales_inventory_constant_save:
+  path: /productSales/inventoryConstant/save
+  defaults:
+    _controller: AppBundle:ProductSales:inventoryConstantSave
+# 商品売上担当者向け 在庫定数設定 リセット日更新
+product_sales_inventory_constant_reset_date_save:
+  path: /productSales/inventoryConstant/resetDateSave
+  defaults:
+    _controller: AppBundle:ProductSales:inventoryConstantResetDateSave
+
+# ===========================================
+# 梱包機能
+# ===========================================
+# 梱包グループリスト画面 表示
+packing_packing_group_list:
+  path: /packing/packingGroup/list
+  defaults:
+    _controller: AppBundle:Packing:packingGroupList
+
+# 梱包グループリスト画面 検索
+packing_packing_group_find:
+  path: /packing/packingGroup/find
+  defaults:
+    _controller: AppBundle:Packing:packingGroupFind
+
+# 保留伝票リスト
+packing_hold_shipping_voucher_list:
+  path: /packing/holdShippingVoucher/list/{page}
+  defaults:
+    _controller: AppBundle:Packing:holdShippingVoucherList
+    page: 1
+
+# 梱包グループ画面 表示
+packing_packing_group_index:
+  path: /packing/packingGroup/index/{id}
+  defaults:
+    _controller: AppBundle:Packing:packingGroupIndex
+
+# 出荷伝票リスト画面 表示
+packing_shipping_voucher_list:
+  path: /packing/shippingVoucherList/{warehouseId}/{pickingListDate}/{pickingListNumber}
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherList
+
+# 出荷伝票リスト画面 梱包開始
+packing_packing_start:
+  path: /packing/packingStart
+  defaults:
+    _controller: AppBundle:Packing:packingStart
+
+# 伝票詳細画面 表示
+packing_shipping_voucher_detail:
+  path: /packing/shippingVoucherDetail/{warehouseId}/{pickingListDate}/{pickingListNumber}/{voucherNumber}
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetail
+# 伝票詳細画面 OK
+packing_shipping_voucher_detail_ok:
+  path: /packing/shippingVoucherDetail/ok
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailOk
+
+# 伝票詳細画面 保留
+packing_shipping_voucher_detail_hold:
+  path: /packing/shippingVoucherDetail/hold
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailHold
+
+# 伝票詳細画面 不足
+packing_shipping_voucher_detail_shortage:
+  path: /packing/shippingVoucherDetail/shortage
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailShortage
+
+# 伝票詳細画面 配送方法変更
+packing_shipping_voucher_detail_change_delivery:
+  path: /packing/shippingVoucherDetail/changeDelivery
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailChangeDelivery
+
+# 伝票詳細画面 完了して次へ
+packing_shipping_voucher_detail_complete:
+  path: /packing/shippingVoucherDetail/complete
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailComplete
+
+# 伝票詳細画面 配送方法変更して次へ
+packing_shipping_voucher_detail_change_delivery_and_complete:
+  path: /packing/shippingVoucherDetail/changeDeliveryAndComplete
+  defaults:
+    _controller: AppBundle:Packing:shippingVoucherDetailChangeDeliveryAndComplete
+
+# ==============================================
+# 配送ラベル再発行伝票・不使用問い合わせ番号一覧
+# ==============================================
+# 使用済み発送伝票報告CSV 表示
+shipping_inquiry_number_used_report_csv_list:
+  path: /shippingInquiryNumber/reissueList
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvList
+
+# 使用済み発送伝票報告CSV 検索
+shipping_inquiry_number_used_report_csv_find:
+  path: /shippinginquiryNumber/usedReportCsvFind
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvFind
+
+# 使用済み発送伝票報告CSV 絞込
+shipping_inquiry_number_used_report_csv_filter:
+  path: /shippinginquiryNumber/usedReportCsvFilter
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvFilter
+
+# 使用済み発送伝票報告CSV 生成
+shipping_inquiry_number_used_report_csv_generate:
+  path: /shippingInquiryNumber/usedReportCsvGenerate
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvGenerate
+
+# 使用済み発送伝票報告CSV CSVダウンロード
+shipping_inquiry_number_used_report_csv_download:
+  path: /shippingInquiryNumber/usedReportCsvDownload
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvDownload
+
+# 使用済み発送伝票報告CSV 出荷破棄伝票報告
+shipping_inquiry_number_used_report_csv_cancel_report:
+  path: /shippingInquiryNumber/usedReportCsvCancelReport
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:usedReportCsvCancelReport
+
+# 配送ラベル再発行伝票一覧 表示
+shipping_inquiry_number_reissue_list:
+  path: /shippingInquiryNumber/reissueList
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:reissueList
+
+# 配送ラベル再発行伝票一覧 検索
+shipping_inquiry_number_reissue_find:
+  path: /shippinginquiryNumber/reissueFind
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:reissueFind
+
+# 配送ラベル再発行伝票一覧 CSVダウンロード
+shipping_inquiry_number_reissue_download:
+  path: /shippingInquiryNumber/reissueDownload
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:reissueDownload
+
+# 不使用問い合わせ番号一覧 表示
+shipping_inquiry_number_noneed_list:
+  path: /shippingInquiryNumber/noneedList
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:noneedList
+
+# 不使用問い合わせ番号一覧 検索
+shipping_inquiry_number_noneed_find:
+  path: /shippingInquiryNumber/noneedFind
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:noneedFind
+
+# 不使用問い合わせ番号一覧 入力完了
+shipping_inquiry_number_noneed_complete:
+  path: /shippingInquiryNumber/noneedComplete
+  defaults: 
+    _controller: AppBundle:ShippingInquiryNumber:noneedComplete
+
+sftp_test_url:
+  path: /sftp/test
+  defaults:
+    _controller: AppBundle:MallOrder:sftpTest

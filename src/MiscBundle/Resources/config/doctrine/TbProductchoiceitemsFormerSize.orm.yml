@@ -1,0 +1,47 @@
+MiscBundle\Entity\TbProductchoiceitemsFormerSize:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsFormerSizeRepository
+    table: tb_productchoiceitems_former_size
+    indexes:
+        index_changed:
+            columns:
+                - changed_flg
+    id:
+        neSyohinSyohinCode:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: SKUコード
+            id: true
+            column: ne_syohin_syohin_code
+            generator:
+                strategy: IDENTITY
+    fields:
+        weight:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "重量\n新規レコードはnull"
+        depth:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "奥行\n新規レコードはnull"
+        width:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "幅\n新規レコードはnull"
+        height:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "高さ\n新規レコードはnull"
+        changedFlg:
+            type: boolean
+            nullable: false
+            comment: "変更ありフラグ\n0:変更なし 1:変更あり バッチ実行中、変更があるレコードを抽出するために利用する"
+            default: '0'
+            column: changed_flg
+    lifecycleCallbacks: {  }

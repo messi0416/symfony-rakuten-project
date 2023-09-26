@@ -1,0 +1,27 @@
+MiscBundle\Entity\TbSdGenre:
+    type: entity
+    table: tb_sd_genre
+    fields:
+        category1:
+            type: string
+            length: '50'
+        category2:
+            type: string
+            length: '50'
+        genreBunrui:
+            type: string
+            length: '50'
+            column: genre_bunrui
+        genreName:
+            type: string
+            length: '100'
+            column: genre_name
+        genreCode:
+            id: true
+            type: integer
+            column: genre_code
+        kaigaiHanbai:
+            type: string
+            length: '20'
+            column: kaigai_hanbai
+    lifecycleCallbacks: {  }

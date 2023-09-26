@@ -1,0 +1,52 @@
+MiscBundle\Entity\TbNeMallProductMainRegistration:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbNeMallProductMainRegistrationRepository
+  table: tb_ne_mall_product_main_registration
+  uniqueConstraints:
+    key_daihyo_syohin_code:
+      columns:
+        - daihyo_syohin_code
+        - ne_mall_id
+  indexes:
+    index_daihyo_syohin_code_ne_mall_id_registration_flg:
+      columns:
+        - daihyo_syohin_code
+        - ne_mall_id
+        - registration_flg
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: ID
+      id: true
+      generator:
+        strategy: IDENTITY
+  fields:
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: 代表商品コード
+      column: daihyo_syohin_code
+    neMallId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "店舗コード\nNE側店舗コード。tb_shopping_mall.id ではない"
+      column: ne_mall_id
+    shopDaihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: "店舗側代表商品コード\n店舗側代表商品コード。通常は代表商品コードと同一"
+      column: shop_daihyo_syohin_code
+    registrationFlg:
+      type: boolean
+      nullable: false
+      comment: "登録フラグ\n0:NEに未登録、1:NEに登録済み"
+      default: "0"
+      column: registration_flg
+  lifecycleCallbacks: {}

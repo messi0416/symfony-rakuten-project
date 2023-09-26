@@ -1,0 +1,73 @@
+MiscBundle\Entity\TbSalesDetailSummaryItemYm:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_summary_item_ym
+    id:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            default: ''
+            id: true
+            column: daihyo_syohin_code
+        orderYM:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 受注年月
+            default: '0'
+            id: true
+            column: order_ym
+    fields:
+        voucherQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 伝票数
+            default: '0'
+            column: voucher_quantity
+        orderQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 受注数
+            default: '0'
+            column: order_quantity
+        detailAmountIncludingCost:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "総売上額\n小計_伝票料金加算の合計。"
+            default: '0'
+            column: detail_amount_including_cost
+        detailAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "明細金額\n小計の合計"
+            default: '0'
+            column: detail_amount
+        detailGrossProfit:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "明細粗利額\n明細粗利額_伝票費用除外の合計"
+            default: '0'
+            column: detail_gross_profit
+        additionalAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 伝票料金加算額
+            default: '0'
+            column: additional_amount
+        subtractionAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 伝票費用減算額
+            default: '0'
+            column: subtraction_amount
+    lifecycleCallbacks: {  }

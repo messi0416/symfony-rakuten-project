@@ -1,0 +1,48 @@
+MiscBundle\Entity\TbShoplistSpeedbinShipping:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShoplistSpeedbinShippingRepository
+    table: tb_shoplist_speedbin_shipping
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        shoplistSalesLatestDate:
+            type: date
+            nullable: true
+            comment: "SHOPLIST販売数最新日\nいつ時点の販売数を基準に計算しているか。\n集計開始時点の、 tb_shoplist_daily_sales に登録されている最新の販売日を登録する"
+            column: shoplist_sales_latest_date
+        speedbinStockImportDatetime:
+            type: datetime
+            nullable: true
+            comment: "SHOPLISTスピード便在庫数取込日時\nいつ時点の在庫数を基準に計算しているか。\n集計開始時点の、最後にSHOPLIST スピード便在庫ロケーション更新処理が成功した日時を、tb_updaterecord から取得する。"
+            column: speedbin_stock_import_datetime
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n0:未処理 1:処理中 2:完了 9:エラー"
+            default: '0'
+        shoplistOrderId:
+            type: bigint
+            nullable: true
+            unsigned: false
+            comment: "SHOPLIST発注番号\n発注確定CSVテンプレートから読み込む"
+            column: shoplist_order_id
+        createUserId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 登録ユーザID
+            default: '0'
+            column: create_user_id
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

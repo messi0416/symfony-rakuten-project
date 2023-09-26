@@ -1,0 +1,6 @@
+{
+  "[php]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+}

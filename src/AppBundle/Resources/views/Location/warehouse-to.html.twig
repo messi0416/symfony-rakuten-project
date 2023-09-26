@@ -1,0 +1,159 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-warehouse-to.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}倉庫へ{% endblock %}
+
+{% block headerButtons %}
+  <a class="btn btn-sm btn-default" href="{{ path('location_warehouse_to_picking_list') }}">
+    <i class="fa fa-shopping-basket fa-fw"></i>倉庫へピッキング
+  </a>
+{% endblock %}
+
+{% block contents %}
+
+  <div class="row row10 mb5">
+    <div class="col-xs-12">
+      <span>最終更新：</span>
+      <span>{% if lastUpdated %}{{ lastUpdated.format('Y/m/d H:i:s') }}{% else %}--{% endif %}</span>
+    </div>
+  </div>
+
+  <div class="row row10 mb10" id="recalculateForm"
+       data-url="{{ path('location_warehouse_to_recalculate') }}"
+      >
+    <div class="col-xs-12 text-right">
+      <div class="form-group inlineBlock inputHeight mr10 mb0">
+        <input type="checkbox" class="checkboxLarge" id="cleanUpFlag" name="cleanUpFlag" />
+        <label for="cleanUpFlag" class="control-label">1個残し無効</label>
+      </div>
+      <button class="btn btn-default w100 inlineBlock" v-on:click="recalculate">
+        <i class="fa fa-calculator"></i>
+        再集計
+      </button>
+    </div>
+  </div>
+
+  <form action="{{ path('location_warehouse_to') }}" method="get" role="form">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row row10">
+          <div class="form-group col-xs-8 mb0">
+            <input type="text" class="form-control input" name="syohin_code" placeholder="商品コード" value="{{ conditions.syohin_code | default('') }}">
+          </div>
+          <div class="form-group col-xs-4 mb0">
+            <input type="submit" class="btn btn btn-primary fullWidth" value="絞込">
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+
+  {% if pagination.count() > 0 %}
+    <div>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+      <table class="table" id="warehouseList">
+        {% for product in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-3">
+              {% if product.getImageUrl() %}
+                <a href="{{ path('location_product_detail', { 'syohinCode' : product.getNeSyohinSyohinCode() }) }}">
+                  <img src="{{ product.getImageUrl(imageParentUrl) }}" class="img-responsive">
+                </a>
+              {% endif %}
+            </td>
+            <td class="col-xs-7">
+              <a href="{{ path('location_product_detail', { 'syohinCode' : product.getNeSyohinSyohinCode() }) }}">
+                {{ product.getNeSyohinSyohinCode() }}
+              </a>
+            </td>
+            <td class="col-xs-2 text-center">
+              <p class="bold bigger">
+                {{ product.getMoveNum() }}
+              </p>
+              <button class="btn btn-xs btn-info fullWidth" v-on:click="toggleDetail($event)">詳細</button>
+            </td>
+          </tr>
+          {# 詳細行 #}
+          <tr class="detail hidden">
+            <td colspan="3">
+              <table class="table table-condensed borderless">
+                <tr>
+                  <th class="col-xs-8 text-right">在庫数</th>
+                  <td class="col-xs-4 text-right">{{ product.getStock() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">引当数</th>
+                  <td class="col-xs-4 text-right">{{ product.getAllocationNum() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">フリー在庫数</th>
+                  <td class="col-xs-4 text-right">{{ product.getFreeStock() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">1か月の受注数</th>
+                  <td class="col-xs-4 text-right">{{ product.getOrderNum() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">取置数（受注×{{ stockMonth }}）</th>
+                  <td class="col-xs-4 text-right">{{ product.getReserveNum() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">倉庫総数</th>
+                  <td class="col-xs-4 text-right">{{ product.getWarehouseTotal() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">倉庫在庫数</th>
+                  <td class="col-xs-4 text-right">{{ product.getWarehouseStock() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">移動数</th>
+                  <td class="col-xs-4 text-right">{{ product.getMoveNum() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">値下許可</th>
+                  <td class="col-xs-4 text-right">{{ product.getPricedownFlgDisplay() }}</td>
+                </tr>
+                <tr>
+                  <th class="col-xs-8 text-right">値下シーズン</th>
+                  <td class="col-xs-4 text-right">{{ product.getSalesSeasonDisplay() }}</td>
+                </tr>
+              </table>
+              
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+    </div>
+  {% else %}
+    <div id="warehouseList" class="alert alert-warning">データがありません。</div>
+  {% endif %}
+
+{% endblock %}

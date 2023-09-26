@@ -1,0 +1,32 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block title %}スーパーデリバリー商品情報管理画面-コード表示{% endblock %}
+ 
+{% block body %}
+<div class="container container-large">
+    <h3 class="header">各種コード</h3>
+    <div>
+        <h4>ジャンル</4>
+        <div>
+            <table class="table table-hover"">
+                <tr>
+                    <th>分類1</th>
+                    <th>分類２</th>
+                    <th>ジャンル名</th>
+                    <th>ジャンルコード</th>
+                    <th>海外への販売</th>
+                </tr>
+                {% for genre in genres %}
+                <tr>
+                    <td>{{ genre.category1 }}</td>
+                    <td>{{ genre.category2 }}</td>
+                    <td>{{ genre.genreName }}</td>
+                    <td>{{ genre.genreCode }}</td>
+                    <td>{{ genre.kaigaiHanbai }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

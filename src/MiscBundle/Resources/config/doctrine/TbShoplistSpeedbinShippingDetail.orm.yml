@@ -1,0 +1,92 @@
+MiscBundle\Entity\TbShoplistSpeedbinShippingDetail:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShoplistSpeedbinShippingDetailRepository
+    table: tb_shoplist_speedbin_shipping_detail
+    id:
+        shoplistSpeedbinShippingId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLISTスピード便出荷ID
+            id: true
+            column: shoplist_speedbin_shipping_id
+        skuCode:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: "SKUコード\ntb_productchoiceitems.ne_syohin_syohin_code"
+            id: true
+            column: sku_code
+    fields:
+        salesQuantityShoplist:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLIST販売量
+            default: '0'
+            column: sales_quantity_shoplist
+        currentSpeedbinStockQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 現在スピード便在庫数
+            default: '0'
+            column: current_speedbin_stock_quantity
+        transportingQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: スピード便向け移動中在庫数
+            default: '0'
+            column: transporting_quantity
+        warehouseStockQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 販売可能倉庫在庫数
+            default: '0'
+            column: warehouse_stock_quantity
+        unshippedSalesQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 未出荷受注数量
+            default: '0'
+            column: unshipped_sales_quantity
+        notForSaleQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "販売不可在庫\n販売可能倉庫内の販売不可在庫"
+            default: '0'
+            column: not_for_sale_quantity
+        salesQuantityOther:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 他店舗販売量
+            default: '0'
+            column: sales_quantity_other
+        deliverableQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLIST納品可能倉庫在庫
+            default: '0'
+            column: deliverable_quantity
+        plannedQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 出荷予定数
+            default: '0'
+            column: planned_quantity
+        fixedQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "出荷確定数\nSHOPLISTから取得する、発注確定CSVテンプレートから読み込む。\nなお実際に出荷する数はこのあとのピッキングで確定する"
+            default: '0'
+            column: fixed_quantity
+    lifecycleCallbacks: {  }

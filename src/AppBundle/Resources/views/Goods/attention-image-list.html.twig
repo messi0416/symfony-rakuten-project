@@ -1,0 +1,158 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+  'bundles/app/css/app.goods.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.goods-attention-image.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="attentionImageList" class="container"
+         data-url="{{ path('goods_attention_image_find') }}"
+         data-update-url="{{ path('goods_attention_image_update') }}"
+         >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>アテンション画像管理</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div is="update-confirm-modal"
+         :state="modalState"
+         :list="list"
+         v-on:update-attention-image="updateAttentionImage()"
+      ></div>
+
+    <div id="attentionImageListTable">
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-inline inlineBlock">
+            <div class="form-group mr5">
+              <label for="syohinCode" class="mr5 inputHeight">代表商品コード</label>
+              <input type="text" v-model="searchConditions.daihyoSyohinCode" class="form-control">
+            </div>
+
+            <div class="form-group mr10">
+              <button type="button" class="btn btn-success" v-on:click="search()">検索</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="pull-right mt8">
+        <button type="button" class="btn btn-info" data-toggle="modal" v-on:click="showFormModal()" v-bind:disabled="!canUpdate">
+          設定反映
+        </button>
+      </div>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="vMiddle text-center">画像ハッシュコード</th>
+          <th class="vMiddle text-center">画像</th>
+          <th class="vMiddle text-center">利用商品総数</th>
+          <th class="vMiddle text-center">販売中商品数</th>
+          <th class="vMiddle text-center">アテンション画像かどうか</th>
+        </tr>
+        <tr v-for="item in list" v-bind:class="item.cssClass">
+          <td class="vMiddle text-center" v-text="item.md5hash"></td>
+          <td class="vMiddle text-center"><img v-bind:src="item.imageUrl" class="w100"></td>
+          <td class="vMiddle text-center" v-text="item.useProductNumAll"></td>
+          <td class="vMiddle text-center" v-text="item.useProductNumOnsale"></td>
+          <td class="vMiddle text-center">
+            <input type="checkbox"  v-model.number="item.attentionFlg" />
+          </td>
+        </tr>
+      </table>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+      <div class="pull-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" v-on:click="showFormModal()" v-bind:disabled="!canUpdate">
+          設定反映
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  {# modal #}
+  <script type="text/x-template" id="templateModalUpdateConfirm">
+    <div class="modal"
+         id="modalUpdateConfirm"
+         tabindex="-1"
+         data-backdrop="static" data-keyboard="false"
+      >
+
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label">
+              (% caption %)
+            </h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save()">はい</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+{% endblock %}

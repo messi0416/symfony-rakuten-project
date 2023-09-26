@@ -1,0 +1,42 @@
+MiscBundle\Entity\TbCompany:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbCompanyRepository
+  table: tb_company
+  id:
+    id:
+      type: integer
+      nullable: false
+      id: true
+      generator:
+        strategy: AUTO
+
+  fields:
+    code:
+      type: string
+      length: 20
+      nullable: false
+    name:
+      type: string
+      length: 20
+      nullable: false
+    display_order:
+      type: integer
+      nullable: false
+      options:
+        default: 9999
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

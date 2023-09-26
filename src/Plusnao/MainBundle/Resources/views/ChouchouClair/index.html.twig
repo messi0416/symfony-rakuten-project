@@ -1,0 +1,385 @@
+{% extends 'PlusnaoMainBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets
+    'bundles/plusnaomain/css/chouchou_clair_stock_list.css' filter='cssrewrite'
+    %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+    {{ parent() }}
+    {% javascripts
+    '@PlusnaoMainBundle/Resources/public/js/chouchou_clair_stock_list.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+    <div id="chouchouClairStockList" class="container">
+
+        <div id="header">
+            <div class="clearfix">
+                <div class="pull-left">
+                    <h2>シュシュクレール様 NETSEA在庫連携</h2>
+                </div>
+
+                <div class="pull-right">
+                    <h4 class="text-right">
+                        {% if account.isForestStaff %}
+                            <a class="btn btn-danger mb10 inlineBlock" v-on:click="closeWindow()">
+                                閉じる
+                            </a>
+                        {% else %}
+                            <a class="label label-danger mb10 inlineBlock" href="{{ path('plusnao_logout') }}">
+                                <i class="fa fa-sign-out"></i>
+                                logout
+                            </a>
+                        {% endif %}
+                        <br>
+                        <span id="clientName">{{ account.getClientName() }}{% if account.isClient() %}  様{% endif %}</span>
+                    </h4>
+                </div>
+            </div>
+
+            <div>
+                <div class="(% messageCssClass %)" v-text="message"></div>
+            </div>
+        </div>
+
+        {% for type, flashMessages in app.session.flashbag.all() %}
+            {% if type in ['info', 'notice', 'success', 'warning', 'danger'] %}
+                <div>
+                    {% for flashMessage in flashMessages %}
+                        <div class="alert alert-{{ type }}">
+                            {{ flashMessage }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {# 検索フォーム #}
+
+        <div id="functionBlock">
+            <form role="form" class="form-horizontal"  action="{{ path('plusnao_chouchou_clair') }}" method="get" id="searchForm">
+
+                {{ form_errors(searchForm) }}
+
+                <div class="row">
+                    <div class="col-xs-4">
+                        {# カテゴリ選択 #}
+                        <div class="form-group">
+                          <label class="col-xs-5 control-label" style="padding-top: 0">
+                              商品管理番号
+                              <br><span>(前方一致)</span>
+                          </label>
+                          {#<div class="form-group col-xs-2 text-right"></div>#}
+                          <div class="col-xs-7">
+                              {{  form_errors(searchForm.code) }}
+                              {{  form_widget(searchForm.code, {'attr': {'class': 'form-control allowSubmit', 'v-model': 'searchConditions.code'} }) }}
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="col-xs-5 control-label" style="padding-top: 0">
+                              商品名 <span>(部分一致）</span>
+                              <br><span>※空白区切り複数可</span>
+                          </label>
+                          {#<div class="form-group col-xs-2 text-right"></div>#}
+                          <div class="col-xs-7">
+                            {{  form_errors(searchForm.keyword) }}
+                            {{  form_widget(searchForm.keyword, {'attr': {'class': 'form-control allowSubmit', 'v-model': 'searchConditions.keyword'} }) }}
+                          </div>
+                        </div>
+                    </div>
+
+                  <div class="col-xs-4">
+                      {# 表示対象 #}
+                      <div class="form-group">
+                          <label class="col-xs-4 control-label">表示対象</label>
+                          <div class="col-xs-8 inputBodyLine">
+                              {{ form_errors(searchForm.searchTarget) }}
+                              {{ form_widget(searchForm.searchTarget) }}
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                        <span class="col-xs-2"></span>
+                        <button class="col-xs-8 btn btn-sm btn-success">絞り込む</button>
+                        <span class="col-xs-2"></span>
+                      </div>
+                    </div>
+
+                    <div class="col-xs-4 form-group text-right">
+                        <div class="mr10 mb10">
+                            <label class="btn btn-info" v-on:click="openCsvUploadModal">CSVアップロード</label>
+                        </div>
+                        <div class="mr10 mb10">
+                            <label class="btn btn-primary" v-on:click="openCsvDownloadModal">CSVダウンロード</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </form>
+        </div>
+
+
+        <div class="main" id="chouchouClairStockListTable" data-update-stock-url="{{ path('plusnao_chouchou_clair_update_stock') }}">
+            {% if not submitted %}
+                <div class="tableAlterText">検索条件を指定して絞り込んでください。</div>
+            {% elseif dataCount == 0 %}
+                <div class="tableAlterText">検索条件に一致する商品はありませんでした。</div>
+            {% else %}
+
+                <div class="pageInfo">
+                    一致件数: {{ totalCount | number_format }} 件
+                    {% if dataCount < totalCount %}
+                        ({{ dataCount | number_format }}件まで表示しています)
+                    {% endif %}
+                </div>
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="sortable" v-on:click="switchSort('code')">
+                            商品管理番号
+                            <i class="text-info" v-bind:class="sortMarks.code"></i>
+                        </th>
+                        <th class="sortable" v-on:click="switchSort('name')" style="max-width: 200px;">
+                            商品名
+                            <i class="text-info" v-bind:class="sortMarks.name"></i>
+                        </th>
+                        <th class="sortable" v-on:click="switchSort('branchCode')">
+                            枝番号
+                            <i class="text-info" v-bind:class="sortMarks.branchCode"></i>
+                        </th>
+                        <th class="sortable" v-on:click="switchSort('detail')">
+                            内訳
+                            <i class="text-info" v-bind:class="sortMarks.detail"></i>
+                        </th>
+                        <th class="sortable" v-on:click="switchSort('wholesalePrice')">
+                            卸価格
+                            <i class="text-info" v-bind:class="sortMarks.wholesalePrice"></i>
+                        </th>
+                        <th class="sortable" v-on:click="switchSort('stock')">
+                            在庫数
+                            <i class="text-info" v-bind:class="sortMarks.stock"></i>
+                        </th>
+                        <th class=""></th>
+                        <th class="sortable" v-on:click="switchSort('stockModified')">
+                            在庫修正日時
+                            <i class="text-info" v-bind:class="sortMarks.stockModified"></i>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr is="result-item"
+                            v-for="item in list | orderBy sortField sortOrder"
+                            :item="item"
+                        ></tr>
+
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+    </div>
+
+    {# 表示データ #}
+    <script type="text/javascript">
+        var productListData = {{ data | raw }};
+    </script>
+
+    {# Vue.js コンポーネントテンプレート #}
+    <script id="result-item" type="x-template">
+        <tr>
+            <td class="text-center">(% code %)</td>
+            <td class="text-left">(% name %)</td>
+            <td class="text-left">(% branchCode %)</td>
+            <td class="text-left">(% detail %)</td>
+            <td class="text-right">(% displayWholesalePrice %)</td>
+            <td class="text-right" v-bind:class="stockCssClass">(% displayStock %)</td>
+
+            <td class="text-center" class="button">
+                <label v-if="isModified == false" v-show="item.stock > 0" class="btn btn-xs btn-danger" v-on:click="modifyStockToZero">在庫 => 0</label>
+                <label v-else class="btn btn-xs btn-info" v-on:click="undoModifyStock">元に戻す</label>
+
+                <img v-if="isLoading" src="{{ asset('img/loading.gif') }}" />
+
+            </td>
+
+            <td class="text-center">(% displayStockModified %)</td>
+        </tr>
+    </script>
+
+    {# modals #}
+    <div class="modal"
+         id="modalCsvUpload"
+         tabindex="-1"
+         data-backdrop="static" data-keyboard="false"
+         data-url="{{ path('plusnao_api_get_product_reviews') }}"
+            >
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal-label">
+                        (% caption %)
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+
+                  <div class="loading" v-bind:class="{ 'hidden' : !nowLoading }">
+                    <img src="{{ asset('img/loading-large.gif') }}" />
+                    <p class="notice">
+                        現在アップロード及びデータの取込中です。完了するまで画面を閉じないでください。<br>
+                        ※データ件数により、最大10分程度かかる場合があります。
+                    </p>
+                  </div>
+
+                  <form v-bind:class="{ 'hidden' : nowLoading }" action="{{ path('plusnao_chouchou_clair_upload_csv') }}" method="post" id="uploadCsvForm" enctype="multipart/form-data">
+                    <div>
+                        <div class="(% messageClass %)">
+                            <div v-text="message"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12 form-group text-center mb20">
+                          {{ form_errors(uploadForm.uploaded) }}
+                          {{ form_widget(uploadForm.uploaded) }}
+                        </div>
+                        <div class="col-sm-12 form-group text-center">
+                            <button class="btn btn-primary" v-on:click="onSubmit">アップロード</button>
+                        </div>
+                    </div>
+
+                    {{ form_widget(uploadForm.code, {'attr': {'v-model': 'searchConditions.code'}}) }}
+                    {{ form_widget(uploadForm.keyword, {'attr': {'v-model': 'searchConditions.keyword'}}) }}
+                    {{ form_widget(uploadForm.searchTarget, {'attr': {'v-model': 'searchConditions.target'}}) }}
+
+                    {{ form_rest(uploadForm) }}
+
+                  </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal"
+         id="modalCsvDownload"
+         tabindex="-1"
+         data-backdrop="static" data-keyboard="false"
+         data-url="{{ path('plusnao_api_get_product_reviews') }}"
+            >
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal-label">
+                        (% caption %)
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="loading" v-bind:class="{ 'hidden' : !nowLoading }">
+                        <img src="{{ asset('img/loading-large.gif') }}" />
+                        <p class="notice">
+                        </p>
+                    </div>
+
+                    <form role="form"
+                          class="form-horizontal"
+                          v-bind:class="{ 'hidden' : nowLoading }"
+                          action="{{ path('plusnao_chouchou_clair_download_csv') }}"
+                          method="post"
+                          id="downloadCsvForm">
+
+                        <div>
+                            <div class="alert alert-info">
+                                <ul>
+                                    <li>在庫数が修正されたデータのみダウンロードされます。</li>
+                                    <li>取得開始を空にすれば、もっとも古いデータから取得します。</li>
+                                    <li>取得終了を空にすれば、もっとも新しいデータまで取得します。</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12 form-group text-center mb20">
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">取得開始</label>
+                                    <div class="col-xs-9">
+                                        {{ form_errors(downloadForm.dateStart) }}
+                                        {{ form_widget(downloadForm.dateStart, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">取得終了</label>
+                                    <div class="col-xs-9">
+                                        {{ form_errors(downloadForm.dateEnd) }}
+                                        {{ form_widget(downloadForm.dateEnd, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 form-group text-center">
+                                <button class="btn btn-primary" v-on:click="onSubmit">ダウンロード</button>
+                            </div>
+                        </div>
+
+                        {{ form_widget(downloadForm.code, {'attr': {'v-model': 'searchConditions.code'}}) }}
+                        {{ form_widget(downloadForm.keyword, {'attr': {'v-model': 'searchConditions.keyword'}}) }}
+                        {{ form_widget(downloadForm.searchTarget, {'attr': {'v-model': 'searchConditions.target'}}) }}
+
+                        {{ form_rest(downloadForm) }}
+
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{# フォーム出力カスタマイズ #}
+{% form_theme searchForm _self %}
+{% block form_errors %}
+    {% spaceless %}
+        {% if errors|length > 0 %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="formError alert alert-danger">
+                        {% for error in errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_errors %}
+
+

@@ -1,0 +1,239 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.delivery-split-rule-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <script type="text/javascript">
+    const DELIVERY_SPLIT_RULE_LIST_DATA = {{ dataJson|raw }};
+    const DELIVERY_METHOD_LIST = {{ methodList|raw }};
+  </script>
+
+  <div id="deliverySplitRuleList" class="container"
+        data-remove-url="{{ path('setting_delivery_split_rule_remove') }}"
+  >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>発送方法変換 一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div>
+      <button slot="left-part" class="btn btn-sm btn-primary mr10 mb5" v-on:click="showFormModal(null)">新規作成</button>
+
+      <table class="table table-bordered table-condensed" v-show="list.length > 0">
+          <tr>
+              <th class="w50">ID</th>
+              <th class="w200">ルール名</th>
+              <th class="w50">チェック順</th>
+              <th class="w70">長辺(mm)</th>
+              <th class="w70">中辺(mm)</th>
+              <th class="w70">短辺(mm)</th>
+              <th class="w70">合計(mm)</th>
+              <th class="w100">体積(mm3)</th>
+              <th class="w50">重量(g)</th>
+              <th class="w50">サイズ<br>チェック</th>
+              <th class="w50">最大<br>フラグ</th>
+              <th class="w100">発送方法コード</th>
+              <th class="w200">対象都道府県</th>
+              <th class="w70">グループID</th>
+              <th class="w50">グループ名</th>
+              <th class="w70">&nbsp;</th>
+          </tr>
+          <tr v-for="item in list"
+              is="result-item"
+              :item="item"
+              v-on:show-edit-form="showFormModal"
+              v-on:remove-item="removeItem"
+          ></tr>
+      </table>
+    </div>
+
+    <div is="delivery-split-rule-form-modal"
+         :state="modalState"
+         v-on:update-item="updateItem"
+      ></div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateDeliverySplitRuleListTableRow">
+    <tr v-bind:class="rowCssClass">
+      <td v-text="item.id" class="text-left vMiddle"></td>
+      <td v-text="item.rulename" class="text-left vMiddle"></td>
+      <td v-text="item.checkorder" class="text-left vMiddle"></td>
+      <td v-text="item.longlength" class="text-left vMiddle"></td>
+      <td v-text="item.middlelength" class="text-left vMiddle"></td>
+      <td v-text="item.shortlength" class="text-left vMiddle"></td>
+      <td v-text="item.totallength" class="text-left vMiddle"></td>
+      <td v-text="item.volume" class="text-left vMiddle"></td>
+      <td v-text="item.weight" class="text-left vMiddle"></td>
+      <td v-text="displaySize" class="text-left vMiddle"></td>
+      <td v-text="displayMax" class="text-left vMiddle"></td>
+      <td v-text="displayMethod" class="text-left vMiddle"></td>
+      <td v-text="item.prefectures" class="text-left vMiddle"></td>
+      <td v-text="item.groupid" class="text-left vMiddle"></td>
+      <td v-text="item.groupname" class="text-left vMiddle"></td>
+
+      <td class="text-center vMiddle">
+        <div class="row row10">
+          <div class="col-xs-6 text-center vMiddle">
+            <button type="button" class="btn btn-success btn-sm" v-on:click="showEditForm">
+              <i class="fa fa-fw fa-pencil" style="font-size: 0.8em"></i>
+            </button>
+          </div>
+          <div class="col-xs-6 text-left">
+            <button type="button" class="btn btn-danger btn-sm" v-on:click="remove">
+              <i class="fa fa-fw fa-times" style="font-size: 0.8em"></i>
+            </button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </script>
+
+
+  {# modals #}
+  <script type="text/x-template" id="templateDeliverySplitRuleForm">
+    <div class="modal"
+         id="modalDeliverySplitRuleForm"
+         tabindex="-1"
+         data-save-url="{{ path('setting_delivery_split_rule_save') }}"
+      >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            {#<div v-show="state.message.length > 0">#}
+              {#<div class="alert" v-bind:class="state.messageCssClass" v-text="state.message">#}
+              {#</div>#}
+            {#</div>#}
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <div id="modalDeliverySplitRuleFormBody" class="row" v-show="!nowLoading">
+              <div class="col-xs-10 col-xs-offset-1">
+
+                <form role="form">
+                  <div class="form-group">
+                    <label for="deliverySplitRuleName">ルール名</label>
+                    <input type="text" id="deliverySplitRuleName" v-model="item.rulename" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="deliverySplitRuleCheckOrder">チェック順</label>
+                    <input type="number" id="deliverySplitRuleCheckOrder" v-model="item.checkorder" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="deliverySplitRuleLong">長辺（mm）</label>
+                      <input type="number" id="deliverySplitRuleLong" v-model="item.longlength" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="deliverySplitRuleMiddle">中辺（mm）</label>
+                      <input type="number" id="deliverySplitRuleMiddle" v-model="item.middlelength" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="deliverySplitRuleShort">短辺（mm）</label>
+                      <input type="number" id="deliverySplitRuleShort" v-model="item.shortlength" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="deliverySplitRuleTotal">合計（mm）</label>
+                      <input type="number" id="deliverySplitRuleTotal" v-model="item.totallength" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                      <label for="deliverySplitRuleVolume">体積（mm3）</label>
+                      <input type="number" id="deliverySplitRuleVolume" v-model="item.volume" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <label for="deliverySplitRuleWeight">重量（g）</label>
+                      <input type="number" id="deliverySplitRuleWeight" v-model="item.weight" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                      <input type="checkbox" id="deliverySplitRuleSizeCheck" v-model="item.sizecheck" /><label for="note">サイズチェックフラグ</label>
+                  </div>
+
+                  <div class="form-group">
+                      <input type="checkbox" id="deliverySplitRuleMaxFlg" v-model="item.maxflg" /><label for="note">最大フラグ</label>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="deliverySplitRuleDeliveryId">送料発送方法コード種別</label>
+                    <select v-model="item.deliveryId" id="deliverySplitRuleDeliveryId" class="form-control">
+                      <option v-for="option in deliveryMethodOptions" v-bind:value="option.value" v-text="option.text">
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="deliverySplitRuleGroupId">グループID</label>
+                    <input type="text" id="deliverySplitRuleGroupId" v-model="item.groupid" class="form-control" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="deliverySplitRuleGroupName">グループ名</label>
+                    <input type="text" id="deliverySplitRuleGroupName" v-model="item.groupname" class="form-control" />
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+{% endblock %}

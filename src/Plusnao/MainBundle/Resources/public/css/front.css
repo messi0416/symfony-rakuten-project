@@ -1,0 +1,12 @@
+/** 取引先様システム 共通CSS */
+
+/* Bootstrap の余計な親切削除 */
+@media print {
+  a[href]:after {
+    content: "" !important;
+  }
+
+  abbr[title]:after {
+    content: "" !important;
+  }
+}

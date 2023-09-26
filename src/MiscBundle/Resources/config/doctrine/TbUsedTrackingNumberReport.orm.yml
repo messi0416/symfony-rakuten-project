@@ -1,0 +1,42 @@
+MiscBundle\Entity\TbUsedTrackingNumberReport:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbUsedTrackingNumberReportRepository
+  table: tb_used_tracking_number_report
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: id
+      id: true
+      generator:
+        strategy: IDENTITY
+  fields:
+    deliveryMethodId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "発送方法id\ntb_delivery_method.delivery_id"
+      column: delivery_method_id
+    downloadCountEdi:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: DL回数(WEB-EDI)
+      default: "0"
+      column: download_count_edi
+    downloadCountNe:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: DL回数(NextEngine)
+      default: "0"
+      column: download_count_ne
+    created:
+      type: datetime
+      nullable: false
+      comment: 作成日時
+      default: CURRENT_TIMESTAMP
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

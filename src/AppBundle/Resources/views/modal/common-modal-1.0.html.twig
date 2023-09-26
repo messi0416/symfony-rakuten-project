@@ -1,0 +1,48 @@
+{# modals #}
+<div class="modal"
+     id="{{ modalId }}"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     {% if actionUrl is defined %}
+       data-url="{{ actionUrl }}"
+     {% endif %}
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div v-show="nowLoading" class="row">
+        <div class="col-sm-12 text-center">
+          <img src="{{ asset('img/loading.gif') }}" />
+        </div>
+      </div>
+
+      <div class="modal-body" v-show="!nowLoading">
+        <div>
+          <div class="(% messageClass %)" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{hidden: noticeHidden}">
+          <div class="(% noticeClass %)">
+            <ul>
+              <li v-for="notice in notices">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>

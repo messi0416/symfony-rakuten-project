@@ -1,0 +1,148 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.sku-shipping-pending.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div class="container container-large" id="shippingPendingList"
+      data-url="{{ path('products_sku_shippingdivision_pending_find') }}"
+      data-update-url="{{ path('products_sku_shippingdivision_pending_update') }}"
+      >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>SKU別送料設定 保留一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+
+    <div class="form-inline clearfix mb10">
+
+      <div class="pull-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" v-on:click="showFormModal()" v-bind:disabled="!canUpdate">
+          設定反映
+        </button>
+      </div>
+
+    </div>
+
+    <div id="pendingListTable">
+
+      <table class="table table-bordered" >
+        <thead>
+          <tr>
+            <th class="text-center w150">商品コード</th>
+            <th class="text-center">商品名</th>
+            <th class="text-center w150">対象サイズコード・SKU</th>
+            <th class="text-center w100">サイズ</th>
+            <th class="text-center w50">重量</th>
+            <th class="text-center w150">修正前送料</th>
+            <th class="text-center w150">保留中送料</th>
+            <th class="text-center w150">代表商品送料</th>
+            <th class="text-center w170">処理ステータス</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="item in list"
+              is="result-item"
+              :item="item"
+              data-location-product-sku-url-base="{{ path('location_product_sku_list', { daihyoSyohinCode: '__DUMMY__' }) }}"
+          ></tr>
+        </tbody>
+      </table>
+
+    </div>
+    <div is="update-confirm-modal"
+         :state="modalState"
+         :list="list"
+         v-on:update-pendings="updatePendings()"
+      ></div>
+
+    <div class="form-inline clearfix mb10">
+
+      <div class="pull-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" v-on:click="showFormModal()" v-bind:disabled="!canUpdate">
+          設定反映
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templatePendingListTableRow">
+    <tr>
+      <td class="text-center vMiddle">
+        <a v-bind:href="locationProductSkuUrl" v-text="item.daihyoSyohinCode" target="_blank"></a>
+      </td>
+      <td class="vMiddle"><div v-text="item.daihyoSyohinName" v-bind:title="item.daihyoSyohinName" class="product-name"></div></td>
+      <td v-text="item.targetCode" class="text-center vMiddle"></td>
+      <td v-text="item.size" class="text-center vMiddle"></td>
+      <td v-text="item.weight" class="text-center vMiddle"></td>
+      <td v-text="item.prevSdName" class="text-center vMiddle" v-bind:title="item.prevSdPrice"></td>
+      <td v-text="item.pendingSdName" class="text-center vMiddle" v-bind:title="item.pendingSdPrice"></th>
+      <td v-text="item.mpSdName" class="text-center vMiddle" v-bind:title="item.mpSdPrice"></th>
+      <td class="text-center vMiddle">
+        <label><input type="radio" v-bind:value="1" v-model.number="item.reflectStatus"/>保留</label>
+        <label><input type="radio" v-bind:value="2" v-model.number="item.reflectStatus"/>反映</label>
+        <label><input type="radio" v-bind:value="3" v-model.number="item.reflectStatus"/>却下</label>
+      </td>
+    </tr>
+  </script>
+
+  {# modal #}
+  <script type="text/x-template" id="templateModalUpdateConfirm">
+    <div class="modal"
+         id="modalUpdateConfirm"
+         tabindex="-1"
+         data-backdrop="static" data-keyboard="false"
+      >
+
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label">
+              (% caption %)
+            </h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save()">はい</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+{% endblock %}

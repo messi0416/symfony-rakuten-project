@@ -1,0 +1,208 @@
+/**
+ * ロジ 仕入・注残一覧画面用 CSS
+ */
+.listTable {
+  border: solid 1px #ccc;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.listTable th,
+.listTable td
+{
+  border: solid 1px #ccc;
+  padding: 1px 2px;
+
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.scrollTableDiv {
+  overflow: auto;
+}
+
+.listTable th {
+  font-weight: normal;
+  background-color: #f0f8ff;
+}
+
+.listTable td {
+  vertical-align: top;
+}
+.listTable input[type="text"] {
+  width: 40px;
+  text-align: right;
+}
+
+/* 詳細 */
+.listTable .orderNumber {
+  width: 60px;
+  min-width: 60px;
+  text-align: center;
+}
+.listTable .sireName {
+  /* 左側にいるので幅が増減すると操作しにくい */
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  text-align: left;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+.listTable .deliveryDate {
+  width: 90px;
+  min-width: 90px;
+  text-align: center;
+}
+.listTable .syohinCode {
+  width: 180px;
+  min-width: 180px;
+  text-align: left;
+
+  font-weight: bold;
+}
+.listTable .orderNum {
+  width: 30px;
+  min-width: 30px;
+  text-align: right;
+}
+.listTable .regularNum {
+  width: 30px;
+  min-width: 30px;
+  text-align: right;
+}
+.listTable .defectiveNum {
+  width: 30px;
+  min-width: 30px;
+  text-align: right;
+}
+.listTable .shortageNum {
+  width: 30px;
+  min-width: 30px;
+  text-align: right;
+}
+.listTable .remainNum {
+  width: 30px;
+  min-width: 30px;
+  text-align: right;
+
+  font-weight: bold;
+  font-size: 1.2em
+}
+.listTable .comment {
+  width: 60px;
+  min-width: 60px;
+  text-align: left;
+}
+.listTable .quantityPrice {
+  width: 40px;
+  min-width: 40px;
+  text-align: right;
+}
+.listTable .inputOrderNum {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+.listTable .inputRegularNum {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+.listTable .inputDefectiveNum {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+.listTable .inputShortageNum {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+.listTable .orderStop {
+  width: 50px;
+  min-width: 50px;
+  text-align: center;
+}
+.listTable .agentName {
+  min-width: 90px;
+  max-width: 150px;
+  text-align: left;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+.listTable .agentStatus {
+  min-width: 60px;
+  text-align: center;
+}
+.listTable .supportColName {
+  min-width: 70px;
+  text-align: center;
+}
+.listTable .supportRowName {
+  min-width: 70px;
+  text-align: center;
+}
+.listTable .vendorComment {
+  min-width: 100px;
+  /*max-width: 200px;*/
+  text-align: left;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+.listTable .shippingNumber {
+  width: 100px;
+  min-width: 100px;
+  text-align: left;
+}
+
+/* 装飾その他 */
+th.sortable {
+  color: #169;
+  text-decoration: underline;
+}
+
+
+/*  */
+.collapsing {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.15s ease;
+  transition: height 0.15s ease;
+}
+
+/*キュー存在通知 ダイアログ*/
+.wkDialogClass .ui-dialog-titlebar {
+  text-align: center;
+  font-size: 1.3em;
+  color: #a94442;
+  background: #f2dede;
+}
+.wkDialogClass .ui-dialog-buttonpane {
+  margin: 0;
+  padding: 0;
+  display: -webkit-flex;
+  text-align: center;
+  justify-content: space-around;
+  -webkit-justify-content: space-around;
+}
+.wkBtnOk{
+  width: 110px;
+  margin: 0 auto;
+}
+.wkBtnNg {
+  width: 110px;
+  margin: 0 auto;
+  color:#a94442;
+  background:#f2dede;
+}
+.wkBtnNg:hover {
+  color:#f2dede;
+  background:#a94442;
+}
+

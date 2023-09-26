@@ -1,0 +1,88 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{# base で指定しても良いのかもしれないが、PC / スマホ共用のログインページのみ、まず指定 #}
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.admin.js'
+    '@AppBundle/Resources/public/js/app.login.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+{% block body %}
+<script type="text/javascript">
+  const USER_LIST_DATA = {{ usersJson|raw }};
+  const LAST_USER_NAME = '{{last_username}}';
+</script>
+<div class="container">
+  <div class="clearfix" id="globalMessage">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="pull-left">
+          <h2>Plusnao Web System</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="messageArea" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="messageDisp">
+    <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+  </div>
+  {% if errorMessage %}
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+  {% endif %}
+
+  <div class="well">
+    <div class="row">
+      <div class="col-sm-3 col-xs-1">&nbsp;</div>
+
+      <div class="col-sm-6 col-xs-10" 
+        id="loginForm"
+        data-url="{{ path('get_username') }}"
+      >
+        <form role="form" action="{{ path('login_check') }}" method="post">
+          <div class="form-group">
+            <label for="username">アカウント</label>
+            <select class="form-control" id="username" name="_username" v-model="username">
+              <option value=""></option>
+              {% for user in users %}
+                <option value="{{ user.username }}"
+                        {% if user.username == last_username %}
+                          selected="selected"
+                        {% endif %}
+                  >{{ user.username }}</option>
+              {% endfor %}
+            </select>
+            <input type="text" v-model="userCd" class="form-control" id="userid" name="_userid" placeholder="ユーザコード" v-on:change="getUsername()">
+          </div>
+          <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" class="form-control" id="password" name="_password" placeholder="パスワード">
+          </div>
+
+          <div class="form-group checkbox" style="padding-left: 20px;">
+            <input type="checkbox" id="remember_me" name="_remember_me" value="1" checked="checked">
+            <label for="remember_me" style="padding-left: 5px;">ログイン状態を維持する</label>
+          </div>
+
+
+          <div class="row">
+            <div class="col-sm-12 text-center">
+              <button type="submit" class="btn btn-default">ログイン</button>
+            </div>
+          </div>
+
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        </form>
+      </div>
+
+      <div class="col-sm-3 col-xs-1">&nbsp;</div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+.scrollTableDiv {
+    overflow: auto;
+}
+
+.mw70 {
+    min-width: 70px
+}
+
+.mw80 {
+    min-width: 80px
+}
+
+.mw90 {
+    min-width: 90px
+}
+
+.operationTimeSumChanged {
+    background-color:#f2dede !important;
+}

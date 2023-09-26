@@ -1,0 +1,133 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+
+  '@AppBundle/Resources/public/js/app.delivery-change-shipping-method.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="deliveryChangeShippingMethodList" class="container"
+      data-url-get-list="{{ path('delivery_change_shipping_method_get_list') }}"
+      data-url-add-voucher-confirm="{{ path('delivery_change_shipping_method_add_confirm') }}"
+      data-url-add-voucher="{{ path('delivery_change_shipping_method_add') }}"
+      data-url-delete-voucher="{{ path('delivery_change_shipping_method_delete') }}"
+      data-url-voucher-list-update="{{ path('delivery_change_shipping_method_update_voucher_list') }}"
+
+      data-url-download-csv="{{ path('delivery_change_shipping_method_download_csv') }}"
+      data-available-shipping-methods="{{ shippingMethodsJson }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>発送方法変更 伝票一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div class="h4 bg-danger text-muted text-center p10">この処理は削除予定です</div>
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+
+    <div class="form-inline clearfix mb10">
+      <div class="form-group pull-left mr10">
+        <label class="sr-only" for="inputVoucherNumber">伝票番号</label>
+        <input type="text" class="form-control" id="inputVoucherNumber" placeholder="伝票番号" v-model="inputVoucherNumber" v-on:keypress.enter="addVoucherConfirm">
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-primary" v-on:click="addVoucherConfirm">追加</button>
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-default w50" v-on:click="loadData">
+          <i class="fa fa-fw fa-repeat"></i>
+        </button>
+      </div>
+
+
+      <div class="pull-right">
+        <a type="button" class="btn btn-success" v-show="activeTab.length > 0"
+          v-bind:href="csvDownloadUrl" v-bind:download="csvDownloadFilename"
+          >
+          <i class="fa fa-fw fa-download"></i>宛名CSVダウンロード
+        </a>
+        <button type="button" class="btn btn-info" v-on:click="updateVoucherList">
+          明細更新＆反映
+        </button>
+      </div>
+
+    </div>
+
+    <div id="deliveryChangeShippingMethodListTable">
+
+      <ul class="nav nav-tabs" id="deliveryChangeShippingMethodNavTab">
+        <li v-bind:class="getTabActiveCss('')"><a class="cursorPointer" v-on:click="activateTab('')">すべて</a></li>
+        <li v-for="method in shippingMethods" v-bind:class="getTabActiveCss(method.code)">
+          <a class="cursorPointer" v-text="method.name" v-on:click="activateTab(method.code)"></a>
+        </li>
+      </ul>
+
+      <table class="table table-border table-condensed tableNoTopBorder">
+        <tr>
+          <th class="text-center col-xs-2 vMiddle" rowspan="2">伝票番号</th>
+          <th class="text-center col-xs-2 vMiddle" rowspan="2">発送先名</th>
+          <th class="text-center col-xs-6 vMiddle" colspan="2">発送方法</th>
+          <th class="text-center col-xs-2 vMiddle">&nbsp;</th>
+        </tr>
+        <tr>
+          <th class="text-center col-xs-3 vMiddle">追加時</th>
+          {#<th class="text-center col-xs-2 vMiddle">変更先</th>#}
+          <th class="text-center col-xs-3 vMiddle">現在</th>
+        </tr>
+
+        <tr v-for="item in pageData"
+            is="result-item"
+            :item="item"
+            v-on:delete-voucher="deleteVoucher"
+          ></tr>
+
+      </table>
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateDeliveryChangeShippingMethodListTableRow">
+    <tr class="text-center">
+      <td class="vMiddle">
+        <a href="#" v-on:click="openVoucherWindow" v-text="item.voucherNumber"></a>
+      </td>
+      <td class="vMiddle text-left" v-text="item.addressee"></td>
+      <td class="vMiddle" v-text="item.shippingMethod"></td>
+      {#<td class="vMiddle" v-text="item.newShippingMethod"></td>#}
+      <td class="vMiddle" v-text="item.currentShippingMethod"></td>
+      <td class="vMiddle text-center">
+        {#<button type="button" class="btn btn-default">修正</button>#}
+        <button type="button" class="btn btn-danger" v-on:click="deleteVoucher">削除</button>
+      </td>
+    </tr>
+  </script>
+{% endblock %}

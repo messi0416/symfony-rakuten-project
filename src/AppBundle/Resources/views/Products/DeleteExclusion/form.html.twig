@@ -1,0 +1,35 @@
+{# フォーム出力カスタマイズ #}
+{% form_theme form 'AppBundle::form_template.html.twig' %}
+
+<form role="form" action="{{ actionUrl }}" method="post">
+
+  <div class="form-group">
+    {{ form_label(form.mall_id) }}
+    {{ form_widget(form.mall_id, { 'attr': {'class' : 'form-control'} }) }}
+    {{ form_errors(form.mall_id) }}
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.syohin_code) }}
+    {{ form_widget(form.syohin_code, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+    {{ form_errors(form.syohin_code) }}
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.comment) }}
+    {{ form_widget(form.comment, { 'attr': {'class' : 'form-control inputComment allowSubmit'} }) }}
+    {{ form_errors(form.comment, { 'attr': {'class' : 'alert alert-danger'} }) }}
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 form-group">
+      <input type="button" value="キャンセル" class="form-control" v-on="click: backToList()" />
+    </div>
+    <div class="col-xs-6 form-group">
+      <input type="submit" value="登録" class="form-control" />
+    </div>
+  </div>
+
+  {{ form_rest(form) }}
+
+</form>

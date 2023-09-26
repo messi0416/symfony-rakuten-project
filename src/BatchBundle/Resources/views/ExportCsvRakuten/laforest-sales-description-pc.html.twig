@@ -1,0 +1,23 @@
+{# PC販売説明文テンプレート #}
+{# 入力HTMLがあれば、そのまま出力 #}
+{% if row['input_PC販売説明文']|length > 0 %}{# 元実装のこの条件には、仮実装で無く、販売終了でもない、の条件が入っていた。省略してみる。 #}
+{{ row['input_PC販売説明文']|raw }}
+{% else %}{# 以下、作成処理 #}
+
+{# ゲリラセール #}{# 現在該当商品が1件もなく、また画像も消えているため省略 #}
+
+{# アウトレット #}
+{% if settings.LAFOREST_DESC_OUTLET != 0 and row.outlet == -1  %}{# 現在設定がOFFで、また画像も消えているため省略 #}
+{#<a href="https://search.rakuten.co.jp/search/inshop-mall/%E3%80%90%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AC%E3%83%83%E3%83%88%E3%80%91/-/f.1-p.1-s.1-sf.0-sid.242190-st.A-v.3">#}
+{#<img src="https://image.rakuten.co.jp/plusnao/cabinet/00883058/01638021/img57669877.gif" width="90" height="30" border="0" hspace="0" vspace="0" alt="【アウトレット】商品一覧へGO!!">#}
+{#</a>#}
+{% endif %}
+
+{# 画像 #}
+{% for code, dirPath in pcImages %}
+<a href="{{ constant('BatchBundle\\MallProcess\\RakutenMallProcess::RAKUTEN_LAFOREST_CABINET_URL') }}{{ dirPath }}" target="_blank">
+<img width="710" align="baseline" border="0" hspace="0" src="{{ constant('BatchBundle\\MallProcess\\RakutenMallProcess::RAKUTEN_LAFOREST_CABINET_URL') }}{{ dirPath }}" alt="">
+</a><br>
+{% endfor %}
+
+{% endif %}

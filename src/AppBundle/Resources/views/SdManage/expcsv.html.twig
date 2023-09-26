@@ -1,0 +1,66 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+    'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+    'bundles/app/css/app.admin.css' filter='cssrewrite'
+    'bundles/app/css/app.sdmanage.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.sd-manage.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}スーパーデリバリー商品情報管理画面-新規登録{% endblock %}
+ 
+{% block body %}
+{% include 'AppBundle:SdManage:_navbar.html.twig' %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+      {% include 'AppBundle:SdManage:_sidebar.html.twig' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">商品データCSV出力</h1>
+            <div class="text-right">
+              <form name="changeNumberForm" onSubmit="changeNumber('{{ path('pltosd') }}');return false;" class="form-group">
+                <label>件数：</label><input type="text" value="{{ number }}" id="chg_num" size="3" class="text-right"> <input type="submit" value="変更" class="btn btn-success">
+              </form>
+            </div>
+            <form name="registFlagForm" method="POST" class="form-group">
+            <table class="table table-hover" style="table-layout:fixed;">
+              <tr>
+              <th style="width:40px;">No</th>
+              <th style="width:50px;">登録</th>
+              <th style="width:150px;">代表商品コード</th>
+              <th>商品タイトル</th>
+              <th style="width:80px;">総在庫数</th>
+            </tr>
+            {% for maininfo in maininfos %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td><input type="checkbox" name="registFlag[]" value="{{ maininfo.daihyoSyohinCode }}" checked="checked"></td>
+              <td>{{ maininfo.daihyoSyohinCode }}</td>
+              <td>{{ maininfo.daihyoSyohinName }}</td>
+              <td class="text-right">{{ maininfo.soZaikoSu }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+            <input type="submit" value="CSV出力" class="btn btn-success">
+            <strong class="text-warning"><i class="glyphicon glyphicon-info-sign"></i> 出力後、CSVにてジャンル・ターゲット・商品属性を入力してください。</strong>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}

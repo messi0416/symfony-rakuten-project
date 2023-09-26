@@ -1,0 +1,19 @@
+.info-body {
+  overflow-x: auto;
+  margin-right: 15px;
+}
+th, td {
+  min-width: 150px;
+  padding: 2px 5px;
+  text-align: center;
+}
+.flex5 {
+  flex: 5;
+}
+.scroll-top {
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  opacity: 0.6;
+  transition: 0.7s;
+}

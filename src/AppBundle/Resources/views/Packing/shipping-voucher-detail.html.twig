@@ -1,0 +1,270 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+    '@AppBundle/Resources/public/js/app.shipping-voucher-detail.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets 'bundles/app/css/app.shipping-voucher-detail.css' filter='cssrewrite'%}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block headerTitle %}伝票詳細{% endblock %}
+
+{% block contents %}
+  <script type="text/javascript">
+    const ITEM = {{ item|raw }};
+    const DELIVERY_METHOD_LIST = {{ deliveryMethodList|raw }}
+  </script>
+  <div
+    id="shippingVoucherDetail"
+    data-ok="{{ path('packing_shipping_voucher_detail_ok') }}"
+    data-hold="{{ path('packing_shipping_voucher_detail_hold') }}"
+    data-shortage="{{ path('packing_shipping_voucher_detail_shortage') }}"
+    data-change-delivery="{{ path('packing_shipping_voucher_detail_change_delivery') }}"
+    data-complete="{{ path('packing_shipping_voucher_detail_complete') }}"
+    data-weight-size-edit="{{ path('goods_weight_size_edit') }}"
+    data-change-delivery-and-complete="{{ path('packing_shipping_voucher_detail_change_delivery_and_complete') }}"
+    v-cloak
+  >
+    <parts-global-message :state="messageState"></parts-global-message>
+    {# header #}
+    <div class="shippingVoucherDetailContents inputHeight border-bottom-solid">
+      <div v-if="item.packing.pickingAccountName" class="text-right" style="line-height: 0;" v-text="'ピッキング：' + item.packing.pickingAccountName"></div>
+      <div class="text-center">
+        <a
+          v-text="'[' + item.shippingVoucherName + ']'"
+          :href="item.shippingVoucherListUrl"
+        ></a>
+      </div>
+      <div class="text-center">
+        発送先
+        <span class="h4" v-text="item.packing.shippingAccountName"></span>
+        様
+      </div>
+      <h2 class="text-right" v-text="item.packing.voucherNumber"></h2>
+      <div class="text-left">計<span class="h1 pl5 pr5" v-text="item.packing.totalAmount"></span>点</div>
+      <div class="text-center bg-warning multiLineWrap h4 p6" v-if="item.packing.notices" v-text="item.packing.notices"></div>
+      <div
+        v-if="item.packing.isWaitShippingStop || item.packing.isShippingStop"
+        class="alert h4 bold text-center p10"
+        style="color: #fff; background-color: #E0115F;">
+          出荷STOP
+        </div>
+    </div>
+
+    {# 伝票明細リスト #}
+    <div
+      class="shippingVoucherDetailContents inputHeight border-bottom-dotted"
+      v-for="(index, detail) in item.shippingVoucherDetail"
+    >
+      <div class="mainLink" @click="onClickOk(detail.id)"></div>
+      <div class="loading" :id="'loading' + detail.id">
+        <img class="loading-img" src="{{ asset('img/loading.gif') }}">
+      </div>
+      <div class="row">
+        <div class="col-xs-8 positionStatic">
+          <a class="skuFont subLink" data-toggle="collapse" :href="'.collapse-content' + index" v-text="detail.skucode"></a>
+        </div>
+        <div class="col-xs-4 positionStatic">
+          <span v-if="detail.isShortage" v-text="detail.assignNum + '/'" class="h3"></span>
+          <span :class="detail.requiredAmount > 1 ? 'h1 bold red' : 'h3'" v-text="detail.requiredAmount"></span>
+        </div>
+      </div>
+      <div class="row" v-if="detail.isAbleShortage">
+        <div class="col-xs-12 alert alert-danger text-center p0v mb0 positionStatic">不足の可能性あり</div>
+      </div>
+      <div class="row mt10">
+        <div class="pull-right">
+          <button
+            type="button"
+            class="btn mr30 subLink"
+            :class="detail.isOk ? 'btn-info' : 'btn-secondary'"
+            @click="onClickOk(detail.id)"
+          >
+            OK
+          </button>
+          <button
+            type="button"
+            class="btn mr30 subLink"
+            :class="detail.isHold ? 'btn-warning' : 'btn-secondary'"
+            @click="onClickHold(detail.id)"
+          >
+            保留
+          </button>
+          <button
+            type="button"
+            class="btn subLink"
+            :class="detail.isShortage ? 'btn-danger' : 'btn-secondary'"
+            @click="openModalShortage(detail.id)"
+            data-toggle="modal"
+            data-target="#shortageModal"
+            data-backdrop="static"
+            data-keyboard="false"
+          >
+            不足
+          </button>
+        </div>
+      </div>
+      <div
+        class="collapse"
+        :class="'collapse-content' + index"
+      >
+        <div class="row mt10">
+          <img :src="detail.imageUrl" class="img-responsive col-xs-5 positionStatic">
+        </div>
+        <div class="row mt10">
+          <div class="col-xs-6 positionStatic">
+            <i class="glyphicon glyphicon-tag fa-2x subLink" @click="openWeightSizeEdit(detail.skucode)"></i>
+          </div>
+          <div class="col-xs-6 positionStatic">
+            <i class="glyphicon glyphicon-barcode fa-2x subLink" @click="openProductDetail(detail.locationProductDetailUrl)"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# フッターのボタン部分 #}
+    <div class="shippingVoucherDetailContents">
+      <div class="text-left mt10">計<span class="h1 pl5 pr5" v-text="item.packing.totalAmount"></span>点</div>
+      <div class="text-center mb50">
+        <template v-if="item.packing.isWaitShippingStop">
+          <div v-if="item.packing.isValidInquiryNumberStatusExist" class="form-group">
+            <label for="stopInquiryNumber">現在のお問い合わせ番号</label>
+            <input type="text" id="stopInquiryNumber" v-model="inquiryNumber" class="form-control mb10" placeholder="入力必須" />
+          </div>
+          <button type="button" class="btn btn-success btn-block" @click="onClickComplete('stop')" v-text="stopButtonName"></button>
+        </template>
+        <button v-if="item.packing.isShippingStop" type="button" class="btn btn-success btn-block" @click="onClickComplete('next')" v-text="nextButtonName"></button>
+        <button
+          v-if="!(item.packing.isWaitShippingStop || item.packing.isShippingStop)"
+          type="button"
+          class="btn btn-success btn-block"
+          @click="onClickComplete()"
+          v-text="completeButtonName">
+        </button>
+      </div>
+      <div class="text-center mb50" v-if="!(item.packing.isWaitShippingStop || item.packing.isShippingStop) && item.packing.isLast">
+        <button type="button" class="btn btn-info btn-block" @click="onClickNextSet">次のセットへ</button>
+      </div>
+      <div class="text-center mt10" v-if="item.packing.labelReissueFlg">
+        <p>発送方法変更中</p>
+        <p v-text="'[' + item.packing.deliveryName + ']'"></p>
+      </div>
+      <div class="text-center mt10" v-if="item.packing.isDisplayDelivery && !item.packing.labelReissueFlg">
+        <p>発送方法</p>
+        <p v-text="'[' + item.packing.deliveryName + ']'"></p>
+      </div>
+      <div class="text-center mt10" v-if="!(item.packing.isWaitShippingStop || item.packing.isShippingStop)">
+        <button
+          type="button"
+          class="btn btn-warning btn-block"
+          data-toggle="modal"
+          data-target="#changeDeliveryMethodModal"
+          data-backdrop="static"
+          data-keyboard="false"
+          @click="openModalChangeDeliveryMethod"
+        >
+          発送方法変更
+        </button>
+      </div>
+      <div v-if="!item.packing.isLast" class="text-right mt10" >
+        （次：
+        <span  v-text="item.packing.nextShippingAccountName"></span>
+        様）
+      </div>
+
+    </div>
+
+    {# 商品数量不足モーダル #}
+    <div class="modal fade" id="shortageModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">商品数量不足</h4>
+          </div>
+
+          <div class="modal-body">
+            <parts-global-message :state="messageStateShortageModal"></parts-global-message>
+            <div class="inputHeight">
+              <div class="text-center">
+                必要数<span class="h3 pl5 pr5" v-text="selectSortageInfo.requiredAmount"></span>点
+              </div>
+              <div class="text-center form-group">
+                <span class="mr10">見つかった数</span>
+                <input type="text" class="form-control w50 inlineBlock mr10" v-model="selectSortageInfo.assignNum">
+                <span>点</span>
+              </div>
+              <div class="row mt20">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-10">
+                  <div class="form-group">
+                    <label for="shortageInquiryNumber">現在のお問い合わせ番号</label>
+                    <input type="text" id="shortageInquiryNumber" v-model="inquiryNumber" class="form-control" />
+                  </div>
+                </div>
+                <div class="col-sm-1"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-primary" @click="onClickShortageRegister">登録</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 発送方法変更モーダル #}
+    <div class="modal fade" id="changeDeliveryMethodModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">発送方法変更</h4>
+          </div>
+
+          <div class="modal-body">
+            <parts-global-message :state="messageStateChangeDeliveryMethodModalModal"></parts-global-message>
+            <div class="text-center inputHeight">
+              現在の発送方法
+              <h2 v-text="item.packing.deliveryName"></h2>
+            </div>
+            <div class="row mt20">
+              <div class="col-sm-1"></div>
+              <div class="col-sm-10">
+                  <div class="form-group">
+                    <label for="changeDeliveryInquiryNumber">現在のお問い合わせ番号</label>
+                    <input type="text" id="changeDeliveryInquiryNumber" v-model="inquiryNumber" class="form-control" />
+                  </div>
+                  <div class="form-group text-center">
+                    <label for="newDeliveryMethod">新しい発送方法</label>
+                    <select id="newDeliveryMethod" class="form-control" v-model="selectDeliveryMethod">
+                      <option value="">選択してください</option>
+                      <option v-for="deliveryMethod in deliveryMethodList" :value="deliveryMethod.id" v-text="deliveryMethod.name"></option>
+                    </select>
+                  </div>
+              </div>
+              <div class="col-sm-1"></div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-primary" @click="onClickChangeDeliveryMethodRegister">登録</button>
+            <button type="button" class="btn btn-success" @click="onClickChangeDeliveryMethodRegisterAndComplete">登録して次へ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

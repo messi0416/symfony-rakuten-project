@@ -1,0 +1,130 @@
+{% extends 'PlusnaoMainBundle::base-front.html.twig' %}
+
+{% block title %}キッズモデル応募 | 株式会社フォレスト{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/plusnaomain/css/model-recruitment-kids-form.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@PlusnaoMainBundle/Resources/public/js/model-recruitment-kids-form.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+
+{% block body %}
+<div id="modelRecruitmentKidsForm" class="container">
+
+  <form action="{{ path('plusnao_model_recruitment_kids_form') }}" method="post" enctype="multipart/form-data">
+
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        株式会社フォレスト　キッズモデル募集フォーム
+      </div>
+
+      <div class="panel-body">
+
+        {# Flash メッセージ #}
+        {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+        <div class="form-group">
+          <label for="formName">申し込み者名前</label>
+          <input id="formName" class="form-control" type="text" name="name" value="{{ data.name|default('') }}">
+        </div>
+
+        <div class="form-group">
+          <label for="formAddress">住所（市区町村まででも結構です）</label>
+          <input id="formAddress" class="form-control" type="text" name="address" value="{{ data.address|default('') }}">
+        </div>
+
+        <div class="form-group">
+          <label for="formPhone">電話番号 <span class="note">※1</span></label>
+          <input id="formPhone" class="form-control" type="text" name="phone" value="{{ data.phone|default('') }}">
+        </div>
+
+        <div class="form-group">
+          <label for="formMail">メールアドレス <span class="note">※1</span></label>
+          <input id="formMail" class="form-control" type="text" name="mail" value="{{ data.mail|default('') }}">
+        </div>
+
+        <div class="form-group">
+          <label for="formAge">モデル年齢</label>
+          <div class="clearfix" id="formAge">
+            <div class="pull-left w80 mr5">
+              <input id="formAgeY" class="form-control text-right" type="number" name="age_y" value="{{ data.age_y|default('') }}">
+            </div>
+            <div class="pull-left inputHeight mr10">歳</div>
+            <div class="pull-left w80 mr5">
+              <input id="formAgeM" class="form-control text-right" type="number" name="age_m" value="{{ data.age_m|default('') }}">
+            </div>
+            <div class="pull-left inputHeight">ヶ月</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="formHeight">モデル身長</label>
+          <div class="clearfix">
+            <div class="pull-left w80 mr5">
+              <input id="formHeight" class="form-control text-right" type="number" name="height" value="{{ data.height|default('') }}">
+            </div>
+            <div class="pull-left inputHeight mr10">cm</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="formWeight">モデル体重</label>
+          <div class="clearfix">
+            <div class="pull-left w80 mr5">
+              <input id="formWeight" class="form-control text-right" type="number" name="weight" value="{{ data.weight|default('') }}">
+            </div>
+            <div class="pull-left inputHeight mr10">kg</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="formComment">備考（ご自由にご記入ください）</label>
+          <textarea id="formComment" class="form-control" style="height: 100px;" name="comment">{{ data.comment | default('') }}</textarea>
+        </div>
+
+        <div class="form-group mb30">
+          <label for="formImages">画像（10枚まで）</label>
+          <div id="formImages" class="panel panel-default">
+            <div class="panel-body">
+              <input id="images" name="images[]" type="file" class="file" multiple
+                 data-msg-placeholder="アップロードする画像ファイルを選択してください">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="form-group text-center mb20">
+          <button class="btn btn-primary btn-lg w200">この内容で応募する</button>
+        </div>
+
+        <div class="panel-footer">
+          <h4>ご注意事項</h4>
+          <ul class="formNotes">
+            <li>
+              <span class="note">※1</span>. 連絡のつく電話番号またメールアドレスのどちらかを必ずご記入ください。
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+
+  </form>
+
+</div>
+{% endblock %}

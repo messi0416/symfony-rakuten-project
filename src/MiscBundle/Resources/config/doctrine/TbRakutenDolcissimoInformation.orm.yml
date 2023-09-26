@@ -1,0 +1,3 @@
+MiscBundle\Entity\TbRakutenDolcissimoInformation:
+  type: entity
+  table: tb_rakuten_dolcissimo_information

@@ -1,0 +1,211 @@
+MiscBundle\Entity\TbShoppingMall:
+    type: entity
+    table: tb_shopping_mall
+    repositoryClass: MiscBundle\Entity\Repository\TbShoppingMallRepository
+    uniqueConstraints:
+        ne_mall_id:
+            columns:
+                - ne_mall_id
+    id:
+        mallId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: mall_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        neMallId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                comment: NEモールID
+            column: ne_mall_id
+        mallName:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false
+            column: mall_name
+        mallNameShort1:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+            column: mall_name_short1
+        mallNameShort2:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+            column: mall_name_short2
+        neMallName:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+                comment: NEモール名
+            column: ne_mall_name
+        mallUrl:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mall_url
+        additionalCostRatio:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                comment: 付加費用率(%)
+                default: '0'
+            column: additional_cost_ratio
+        systemUsageCostRatio:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            options:
+                comment: システム利用料(%)
+                default: '0'
+            column: system_usage_cost_ratio
+        obeyPostageSetting:
+            type: boolean
+            nullable: false
+            options:
+                comment: 送料設定に従う
+                default: '-1'
+            column: obey_postage_setting
+        mallDesc:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            column: mall_desc
+        mallSort:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: mall_sort
+
+        neOrderUploadPatternId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: ne_order_upload_pattern_id
+
+        shippingVoucherTitle:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: shipping_voucher_title
+        
+        shippingVoucherText:
+            type: string
+            nullable: true
+            length: 20000
+            options:
+                fixed: false
+            column: shipping_voucher_text
+        
+        shippingVoucherSub01Title:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: shipping_voucher_sub_01_title
+        
+        shippingVoucherSub01Text:
+            type: string
+            nullable: true
+            length: 20000
+            options:
+                fixed: false
+            column: shipping_voucher_sub_01_text
+        
+        shippingVoucherSub02Title:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: shipping_voucher_sub_02_title
+        
+        shippingVoucherSub02Text:
+            type: string
+            nullable: true
+            length: 20000
+            options:
+                fixed: false
+            column: shipping_voucher_sub_02_text
+        
+        shippingVoucherSub03Title:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+            column: shipping_voucher_sub_03_title
+        
+        shippingVoucherSub03Text:
+            type: string
+            nullable: true
+            length: 20000
+            options:
+                fixed: false
+            column: shipping_voucher_sub_03_text
+        
+        shippingVoucherShopInfo:
+            type: string
+            nullable: true
+            length: 20000
+            options:
+                fixed: false
+            column: shipping_voucher_shop_info
+        
+        shippingVoucherShowBuyerAddress:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+            column: shipping_voucher_show_buyer_address
+        
+        shippingVoucherShowShippingAddress:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+            column: shipping_voucher_show_shipping_address
+
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新者ID"
+            default: '0'
+            column: update_account_id
+
+        updated:
+            type: datetime
+            nullable: true
+            comment: "更新日時"
+            default: CURRENT_TIMESTAMP
+
+    lifecycleCallbacks: {  }

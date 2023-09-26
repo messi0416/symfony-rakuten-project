@@ -1,0 +1,72 @@
+MiscBundle\Entity\TbMainproductsSalesStatus:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbMainproductsSalesStatusRepository
+    table: tb_mainproducts_sales_status
+    indexes:
+        index_orderable_flg:
+            columns:
+                - orderable_flg
+        index_active_flg:
+            columns:
+                - active_flg
+    id:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            id: true
+            column: daihyo_syohin_code
+            generator:
+                strategy: IDENTITY
+    fields:
+        orderableFlg:
+            type: integer
+            nullable: false
+            comment: "受発注可能フラグ\n0:紐づくSKU全て受注不可、1:紐づくSKUに受注可能のものがある"
+            default: '0'
+            column: orderable_flg
+        activeFlg:
+            type: integer
+            nullable: false
+            comment: "稼働中フラグ\n0:紐づくSKU全て非稼働、1:紐づくSKUに稼働中のものがある"
+            default: '0'
+            column: active_flg
+        zaikoTeisuExistFlg:
+            type: integer
+            nullable: false
+            comment: "在庫定数存在フラグ\n0:紐づくSKU全て在庫定数が0、1:紐づくSKUに在庫定数が0より大きいものがある"
+            default: '0'
+            column: zaiko_teisu_exist_flg
+        baikaTanka:
+            type: integer
+            nullable: false
+            comment: "売価単価"
+            default: '0'
+            column: baika_tanka
+        bigCategory:
+            type: string
+            nullable: false
+            length: 255
+            comment: "大カテゴリ"
+            column: big_category
+        midCategory:
+            type: string
+            nullable: false
+            length: 255
+            comment: "中間カテゴリ"
+            column: mid_category
+        sireCode:
+            type: string
+            nullable: false
+            length: 10
+            comment: "仕入先コード"
+            column: sire_code
+        sireName:
+            type: string
+            nullable: false
+            length: 255
+            comment: "仕入先名"
+            column: sire_name
+    lifecycleCallbacks: {  }

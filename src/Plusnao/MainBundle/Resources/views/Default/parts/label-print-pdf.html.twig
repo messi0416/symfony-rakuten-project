@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style type="text/css">
+    * { margin: 0; padding: 0 }
+    body{
+      /* font-family: "Ricty Discord", monospace; */
+      /*font-family: "IPA Gothic", monospace;*/
+      font-family: "Source Code Pro", "IPA Gothic", monospace;
+      width: 210mm;
+      height: 297mm;
+    }
+
+    div.page {
+      padding-top: 4mm; /* レーザープリンタ余白(4mm)調整 */
+      padding-bottom: 4mm; /* レーザープリンタ余白(4mm)調整 */
+      page-break-after: always;
+    }
+    div.row {
+      width: 210mm;
+      height: 29.7mm;
+      overflow: hidden;
+    }
+    div.block {
+      width: 44.5mm; /* 50.5 - (padding 3mm *2) ※50.5は実際に試して決めた値。謎の2mm（くらい）がどこかに奪われている */
+      height: 21.7mm; /* 29.7 - (padding 3mm * 2) */
+      display: inline-block;
+      text-align: center;
+      padding: 4mm 3mm;
+
+      overflow: hidden;
+    }
+    div.row.top {
+      height: 25.7mm;
+    }
+    div.row.bottom {
+      height: 25.7mm;
+    }
+
+    div.row.top div.block {
+      padding-top: 0;
+      height: 25.7mm;
+    }
+    div.row.bottom div.block {
+      padding-bottom: 0;
+      height: 21.7mm;
+    }
+
+    div.category {
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 5pt;
+      color: #333333;
+    }
+    div.productCode {
+      position: relative;
+      height: 8mm;
+      margin: 1mm auto 0.5mm auto;
+    }
+    div.productCode > div {
+      text-align: center;
+      font-size: 10.5pt;
+      font-weight: bold;
+      line-height: 10.5pt;
+
+      word-wrap: break-word;
+      overflow-wrap : break-word;
+
+      width: 43.5mm;
+      position: absolute;
+      top: 36%;
+      -webkit-transform: translate(0, -36%);
+      /* transform: translateY(-50%); */
+    }
+
+    div.barcode {
+      width: 43.5mm;
+      text-align: center;
+    }
+
+    div.sizeColor {
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 7pt;
+    }
+
+  </style>
+</head>
+<body>
+
+{% for page, lines in data %}
+
+<div class="page">
+
+{% for line, cols in lines %}
+
+  {% set rowCss = "" %}
+  {% if line == 1 %}
+    {% set rowCss = "top" %}
+  {% elseif line == 10 %}
+    {% set rowCss = "bottom" %}
+  {% endif %}
+
+  <div class="row {{ rowCss }}">
+    {% for col in cols %}
+      {% if col %}
+        <div class="block">
+          {#<div class="category">#}
+            {#{{ col.category }}#}
+          {#</div>#}
+          <div class="productCode">
+            <div>
+              {{ col.productCode }}
+            </div>
+          </div>
+
+          <div class="barcode">
+            {{ barcodeSVG[col.productCode] | raw }}
+          </div>
+
+          <div class="sizeColor">
+            {{ col.colname | truncate(10) }} / {{ col.rowname | truncate(10) }}<br>
+            MADE IN CHINA
+          </div>
+        </div>
+      {% else %}
+        <div class="block">
+          <div class="category">
+            &nbsp;
+          </div>
+          <div class="productCode">
+            <div>&nbsp;</div>
+          </div>
+          <div class="sizeColor">
+            &nbsp;
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endfor %}
+
+</div>
+
+{% endfor %}
+</body>
+</html>

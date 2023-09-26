@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="robots" content="noindex,nofollow" />
+      {% block meta %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+      {% endblock %}
+      <title>{% block title %}Plusnao Web System{% endblock %}</title>
+      {% block stylesheets %}
+        {% stylesheets
+          'bundles/app/css/font-awesome.min.css' filter='cssrewrite'
+          'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+          'bundles/app/css/templatemo-style.css' filter='cssrewrite'
+          'bundles/app/css/app.css' filter='cssrewrite'
+          'bundles/app/css/custom-buttons.css' filter='cssrewrite'
+        %}
+        <link href="{{ asset_url }}" rel="stylesheet" />
+        {% endstylesheets %}
+      {% endblock %}
+
+      {% if (app.environment != 'prod') %}
+        {%stylesheets
+          '@AppBundle/Resources/public/css/app.dev.css' filter='cssrewrite'
+        %}
+        <link href="{{ asset_url }}" rel="stylesheet" />
+        {% endstylesheets %}
+      {% endif %}
+
+      <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+
+        {% block javascripts %}
+          {#'@AppBundle/Resources/public/js/jquery-2.2.4.min.js'#}
+          {#'@AppBundle/Resources/public/js/jquery-migrate-1.4.1.min.js'#}
+
+          {% javascripts
+          '@AppBundle/Resources/public/js/jquery-3.3.1.min.js'
+          '@AppBundle/Resources/public/js/jquery-migrate-3.0.1.min.js'
+          '@AppBundle/Resources/public/js/bootstrap.min.js'
+          '@AppBundle/Resources/public/js/templatemo-script.js'
+          %}
+          <script src="{{ asset_url }}"></script>
+          {% endjavascripts %}
+
+          {% if useVue200 is defined and useVue200 == true %}
+            {% if (app.environment != 'prod') %}
+              {% javascripts
+              '@AppBundle/Resources/public/js/vue.2.1.10.js'
+              '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+              '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% else %}
+              {% javascripts
+              '@AppBundle/Resources/public/js/vue.2.1.10.min.js'
+              '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+              '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% endif %}
+          {% elseif useVue100 is defined and useVue100 == true %}
+            {% if (app.environment != 'prod') %}
+              {% javascripts
+              '@AppBundle/Resources/public/js/vue.1.0.15.js'
+              '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% else %}
+              {% javascripts
+              '@AppBundle/Resources/public/js/vue.1.0.15.min.js'
+              '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% endif %}
+          {% else %}
+            {% javascripts
+            '@AppBundle/Resources/public/js/vue.min.js'
+            '@AppBundle/Resources/public/js/app.common.js'
+            %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+          {% endif %}
+        {% endblock %}
+
+    </body>
+</html>

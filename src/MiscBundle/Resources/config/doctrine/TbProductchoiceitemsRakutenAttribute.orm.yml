@@ -1,0 +1,29 @@
+MiscBundle\Entity\TbProductchoiceitemsRakutenAttribute:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsRakutenAttributeRepository
+  table: tb_productchoiceitems_rakuten_attribute
+  id:
+    neSyohinSyohinCode:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: SKUコード
+      id: true
+      column: ne_syohin_syohin_code
+    tbRakutenGenreAttributeId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "楽天商品属性項目ID\ntb_rakuten_genre_attribute.id"
+      id: true
+      column: tb_rakuten_genre_attribute_id
+  fields:
+    value:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: "値\nCSVに出力する形式で値を格納する。"
+      default: ""
+  lifecycleCallbacks: {}

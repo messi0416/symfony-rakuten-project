@@ -1,0 +1,11 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.location.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+

@@ -1,0 +1,82 @@
+{# ラベル印刷モーダル #}
+<script type="text/x-template" id="templateModalLabelPrint">
+  <div class="modal"
+       id="modalLabelPrint"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false" {# 閉じて開くとリセットされる（デフォルト？）なので、閉じにくくする。 #}
+       data-search-sku-url="{{ path('api_find_product_sku_one') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" v-on:click="hideModal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+        </div>
+
+        <div class="modal-body">
+          <div v-show="message.length > 0">
+            <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+          </div>
+
+          <div id="modalProductListIndex">
+
+            <div class="row row10 mb10">
+              <div class="col-xs-10">
+                <input type="text" class="form-control" placeholder="商品コード" v-model="searchCode" v-on:keyup.enter="search">
+              </div>
+              <div class="col-xs-2">
+                <button type="button" class="btn btn-default fullWidth" v-on:click="search">
+                  <i class="fa fa-my-search"></i>
+                </button>
+              </div>
+            </div>
+
+            <table class="table table-condensed" v-show="list.length > 0">
+              <thead></thead>
+              <tbody>
+              <tr v-for="item in list">
+                <td class="col-xs-10" v-text="item.neSyohinSyohinCode"></td>
+                <td class="col-xs-2">
+                  <input type="text" class="form-control text-right input-sm fullWidth" v-model="item.num" number>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+        </div>
+
+        <div class="modal-footer clearfix">
+          <div class="pull-left mb10">
+            <input type="file" id="modalLabelPrintUploadCsvFile" v-on:change="addFromCsvFile($event)" accept=".csv">
+          </div>
+
+          <form id="labelDownloadForm" class="inlineBlock mr5" action="{{ path('label_csv_download') }}" method="post">
+            <button type="button" class="btn btn-lg btn-success" v-on:click="downloadLabel('realShop')" v-show="state.showRealShopButton">実店舗</button>
+            <button type="button" class="btn btn-lg btn-success" v-on:click="downloadLabel('normal')">倉庫</button>
+          </form>
+          <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</script>
+
+{% if useVue200 is defined and useVue200 == true %}{# Vue2.x #}
+  {% javascripts '@AppBundle/Resources/public/js/partial/modal-label-print.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% elseif useVue100 is defined and useVue100 == true %}{# Vue1.x #}
+  {% javascripts '@AppBundle/Resources/public/js/partial/modal-label-print-100.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% else %}{# Vue2.x #}
+  {% javascripts '@AppBundle/Resources/public/js/partial/modal-label-print.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endif %}

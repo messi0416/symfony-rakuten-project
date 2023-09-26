@@ -1,0 +1,87 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+  'bundles/app/css/app.malldesign.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.malldesign.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body -%}
+
+<div class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>モールデザイン管理</h2>
+        </div>
+
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onClick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+    </div>
+
+  <div class="col-sm-offset-2 col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        モールデザイン一覧
+      </div>
+      <div class="panel-body">
+        <table id="design-table" class="table table-striped">
+          <thead>
+            <tr>
+              <th>モールデザイン名</th>
+              <th class="action">　　操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for malldesign in entities %}
+            <tr>
+              <td>
+                {# リンク先をプレビューにする #}
+                <button class="btn btn-link modal-open" onClick="setCode('{{ malldesign.code }}');return false;">{{ malldesign.name }}</button>
+                <input type="hidden" id="{{ malldesign.code }}" value="{{ malldesign.designHtml }}">
+              </td>
+              <td class="action">
+              　<a class="btn btn-success" href="{{ path('malldesign_edit', { 'id': malldesign.id }) }}">編集</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+ 
+    <a class="btn btn-primary" href="{{ path('malldesign_new') }}">新規モールデザインを追加する</a>
+  </div>
+
+</div>
+
+<div id="modal-content">
+    <p id="preview"></p>
+    <p>※各モールのCSS等により、実際のデザインとは異なる場合があります。</p>
+	<p class="text-center"><a id="modal-close" class="btn  btn-default">閉じる</a></p>
+</div>
+
+{% endblock %}

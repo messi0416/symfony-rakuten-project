@@ -1,0 +1,213 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/css/app.stock-manual-change-history.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.stock-manual-change-history.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div
+    id="stock-manual-change-histories" class="container"
+    data-find-warehouses-url="{{ path('api_find_warehouse_list') }}"
+    data-search-url="{{ path('stock_manual_change_history_search') }}"
+  >
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品在庫数 手動変更履歴</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="form-inline clearfix mb20 mt10">
+      <div class="form-inline mb10">
+        <div class="input-group mr5">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input id="targetDateFrom" type="text" class="form-control w120"
+            v-model="conditions.targetDateFrom" placeholder="対象日From（必須）"
+          >
+        </div>
+        ～
+        <div class="input-group ml5 mr10">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input id="targetDateTo" type="text" class="form-control w120"
+            v-model="conditions.targetDateTo" placeholder="対象日To"
+          />
+        </div>
+        <div class="form-group mr10">
+          <label for="warehouse" class="vMiddle mb0">倉庫: </label>
+          <select id="warehouse" class="form-control"
+            v-model="conditions.warehouseId"
+          >
+            <option v-for="warehouse in displayWarehouses" :value="warehouse.id"
+              v-text="warehouse.name"
+            >
+            </option>
+          </select>
+        </div>
+        <div class="form-group mr10">
+          <input id="sku" type="text" class="form-control w170"
+            v-model="conditions.sku" @keyup.enter="search" placeholder="SKUコード（前方一致）"
+          />
+        </div>
+        <div class="form-group mr10">
+          <input id="reason" type="text" class="form-control w200"
+            v-model="conditions.reason" @keyup.enter="search" placeholder="理由（部分一致）"
+          />
+        </div>
+        <div class="form-group mr10">
+          <div class="mb5">
+            <input id="exceptNoDiff" type="checkbox" class="checkbox"
+              v-model="conditions.exceptNoDiff"
+            />
+            <label for="exceptNoDiff" class="vMiddle mb0">変化無しを除く</label>
+          </div>
+          <div>
+            <input id="exceptExcludeProducts" type="checkbox" class="checkbox"
+              v-model="conditions.exceptExcludeProducts"
+            />
+            <label for="exceptExcludeProducts" class="vMiddle mb0">除外商品を除く</label>
+          </div>
+        </div>
+        <div class="form-group mr5">
+          <button type="button" class="btn btn-info"
+            data-toggle="modal" data-target="#modalExcludeProductsSettingForm">
+            除外商品設定
+          </button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-primary" @click="search">
+            検索
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="histories.length > 0" v-cloak class="w600 center-block">
+      <div>
+        <p>
+          <span class="mr20 bold">合計</span>
+          <span class="mr10">数量</span>
+          <span class="mr5" :class="diffSumCss" v-text="displayDiffSum">
+          </span>
+          <span class="mr20">個</span>
+          <span class="mr10">売価原価 × 数量</span>
+          <span class="mr5" :class="totalBaikaGenkaSumCss" v-text="displayTotalBaikaGenkaSum">
+          </span>
+          <span>円</span>
+        </p>
+      </div>
+      <table class="table table-bordered odd-bg-smoke">
+        <tr>
+          <th class="text-center cursorPointer w300 " :class="addSortArrow('sku')"
+            @click="sortBy('sku')">
+            SKUコード
+          </th>
+          <th class="text-center cursorPointer w100" :class="addSortArrow('baikaGenka')"
+            @click="sortBy('baikaGenka')">
+            売価原価
+          </th>
+          <th class="text-center cursorPointer w100" :class="addSortArrow('diff')"
+            @click="sortBy('diff')">
+            数量
+          </th>
+          <th class="text-center cursorPointer w150" :class="addSortArrow('totalBaikaGenka')"
+            @click="sortBy('totalBaikaGenka')">
+            売価原価 × 数量
+          </th>
+        </tr>
+        <tr v-for="(history, index) in histories" is="result-history" :history="history">
+        </tr>
+      </table>
+    </div>
+
+    <div is="setting-form-modal">
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateStockManualChangeHistoriesTableRow">
+    <tr>
+      <td class="text-left" v-text="history.ne_syohin_syohin_code"></td>
+      <td class="text-right" v-text="displayBaikaGenka"></td>
+      <td class="text-right" v-text="displayDiff" :class="diffCss"></td>
+      <td class="text-right" v-text="displayTotalBaikaGenka" :class="diffCss"></td>
+    </tr>
+  </script>
+
+  {# 除外商品設定モーダルテンプレート #}
+  <script type="text/x-template" id="templateExcludeProductsSettingForm">
+    <div class="modal"
+      id="modalExcludeProductsSettingForm"
+      tabindex="-1"
+      data-backdrop="static" data-keyboard="false"
+      data-find-url="{{ path('stock_manual_change_history_exclude_products_find') }}"
+      data-save-url="{{ path('stock_manual_change_history_exclude_products_save') }}"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label">
+              除外商品設定
+            </h4>
+          </div>
+
+          <div class="modal-body">
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <form role="form" class="dialogForm">
+              <div class="form-group">
+                <textarea id="excludeTargetList" v-model="excludeProductsStr" rows="7" cols="30">
+                </textarea>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" @click="save">商品情報保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+{% endblock %}

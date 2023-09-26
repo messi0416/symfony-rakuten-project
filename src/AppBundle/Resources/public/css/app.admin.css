@@ -1,0 +1,102 @@
+/** 管理画面 共通CSS */
+
+/* Bootstrap の余計な親切削除 */
+@media print {
+  a[href]:after {
+    content: "" !important;
+  }
+
+  abbr[title]:after {
+    content: "" !important;
+  }
+}
+
+
+#header #clientName {
+  font-size: 16px;
+  color: #696969;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* 幅いっぱいにする設定 */
+.container {
+  width: auto;
+}
+
+/* 幅いっぱいにする設定(IE8対応用) */
+@media (min-width: 768px) {
+  .container {
+    width: auto;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: auto;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: auto;
+  }
+}
+
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav>li>a
+{
+  color: #fff;
+}
+
+#body-content {
+  padding-top: 40px;
+  /*padding-bottom: 100px;*/
+}
+
+.inputBodyLine {
+  line-height: 34px;
+}
+
+.pagination {
+  margin: 10px 0;
+}
+
+.tablePagination form.inlineBlock {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+
+div.loading {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+}
+
+div.loading p.notice {
+  margin: 10px auto;
+}
+
+div.pageInfo {
+  width: 100%;
+  text-align: right;
+}
+
+.bigger {
+  font-size: 1.2em;
+}
+.moreBigger {
+  font-size: 1.6em;
+}
+
+div.tableAlterText {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+}
+
+div.content-box.narrow {
+  margin-bottom: 5px;
+}
+div.content-box.narrow .panel-body {
+  text-align: left;
+  padding: 3px;
+}

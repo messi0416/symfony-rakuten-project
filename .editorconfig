@@ -1,0 +1,24 @@
+root = true
+
+[*]
+# 改行コード
+end_of_line = lf
+# 最終行に改行を追加する
+insert_final_newline = true
+
+charset = utf-8
+
+indent_style = space
+indent_size = 2
+
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[*.php]
+indent_style = space
+indent_size = 2
+
+[*.js]
+indent_style = space
+indent_size = 2

@@ -1,0 +1,12 @@
+services:
+    plusnao.main.before_filter_controller_listener:
+      class: Plusnao\MainBundle\EventListener\BeforeFilterControllerEventListener
+      tags:
+        - name: kernel.event_listener
+          event: kernel.controller
+          method: onKernelController
+
+    plusnao_main.import_chouchou_clair_product:
+        class: Plusnao\MainBundle\Command\ImportChouchouClairProductsCsvCommand
+        calls:
+            - [setContainer, ["@service_container"] ]

@@ -1,0 +1,60 @@
+body {
+    max-width: 100%;
+  }
+#rakutenExpressCsvList {
+    margin: 15px;
+}
+.form {
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    min-height: 105px;
+    margin : 0 15px 15px 0;
+    padding: 15px;
+}
+#functions {
+    margin-right: 15px;
+    padding: 0;
+}
+.function-message {
+    margin: 0;
+}
+#messageBox > div {
+    white-space: pre-wrap;
+    margin-bottom: 0;
+}
+#list {
+    width : 100%;
+    margin-top : 15px;
+    margin-bottom: 50px;
+}
+#list > thead > tr > th > p {
+    margin : 10px auto;
+    white-space: nowrap;
+}
+tbody > tr > td > p , tbody > tr > td > a {
+    white-space: nowrap;
+}
+.checkbox-col > input[type=checkbox] {
+    margin : 0 19px;
+}
+.btn-upload {
+    margin: 0px 10%;
+    padding: 1px 0;
+    width: 80%;
+}
+label {
+    margin : 0;
+}
+label > span {
+    width: 100%;
+}
+#row > td > button {
+    width: 100%;
+}
+#row > td > input {
+    padding : 0;
+}
+iframe {
+    height: 70vh;
+}
+  

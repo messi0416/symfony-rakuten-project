@@ -1,0 +1,23 @@
+/**
+ * ロジ 移動伝票 編集画面用 CSS
+ */
+
+/* elemnt-ui DatePicker 幅設定 */
+.el-date-editor.el-input, .el-date-editor.el-input__inner {
+  width: 100%;
+}
+
+#logisticsStockTransportEditForm .wrapper-content {
+    margin-right: 100px;
+    position: relative;
+}
+#logisticsStockTransportEditForm .wrapper-content .row-item{
+    padding: 8px 0px;
+}
+
+#shippingPendingList #pendingListTable .product-name {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

@@ -1,0 +1,109 @@
+/** 取引先様システム 売れ筋ランキング CSS */
+
+select:invalid {
+  color: #999; /* placeholderのように見せるために薄い灰色に */
+}
+
+select option {
+  color: black;
+}
+
+select option:first-child {
+  color: #999;
+}
+
+#salesRanking #header {
+  border-bottom: 1px solid #d9edf7;
+  margin-bottom: 20px;
+}
+
+/**
+ * 検索フォーム
+ */
+#functionBlock .formLabel {
+  text-align: right;
+  vertical-align: bottom;
+}
+#functionBlock .midSmallInt {
+  width: 50px;
+}
+#functionBlock .formError li {
+  margin-left: 0;
+  list-style-type: none;
+
+}
+div#rankingTarget label {
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+#searchForm .searchKeyword label {
+  line-height: 2em;
+}
+
+/**
+ * ランキングテーブル
+ */
+#salesRankingTable thead tr th {
+  font-weight: normal;
+  text-align: center;
+}
+#salesRankingTable thead tr th.sortable {
+  cursor: pointer;
+}
+#salesRankingTable img.salesRankingThumbnail {
+  width: 80px;
+}
+#salesRankingTable .listCategory {
+  color: #909090;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+#salesRankingTable .listCategory a         { color: #333333; }
+#salesRankingTable .listCategory a:link    { color: #999999; }
+#salesRankingTable .listCategory a:hover   { color: #666666; }
+#salesRankingTable .listCategory a:visited { color: #999999; }
+#salesRankingTable .listCategory a:active  { color: #000000; }
+
+#salesRankingTable .sire {
+  color: #a0a0a0;
+  font-size: 0.8rem;
+  text-align: right;
+  width: 100%;
+  padding-top: 10px;
+}
+
+#salesRankingTable .reviewButton { min-width: 68px; }
+
+#modalProductReviewList .productReviewList {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+#modalProductReviewList table.reviewList th,
+#modalProductReviewList table.reviewList td
+{
+  padding: 2px;
+}
+
+#modalProductReviewList table.reviewList th {
+  font-weight: normal;
+  background-color: #eeeeee;
+  width: 80px;
+  text-align: center;
+}
+#modalProductReviewList table.reviewList .reviewBody {
+  white-space: pre;
+}
+
+/* now loading */
+#modalProductReviewList div.nowLoading {
+  text-align: center;
+  width: 100%;
+  height: 200px;
+}
+#modalProductReviewList div.nowLoading span {
+  line-height: 200px;
+  vertical-align: middle;
+}
+

@@ -1,0 +1,26 @@
+MiscBundle\Entity\TbRakutenCategoryForSalesRanking:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbRakutenCategoryForSalesRankingRepository
+    table: tb_rakuten_category_for_sales_ranking
+    # indexes:
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        big_category:
+            type: string
+            length: 60
+            nullable: false
+        mid_category:
+            type: string
+            length: 60
+            nullable: false
+        display_order:
+            type: integer
+            nullable: false
+            default: 0
+
+    lifecycleCallbacks: {  }

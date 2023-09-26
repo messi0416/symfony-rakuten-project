@@ -1,0 +1,188 @@
+services:
+  # DB接続確認
+  misc.db_connection_test:
+    class: MiscBundle\Command\DbConnectionTestCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # DB共通処理
+  misc.util.db_common:
+    class: MiscBundle\Util\DbCommonUtil
+    arguments: ['@doctrine']
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # WEB接続処理
+  misc.util.web_access:
+    class: MiscBundle\Util\WebAccessUtil
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setLogger, ["@misc.util.batch_logger"] ]
+
+  # ファイル関連ユーティリティ
+  misc.util.file:
+    class: MiscBundle\Util\FileUtil
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 画像関連ユーティリティ
+  misc.util.image:
+    class: MiscBundle\Util\ImageUtil
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setLogger, ["@misc.util.batch_logger"] ]
+      - [setImageDir, [ %product_image_dir% ] ]
+      - [setOriginalImageDir, [ %product_image_original_dir% ] ]
+      - [setImageHost, [ %host_plusnao% ] ]
+
+  # 文字列関連ユーティリティ
+  misc.util.string:
+    class: MiscBundle\Util\StringUtil
+
+  # 日時関連ユーティリティ
+  misc.util.datetime:
+    class: MiscBundle\Util\DateTimeUtil
+
+  misc.util.batch_logger:
+    class: MiscBundle\Util\BatchLogger
+    arguments:
+      - batch # name
+    calls:
+      - [ pushHandler, [ @misc.batch_logger.handler ] ]
+      - [ setContainer, [ @service_container ] ]
+      - [ setDoctrine, [ @doctrine ] ]
+      - [ setMailer, [ @mailer ] ]
+      - [ setErrorMailFrom, [ %system_mail_from% ] ]
+      - [ setErrorMailTo, [ %system_mail_error_to% ] ]
+      - [ setErrorMailBcc, [ %system_mail_bcc% ] ]
+
+  misc.batch_logger.handler:
+    class: Monolog\Handler\StreamHandler
+    arguments:
+      - %kernel.logs_dir%/batch_%kernel.environment%.log
+    public: false
+
+  misc.util.file_logger:
+    class: MiscBundle\Util\FileLogger
+    arguments:
+      - file # name
+    calls:
+      - [ setContainer, [ @service_container ] ]
+
+  misc.util.message:
+    class: MiscBundle\Util\MessageUtil
+    calls:
+      - [ setContainer, [ @service_container ] ]
+      - [ setMailer, [ @mailer ] ]
+
+  misc.util.stop_watch:
+    class: MiscBundle\Util\StopWatchUtil
+    # shared: false # singletonにしない ... → この機能は2.8以降。残念
+
+  # カスタム AuthenticationSuccessHandler
+  misc.symfony.component.secrity.authentication_success_handler:
+    class: MiscBundle\Extend\Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandler
+    arguments: ["@security.http_utils", {}]
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # カスタム AuthenticationFailureHandler
+  misc.symfony.component.secrity.authentication_failure_handler:
+    class: MiscBundle\Extend\Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandler
+    arguments: ["@http_kernel", "@security.http_utils", {}, "@logger" ]
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # カスタム RepositoryFactory
+  misc.doctrine.orm.repository_factory:
+    class: MiscBundle\Extend\Doctrine\ORM\ContainerAwareRepositoryFactory
+    arguments: [ @service_container ]
+
+  # カスタム LogoutHandler
+  misc.symfony.component.secrity.logout_with_target_path_success_handler:
+    class: MiscBundle\Extend\Symfony\Component\Security\Http\Logout\LogoutWithTargetPathSuccessHandler
+    arguments:
+      - @security.http_utils
+      - %default_logout_target%
+
+ # 出荷伝票サービス
+  misc.service.shipping_voucher:
+    class: MiscBundle\Service\ShippingVoucherService
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+ # 楽天サービス
+  misc.service.rakuten:
+    class: MiscBundle\Service\RakutenService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+ # 梱包機能関連サービス
+  misc.service.packing:
+    class: MiscBundle\Service\PackingService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+ # 発送お問い合わせ番号関連サービス
+  misc.service.shippingInquiryNumber:
+    class: MiscBundle\Service\ShippingInquiryNumberService
+    calls:
+      - [setContainer, ["@service_container"] ]
+    arguments: 
+      - @service_container
+      - %kernel.environment%
+
+ # 伝票毎注残管理サービス
+  misc.service.remain_order_by_voucher:
+    class: MiscBundle\Service\RemainOrderByVoucherService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+ # ピッキングスコアサービス
+  misc.service.picking_score:
+    class: MiscBundle\Service\PickingScoreService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+ # Yahooおとりよせサービス
+  misc.service.yahoo_otoriyose:
+    class: MiscBundle\Service\MallYahooOtoriyoseService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+ # 発送ラベルサービス
+  misc.service.shipping_label:
+    class: MiscBundle\Service\ShippingLabelService
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # SHOPLISTスピード便サービス
+  misc.service.shoplist_speedbin:
+    class: MiscBundle\Service\ShoplistSpeedbinService
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # セット商品受注情報案分サービス
+  misc.service.set_product_sales_distribution:
+    class: MiscBundle\Service\SetProductSalesDistributionService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 倉庫移動伝票一括作成サービス
+  misc.service.transport_list:
+    class: MiscBundle\Service\TransportListService
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 商品削除サービス
+  misc.service.product_delete:
+    class: MiscBundle\Service\ProductDeleteService
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # 商品スナップショット取得サービス
+  misc.service.product_snapshot:
+    class: MiscBundle\Service\ProductSnapshotService
+    calls:
+      - [setContainer, ["@service_container"] ]      
+      

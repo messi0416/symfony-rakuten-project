@@ -1,0 +1,122 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container container-large">
+
+  <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+    <div class="row row10">
+      <div class="col-xs-12 col-sm-6">
+        <div class="pull-left">
+          <h2>倉庫在庫 移動対象一覧</h2>
+          <h4>
+          倉庫移動優先順位
+          ①出荷優先重みづけの高い順
+          ②表示順が低い順
+          </h4>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-6">
+        <div class="pull-right mt20 mb10">
+          <a class="btn btn-default" href="{{ path('delivery_statement_detail_product_num_list') }}">納品書印刷待ち伝票一覧に戻る</a>
+        </div>
+      </div>
+
+    </div>
+    <p class="text-right">現在の倉庫在庫移動先： {{ stockMoveWarehouseName }}</p>
+    <div class="row">
+      <div class="pull-left">
+        <div v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+  </div>
+
+  {% for type, flashMessages in app.session.flashbag.all() %}
+    {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+    <div>
+    {% for flashMessage in flashMessages %}
+      <div class="alert alert-{{ type }}">
+        {{ flashMessage }}
+      </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <div class="panel panel-default" id="deliveryShippingStockMoveList"
+      data-refresh-warehouse-stock-move-url="{{ path('delivery_warehouse_stock_move_list_refresh') }}"
+    >
+    <div class="panel-body">
+      <ul class="nav nav-tabs nav-tabs-justified">
+        {% for warehouseId, warehouse in warehouses %}
+        <li {% if warehouseId == activeWarehouseId %}class="active"{% endif %}><a data-toggle="tab" href="#delivery_{{ warehouse.getId() }}">{{ warehouse.getName() }} ({% if pickingList[warehouseId] is defined %}{{ pickingList[warehouseId] | length }}{% else %}0{% endif %})</a></li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content tab-content-bordered">
+
+        {% for warehouseId, warehouse in warehouses %}
+        <div id="delivery_{{ warehouse.getId() }}" class="tab-pane {% if warehouseId == activeWarehouseId %}active{% endif %}">
+
+          {% if pickingList[warehouseId] is defined %}
+            <div class="row">
+              <div class="col-xs-12">
+                <table class="table">
+                  <tr>
+                    <th>No.</th>
+                    <th>商品コード</th>
+                    <th>数量</th>
+                    <th>状態</th>
+                    <th>アカウント</th>
+                    <th>ピッキング</th>
+                  </tr>
+                  {% for i, item in pickingList[warehouseId] %}
+                    <tr>
+                      <td>{{ item.getNumber() }}</td>
+                      <td>{{ item.getNeSyohinSyohinCode() }}</td>
+                      <td>{{ item.getMoveNum() }}</td>
+                      <td>{{ item.getStatusDisplay() }}</td>
+                      <td>{{ item.getAccountName() }}</td>
+                      <td>{{ item.getPickingAccountName() }}</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+          {% else %}
+            （なし）
+          {% endif %}
+
+          </div>
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+

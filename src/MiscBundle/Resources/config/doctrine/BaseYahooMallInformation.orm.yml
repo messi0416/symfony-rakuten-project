@@ -1,0 +1,34 @@
+MiscBundle\Entity\BaseYahooMallInformation:
+  type: mappedSuperclass
+  indexes:
+  index_variation_image_upload:
+    columns:
+      - variation_image_upload_flg
+      - variation_image_upload_date
+  fields:
+    title:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: Yahooタイトル
+      column: yahoo_title
+    inputCaption:
+      type: text
+      nullable: false
+      length: 16777215
+      fixed: false
+      column: input_caption
+    inputSpAdditional:
+      type: text
+      nullable: false
+      length: 16777215
+      fixed: false
+      column: input_sp_additional
+    prRate:
+      type: decimal
+      nullable: true
+      precision: 10
+      scale: 1
+      column: `pr-rate`
+  lifecycleCallbacks: {}

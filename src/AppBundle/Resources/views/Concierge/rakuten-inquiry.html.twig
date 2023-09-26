@@ -1,0 +1,75 @@
+{% extends 'AppBundle::base-admin-popup.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.concierge-mail-template.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.concierge-rakuten-inquiry.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}楽天未処理問い合わせ件数 | Plusnao Web System{% endblock %}
+
+{% block body %}
+
+  <div id="mailTemplate" class="container pt10">
+
+    <div id="header">
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass">
+          <button type="button" class="close" v-on:click="clear">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <span v-text="message"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="rakutenInquiryList"
+         data-list-url="{{ path('concierge_find_rakuten_inquiry') }}"
+      >
+      {# 一覧テーブル #}
+      <div class="table-responsible">
+        <table class="table table-bordered table-hover table-condensed" id="rakutenInquiryListTable">
+          <thead>
+            <tr>
+              <th class="col-xs-4">店舗</th>
+              <th class="col-xs-4">未処理件数</th>
+              <th class="col-xs-4">1営業日経過</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr v-for="item in listData"
+              is="result-item"
+              :item="item"
+              ></tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateConciergeRakutenInquiryListTableRow">
+    <tr class="text-left">
+      <td class="vMiddle" v-text="item.name"></td>
+      <td class="vMiddle" v-text="item.past90daysCount"></td>
+      <td class="vMiddle" v-text="item.past1dayCount"></td>
+    </tr>
+  </script>
+
+{% endblock %}

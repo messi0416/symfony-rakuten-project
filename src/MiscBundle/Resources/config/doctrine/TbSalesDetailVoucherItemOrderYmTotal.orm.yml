@@ -1,0 +1,32 @@
+MiscBundle\Entity\TbSalesDetailVoucherItemOrderYmTotal:
+    type: entity
+    table: tb_sales_detail_voucher_item_order_ym_total
+    id:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+                default: ''
+            id: true
+            column: daihyo_syohin_code
+            generator:
+                strategy: IDENTITY
+#    fields:
+#        伝票金額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        伝票粗利額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        粗利率:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+    lifecycleCallbacks: {  }

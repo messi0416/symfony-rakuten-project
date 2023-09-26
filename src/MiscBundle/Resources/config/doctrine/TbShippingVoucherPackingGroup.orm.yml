@@ -1,0 +1,52 @@
+MiscBundle\Entity\TbShippingVoucherPackingGroup:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShippingVoucherPackingGroupRepository
+    table: tb_shipping_voucher_packing_group
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+
+    fields:
+        deliveryMethodId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "配送方法ID\ntb_delivery_method.delivery_id"
+            default: '0'
+            column: delivery_method_id
+        name:
+            type: string
+            nullable: false
+            length: 64
+            fixed: false
+            comment: "梱包グループ名"
+            default: ''
+        status:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "ステータス\n0:未処理,1:処理中,2:完了\n配下の各出荷伝票グループの進捗に基づき決定する。\n梱包機能リリース前のデータはnull"
+            default: ''
+        shippingVoucherPdfFilename:
+            type: string
+            nullable: false
+            length: 40
+            fixed: false
+            comment: "納品書PDFファイル名\nshipping_voucher_yymmdd_梱包グループID6桁.pdf"
+            default: ''
+            column: shipping_voucher_pdf_filename
+        packingComment:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: 梱包コメント
+            default: ''
+            column: packing_comment
+    lifecycleCallbacks: {  }

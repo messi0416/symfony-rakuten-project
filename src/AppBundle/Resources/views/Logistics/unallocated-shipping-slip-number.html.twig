@@ -1,0 +1,169 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.logistics-unallocated-shipping-slip-number.css' filter='cssrewrite' %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.logistics-unallocated-shipping-slip-number.js' %}
+    <script src="{{ asset_url }}"></script>
+
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    var ITEMS = {{ dataJson | raw }}
+  </script>
+
+  <div class="container container-large">
+    <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          <div class="pull-left">
+            <h2>未引当　発送伝票番号リスト画面</h2>
+          </div>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+
+      {# Flash メッセージ #}
+      {% include 'AppBundle::parts/flash-message.html.twig' %}
+      <div class="main">
+        <div class="row">
+          <div class="unallocated-table" id="unallocatedTable"
+               data-update-unallocated-list-url="{{ path('logistics_update_unallocated_list') }}"
+          >
+            <div class="toolbar">
+              <select class="col-xs-6 col-md-2" v-model="filterOrder" id="filter">
+                <option value="non">抽出オプション</option>
+                <option value="unallocated">未引当</option>
+              </select>
+              <div class="col-xs-6 col-md-2" id="submitButton">
+                <button type="submit" class="btn btn-block btn-primary" id="submitTextButton" v-on:click="onSubmit()">
+                保存
+                </button>
+              </div>
+              <div class="text-right" id="csvDownloadSubmitButton">
+                <form method="post" name="csvDownload" id="csvDownloadForm" action="{{ path('logistics_download_unallocated_csv') }}">
+                  <input type="hidden" name="ssn" v-bind:value="downloadCsvData" />
+                  <button type="submit" class="btn btn-success" id="csvDownloadButton" >
+                    CSVダウンロード
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <table class="table table-bordered" style="">
+              <thead>
+              <tr>
+                <th class="col-xs-2">
+                  <p class="text-center" v-on:click="sortBy('shippingSlipNumber')">
+                    発送伝票番号
+                    <i class="text-info" v-bind:class="sortClass.shippingSlipNumber"></i>
+                  </p>
+                </th>
+                <th class="col-xs-3" id="matter-head">
+                  <p class="text-center">
+                    連絡事項
+                  </p>
+                </th>
+                <th class="col-xs-2" id="gw-head">
+                  <p class="text-center">
+                    G.W
+                  </p>
+                </th>
+                <th class="col-xs-2" id="meas-head">
+                  <p class="text-center">
+                    MEAS
+                  </p>
+                </th>
+                <th class="col-xs-2" id="shipping-operation-number-head">
+                  <p class="text-center">
+                    出庫番号
+                  </p>
+                </th>
+                <th class="col-xs-1">
+                  <p class="text-center" v-on:click="sortBy('waitDate')">
+                    出荷待ち日
+                    <i class="text-info" v-bind:class="sortClass.waitDate"></i>
+                  </p>
+                </th>
+                <th class="col-xs-1">
+                  <p class="text-center" v-on:click="sortBy('shipDate')">
+                    出荷日
+                    <i class="text-info" v-bind:class="sortClass.shipDate"></i>
+                  </p>
+                </th>
+                <th class="col-xs-1">
+                  <p class="text-center" v-on:click="sortBy('requesterName')">
+                    依頼先
+                    <i class="text-info" v-bind:class="sortClass.requesterName"></i>
+                  </p>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr is="result-item"
+                  v-for="row in list"
+                  v-bind:row="row"
+                  v-bind:key="row.id"
+              >
+              </tr>
+              </tbody>
+            </table>
+            <div class="col-xs-12" id="submitButton">
+              <button type="submit" class="btn btn-block btn-primary" id="submitTextButton" v-on:click="onSubmit()">
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {# Vue.js コンポーネントテンプレート #}
+  <script id="result-item" type="x-template">
+    <tr v-bind:class="rowClass">
+      <td class="col-xs-2 shipping-number">
+        <p v-text="shippingSlipNumber"></p>
+      </td>
+      <td class="col-xs-3 contact-matters">
+         <textarea type="text" class="form-control"  name="checkListComment" rows="1"
+                   placeholder="備考" v-model="row.checkListComment" v-on:change="includeInTheUpdate()"></textarea>
+      </td>
+      <td class="col-xs-2 g-w">
+         <input type="text" class="form-control"  name="checkListGw"
+                   placeholder="G.W" v-model="row.checkListGw" v-on:change="includeInTheUpdate()">
+      </td>
+      <td class="col-xs-2 meas">
+         <input type="text" class="form-control"  name="checkListMeas"
+                   placeholder="MEAS" v-model="row.checkListMeas" v-on:change="includeInTheUpdate()">
+      </td>
+      <td class="col-xs-2 shipping-operation-number">
+         <input type="text" class="form-control"  name="shippingOperationNumber"
+                   placeholder="出庫番号" v-model="row.shippingOperationNumber" v-on:change="includeInTheUpdate()">
+      </td>
+      <td class="col-xs-1">
+        <p v-text="waitDate"></p>
+      </td>
+      <td class="col-xs-1">
+        <p v-text="shipDate"></p>
+      </td>
+      <td class="col-xs-1">
+        <p v-text="requesterName"></p>
+      </td>
+    </tr>
+  </script>
+{% endblock %}

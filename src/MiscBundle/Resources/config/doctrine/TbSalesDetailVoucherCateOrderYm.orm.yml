@@ -1,0 +1,66 @@
+MiscBundle\Entity\TbSalesDetailVoucherCateOrderYm:
+    type: entity
+    table: tb_sales_detail_voucher_cate_order_ym
+    id:
+        cateCode:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            id: true
+            column: cate_code
+#        受注年月:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#            id: true
+#    fields:
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        伝票数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        cateRoot:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#            column: cate_root
+    lifecycleCallbacks: {  }

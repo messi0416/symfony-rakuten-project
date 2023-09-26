@@ -1,0 +1,136 @@
+MiscBundle\Entity\TbShoplistDailySales:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbShoplistDailySalesRepository
+  table: tb_shoplist_daily_sales
+  indexes:
+    index_num_total:
+      columns:
+        - num_total
+    index_syohin_code:
+      columns:
+        - order_date
+        - daihyo_syohin_code
+    index_code:
+      columns:
+        - daihyo_syohin_code
+  id:
+    orderDate:
+      type: date
+      nullable: false
+      id: true
+      column: order_date
+    neSyohinSyohinCode:
+      type: string
+      nullable: false
+      length: 50
+      fixed: false
+      default: ""
+      id: true
+      column: ne_syohin_syohin_code
+  fields:
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      default: ""
+      column: daihyo_syohin_code
+    janCode:
+      type: string
+      nullable: false
+      length: 100
+      fixed: false
+      default: ""
+      column: jan_code
+    syohinTitle:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      default: ""
+      column: syohin_title
+    numTotal:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: 販売個数(合計)
+      default: "0"
+      column: num_total
+    numNormal:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: 販売個数(通常販売)
+      default: "0"
+      column: num_normal
+    numSpeedBin:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: 販売個数(スピード便)
+      default: "0"
+      column: num_speed_bin
+    salesAmount:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "受注高\n金額"
+      default: "0"
+      column: sales_amount
+    rate:
+      type: decimal
+      nullable: false
+      precision: 10
+      scale: 2
+      comment: 比率
+      default: "0.00"
+    color:
+      type: string
+      nullable: false
+      length: 100
+      fixed: false
+      default: ""
+    size:
+      type: string
+      nullable: false
+      length: 100
+      fixed: false
+      default: ""
+    stock:
+      type: integer
+      nullable: false
+      unsigned: false
+      default: "0"
+    salesStartDate:
+      type: datetime
+      nullable: false
+      default: "0000-00-00 00:00:00"
+      column: sales_start_date
+    costTanka:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "コスト単価・売価原価\n2020/03までのデータはコスト単価、2020/03、#90989から売価単価に変更"
+      default: "0"
+      column: cost_tanka
+    systemUsageCostRatio:
+      type: decimal
+      nullable: false
+      precision: 10
+      scale: 2
+      comment: システム利用料(%)
+      default: "0.00"
+      column: system_usage_cost_ratio
+    created:
+      type: datetime
+      nullable: false
+      comment: 登録日時
+      default: CURRENT_TIMESTAMP
+    updated:
+      type: datetime
+      nullable: false
+      comment: 更新日時
+      default: CURRENT_TIMESTAMP
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

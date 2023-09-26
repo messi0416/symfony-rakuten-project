@@ -1,0 +1,35 @@
+MiscBundle\Entity\TbBoxRfid:
+  type: entity
+  table: tb_box_rfid
+  repositoryClass: MiscBundle\Entity\Repository\TbBoxRfidRepository
+  id:
+    boxCode:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: 箱コード
+      id: true
+      column: box_code
+    sequenceNum:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "連番\n箱コードごとの連番。RFIDの発行数分だけ確保する。"
+      id: true
+      column: sequence_num
+  fields:
+    createAccountId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "発番ユーザID\nsymfony_users.id"
+      column: create_account_id
+    created:
+      type: datetime
+      nullable: false
+      comment: 発番日
+      default: CURRENT_TIMESTAMP
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

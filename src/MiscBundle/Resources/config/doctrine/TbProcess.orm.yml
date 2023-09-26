@@ -1,0 +1,44 @@
+MiscBundle\Entity\TbProcess:
+    type: entity
+    table: tb_process
+    uniqueConstraints:
+        key_process_code:
+            columns:
+                - process_code
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: 処理名
+            default: ''
+        processCode:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: "処理コード\nプログラムから処理IDを取得するための一意なコード。クラス名など"
+            column: process_code
+        note:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: 備考
+            default: ''
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

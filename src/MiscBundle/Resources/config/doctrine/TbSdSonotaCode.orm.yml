@@ -1,0 +1,16 @@
+MiscBundle\Entity\TbSdSonotaCode:
+    type: entity
+    table: tb_sd_sonota_code
+    fields:
+        komoku:
+            id: true
+            type: string
+            length: '30'
+        syosai:
+            id: true
+            type: string
+            length: '30'
+        code:
+            id: true
+            type: integer
+    lifecycleCallbacks: {  }

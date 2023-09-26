@@ -1,0 +1,16 @@
+{
+  "prod": {
+    "port": 32572,
+    "auth": {
+      "user": "plusnao",
+      "password": "IPM6chnGcb"
+    }
+  },
+  "test": {
+    "port": 8888,
+    "auth": {
+      "user": "plusnao",
+      "password": "IPM6chnGcb"
+    }
+  }
+}

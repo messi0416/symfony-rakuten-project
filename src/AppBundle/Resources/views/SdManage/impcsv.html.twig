@@ -1,0 +1,130 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  'bundles/app/css/app.admin.css' filter='cssrewrite'
+  'bundles/app/css/app.sdmanage.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.sd-manage.js'
+
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}スーパーデリバリー商品情報管理画面-新規登録{% endblock %}
+ 
+{% block body %}
+{% include 'AppBundle:SdManage:_navbar.html.twig' %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+      {% include 'AppBundle:SdManage:_sidebar.html.twig' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">登録用ファイル出力</h1>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">新規登録商品データCSV取込</h3>
+            </div>
+            <div class="panel-body">
+              <p>管理データを作成します。ジャンル・ターゲット・商品属性を入力したCSVファイルをアップロードしてください。</p>
+              <p><button class="btn btn-default" data-toggle="modal" data-target="#modalUploadCsv"><i class="fa fa-upload"></i>  新規登録商品データ CSVアップロード</button></p>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">新規管理データ編集・削除</h3>
+            </div>
+            <div class="panel-body">
+              <p>新規追加した管理データを編集・削除します。<br>
+              ※スーパーデリバリーとのデータ同期後はこの画面で編集できません。</p>
+              <p><a href="{{ path('sdnew_list') }}" class="btn btn-success"><i class="fa fa-edit"></i>  新規管理データ編集・削除画面へ</a></p>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">スーパーデリバリー用ファイルダウンロード</h3>
+            </div>
+            <div class="panel-body">
+              <p>CSVおよび画像ファイルをダウンロードしてください。</p>
+              <p><a href="{{ path('sdexp_new') }}" class="btn btn-success">CSVファイルをダウンロードする</a>
+              <a href="{{ path('sdexp_img') }}" class="btn btn-success">画像ZIPファイルをダウンロードする</a></p>
+              <p>ダウンロードしたファイルはスーパーデリバリー管理画面でアップロードできます。<br>
+              アップロード後、新規登録データのCSVをダウンロードしてください。</p>
+              <p><a href="https://www.superdelivery.com/i/merchandise/csv" target="_blank" class="btn btn-info">スーパーデリバリー管理画面-CSVアップロード <i class="fa fa-external-link"></i></a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{# modals #}
+<div class="modal"
+     id="modalUploadCsv"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('pltosd_impcsv', {'exe':'exe'}) }}"
+  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          新規登録商品データ CSVアップロード
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        {# アップロード #}
+        <form action="{{ path('pltosd_impcsv') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="impCsv" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div v-show="result != null">
+          <h3>アップロード結果</h3>
+          <strong><div v-text="result.msg" class="text-success"></div></strong>
+          <ul>
+            <li v-text="result.tbsdinfo"></li>
+            <li v-text="result.tbsdinfosku"></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

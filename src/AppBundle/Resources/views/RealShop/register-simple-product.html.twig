@@ -1,0 +1,169 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.real-shop-register-simple-product.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <script type="text/javascript">
+    var SKU_DATA = {{ skuDataJson | raw }};
+  </script>
+
+  <div id="realShopProductStockList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>実店舗 簡易商品登録</h2>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="realShopRegisterSimpleProduct"
+         class="container mb20"
+      >
+
+      <form action="{{ path('real_shop_register_simple_product') }}" method="post" {{ form_enctype(form) }}>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              {{ form_label(form.daihyoSyohinCode) }}
+              {{ form_widget(form.daihyoSyohinCode, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+              {{ form_errors(form.daihyoSyohinCode, { 'attr': {'class' : 'alert alert-danger'} }) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              {{ form_label(form.daihyo_syohin_name) }}
+              {{ form_widget(form.daihyo_syohin_name, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+              {{ form_errors(form.daihyo_syohin_name, { 'attr': {'class' : 'alert alert-danger'} }) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-4">
+            <div class="form-group">
+              {{ form_label(form.genka_tnk) }}
+              {{ form_widget(form.genka_tnk, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+              {{ form_errors(form.genka_tnk, { 'attr': {'class' : 'alert alert-danger'} }) }}
+            </div>
+          </div>
+
+          <div class="col-xs-4">
+            <div class="form-group">
+              {{ form_label(form.col_type_name) }}
+              {{ form_widget(form.col_type_name, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+              {{ form_errors(form.col_type_name, { 'attr': {'class' : 'alert alert-danger'} }) }}
+            </div>
+          </div>
+
+          <div class="col-xs-4">
+            <div class="form-group">
+              {{ form_label(form.row_type_name) }}
+              {{ form_widget(form.row_type_name, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+              {{ form_errors(form.row_type_name, { 'attr': {'class' : 'alert alert-danger'} }) }}
+            </div>
+          </div>
+        </div>
+
+
+        <h3>SKU</h3>
+        <div class="alert alert-info">
+          <small>※コードの前のハイフンは不要です。ただしコード・名前が無いことを表すハイフンは必要です。</small>
+        </div>
+
+        <div>
+          <div class="clearfix mb20">
+            <div class="w300 pull-left mr10">
+              <table class="table">
+                <caption>
+                  横軸
+                  <button type="button" class="btn btn-default" v-on:click="addLine('col')">追加</button>
+                  <button type="button"  class="btn btn-default" v-on:click="removeLine('col')">削除</button>
+                </caption>
+                <tr v-for="(item, i) in skuCols">
+                  <td>
+                    <input type="text" class="form-control" v-bind:name="'cols[' + i + '][code]'" v-model="item.code" placeholder="コード">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" v-bind:name="'cols[' + i + '][name]'" v-model="item.name" placeholder="名前">
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="w300 pull-left">
+              <table class="table">
+                <caption>
+                  縦軸
+                  <button type="button" class="btn btn-default" v-on:click="addLine('row')">追加</button>
+                  <button type="button"  class="btn btn-default" v-on:click="removeLine('row')">削除</button>
+                </caption>
+
+                <tr v-for="(item, i) in skuRows">
+                  <td>
+                    <input type="text" class="form-control" v-bind:name="'rows[' + i + '][code]'" v-model="item.code" placeholder="コード">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" v-bind:name="'rows[' + i + '][name]'" v-model="item.name" placeholder="名前">
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存</button>
+
+        {{ form_rest(form) }}
+      </form>
+
+
+    </div>
+
+  </div>
+
+
+{% endblock %}

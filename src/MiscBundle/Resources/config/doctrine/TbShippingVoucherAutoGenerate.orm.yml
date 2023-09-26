@@ -1,0 +1,94 @@
+MiscBundle\Entity\TbShippingVoucherAutoGenerate:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShippingVoucherAutoGenerateRepository
+    table: tb_shipping_voucher_auto_generate
+    indexes:
+        index_status:
+            columns:
+                - status
+        index_warehouse_id:
+            columns:
+                - warehouse_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        packingGroupId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 梱包グループID
+            column: packing_group_id
+        companyId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 会社ID
+            column: company_id
+        warehouseId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 倉庫ID
+            column: warehouse_id
+        deliveryMethod:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: "配送方法\ntb_delivery_statement_detail_num_order_list_result の「発送方法」。SHOPLISTがあるため、tb_delivery_methodのdelivery_nameとは一致しない。"
+            column: delivery_method
+        page:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ページ
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n0:登録済,1:処理中,2:完了,3:完了(対象無し),4:エラー,5:エラー(再生成済)"
+            default: '0'
+        targetNum:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 対象伝票数
+            column: target_num
+        registNum:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "登録伝票数\n完了、完了(対象無し)以外はnull"
+            column: regist_num
+        fileName:
+            type: string
+            nullable: false
+            length: 40
+            fixed: false
+            comment: "ファイル名\nNEからダウンロードした納品書CSVの保存ファイル名"
+            column: file_name
+        accountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 登録ユーザID
+            default: '0'
+            column: account_id
+        created:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

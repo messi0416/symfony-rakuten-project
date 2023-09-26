@@ -1,0 +1,83 @@
+MiscBundle\Entity\MappedSuperClassTbYahooApiAuth:
+  type: mappedSuperclass
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    symfony_users_id:
+      type: integer
+      nullable: false
+      default: 0
+    state:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        fixed: false
+    nonce:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        fixed: false
+    scopes:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    redirect_url:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    redirected_url:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    auth_code:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        fixed: false
+    access_token:
+      type: string
+      nullable: false
+      length: 1000
+      options:
+        fixed: false
+    refresh_token:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        fixed: false
+    expiration:
+      type: datetime
+      nullable: true
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  # see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps

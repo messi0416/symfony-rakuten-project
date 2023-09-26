@@ -1,0 +1,642 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{#------------------------------------------------------------------#}
+{# changelog #}
+{#------------------------------------------------------------------#}
+{# 181005: add second clear button clearing all rows, limit float to single decimal place #}
+{# 181001: mm -> cm #}
+{#------------------------------------------------------------------#}
+{# macros #}
+{#------------------------------------------------------------------#}
+{% macro inputRow1(head,variable,tail) %}
+<div class="row" style="padding:15px;">
+<span class="mr5">{{ head }}</span><input type="number"
+ class="form-control text-right w120 mr5"
+ style="display:inline;"
+ v-bind:value="{{ variable }}"
+ v-on:input="{{ variable }}=$event.target.value"
+ v-on:keypress.enter.stop="focusNext($event)"
+ v-on:focus="selectAll($event)"
+> {{ tail }}
+<!--row--></div>
+{% endmacro %}
+{% macro inputRow2(head,variable,tail) %}
+<div class="row" style="padding:15px;">
+<span class="mr5">{{ head }}</span><input type="number"
+ class="form-control text-right w120 mr5"
+ style="display:inline;"
+ v-bind:value="{{ variable }}"
+ v-on:input="{{ variable }}=sdf($event.target.value)"
+ v-on:keypress.enter.stop="focusNext($event)"
+ v-on:focus="selectAll($event)"
+> {{ tail }}
+<!--row--></div>
+{% endmacro %}
+{% macro inputRow3(head,variable,tail) %}
+<div class="row" style="padding:15px;">
+<span class="mr5">{{ head }}</span><input type="number"
+ class="form-control text-right w120 mr5"
+ style="display:inline;"
+ v-model="{{ variable }}"
+ v-on:input="{{ variable }}=sdf($event.target.value)"
+ v-on:keypress.enter.stop="focusNext($event)"
+ v-on:focus="selectAll($event)"
+ step="0.1"
+> {{ tail }}
+<!--row--></div>
+{% endmacro %}
+{% macro row1(body) %}
+<div class="row" style="padding:15px;">
+<span class="mr5">{{ body }}</span>
+<!--row--></div>
+{% endmacro %}
+{#------------------------------------------------------------------#}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/element-ui/lib/theme-chalk/index.css' filter='cssrewrite'
+  'bundles/app/css/app.goods-weight-size-edit.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+{#------------------------------------------------------------------#}
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/element-ui/lib/index.js'
+  '@AppBundle/Resources/public/vendor/element-ui/lib/umd/locale/ja.js'
+  '@AppBundle/Resources/public/js/app.goods-weight-size-edit.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+{#------------------------------------------------------------------#}
+
+{% block body %}
+    <script type="text/javascript">
+      const SEARCH_CODE = "{{ code }}";
+    </script>
+  {#<script type="text/javascript">#}
+    {#var TRANSPORT = {{ transportJson | raw }};#}
+    {#var DETAILS = {{ details | raw }};#}
+    {#var STATUS_LIST = {{ statusList | raw }};#}
+    {#var TRANSPORT_CODE_LIST = {{ transportCodeList | raw }};#}
+    {#var WAREHOUSE_LIST = {{ warehouseList | raw }};#}
+  {#</script>#}
+
+  <div id="goodsWeightSizeEdit" class="container"
+       data-update-url="{{ path('goods_weight_size_update') }}"
+       data-find-sku-url="{{ path('goods_weight_size_get') }}"
+       data-update-setting-url="{{ path('goods_weight_size_setting_set') }}"
+       data-ws-limits="{{ wsLimits|json_encode }}"
+       data-list-desc="{{ listDesc|json_encode }}"
+       data-update-desc-url="{{ path('goods_weight_size_update_desc') }}"
+       data-create-desc-url="{{ path('goods_weight_size_create_desc') }}"
+       data-create-description-url="{{ path('goods_weight_size_create_description') }}"
+       data-create-hint-url="{{ path('goods_weight_size_create_hint') }}"
+       data-delete-desc-url="{{ path('goods_weight_size_delete_desc') }}"
+       data-delete-description-url="{{ path('goods_weight_size_delete_description') }}"
+       data-delete-hint-url="{{ path('goods_weight_size_delete_hint') }}"
+    >
+    <div id="header">
+      <div class="clearfix row row10 mt20">
+        <div class="pull-left">
+          <h2 class="mt0">SKU別重量・サイズ 編集</h2>
+        </div>
+
+<div class="pull-right mb10">
+<p class="inputHeight inlineBlock small mb0 mr10">
+{#※ねこポス制限: {{ nekoposuWeightLimit }}g / {{ nekoposuSizeLimits.side1 }}cm x {{ nekoposuSizeLimits.side2 }}cm x {{ nekoposuSizeLimits.side3 }}cm#}
+</p>
+
+          <div class="inlineBlock w50 mr5 ">
+            <a href="zxing://scan/?ret=http%3A%2F%2Fstarlight.plusnao.co.jp%2Fgoods%2Fweight_size%2Fbarcode%2F%7BCODE%7D" class="btn btn-default fullWidth">
+             <i class="fa fa-barcode"></i>
+            </a>
+          </div>
+          <input type="text" class="form-control inlineBlock w200 mr5" placeholder="バーコード or 商品コード"
+                 v-model="changeSyohinCode"
+                 v-on:click="selectAll($event)"
+                 v-on:keypress.enter="changeProduct"
+          >
+          <button type="button" class="btn btn-default mr5" v-on:click="changeProduct">移動</button>
+
+<button type="button" class="btn btn-default mr20" v-on:click="toggleSettings">
+<i class="fa fa-cog" aria-hidden="true"></i>
+</button>
+
+        </div>
+
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+
+<div id="logisticsStockTransportEditForm" class="container mb20">
+
+<form method="post" class="form-horizontal">
+
+<div class="panel panel-default" v-if="showSettings">
+<div class="panel-heading">
+<div class="clearfix">
+<div class="pull-left panelTitle">
+設定
+</div>
+</div>
+</div>
+<div class="panel-body">
+{{ _self.inputRow1('10 cm x 10 cm x 10 cm の重量が','wsLimits.weight_ubound','g以上であれば、商品の大きさに対して重すぎる') }}
+{{ _self.inputRow1('10 cm x 10 cm x 10 cm の重量が','wsLimits.weight_lbound','g以下であれば、商品の大きさに対して軽すぎる') }}
+{{ _self.row1('クリックポスト規定外サイズ設定') }}
+{{ _self.inputRow3('最長辺が','wsLimits.side1_ubound','cm以上') }}
+{{ _self.inputRow3('2番目の辺が','wsLimits.side2_ubound','cm以上') }}
+{{ _self.inputRow3('最短辺が','wsLimits.side3_ubound','cm以上') }}
+{{ _self.inputRow3('３辺の合計が','wsLimits.sides_ubound','cm以上') }}
+{{ _self.inputRow1('重量が','wsLimits.weight_aubound','g以上') }}
+<div class="row" style="padding:15px;">
+<div class="pull-left mb10">
+<p class="inputHeight inlineBlock small mb0 mr10">
+
+{#※ねこポス制限: {{ wsLimits.weight_aubound }}g / {{ wsLimits.side1_ubound }}cm x {{ wsLimits.side2_ubound }}cm x {{ wsLimits.side3_ubound }}cm#}
+</p>
+<button type="button" class="btn btn-primary mr10 w150" v-on:click="updateLimits">保存</button>
+</div>
+<!--row--></div>
+<!--body--></div>
+<!--panel--></div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="row" v-if="state.product">
+              <div class="col-xs-12 col-sm-3 col-md-2 col-lg-1 mb10">
+                <img class="img-responsive" v-bind:src="state.product.image">
+              </div>
+              <div class="col-xs-12 col-sm-9 col-md-10">
+
+                <div class="row mb10">
+
+                  {# SKUコード #}
+                  <div class="col-xs-12 col-sm-12 col-md-5 mb10">
+                    <div class="input-group">
+                      <input type="text" class="form-control readonlyWhite" v-bind:value="currentSkuCode" readonly>
+
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-default" v-on:click="moveCurrentSku('prev')">
+                          <i class="fa fa-fw fa-arrow-up"></i>
+                        </button>
+                        <button type="button" class="btn btn-default" v-on:click="moveCurrentSku('next')">
+                          <i class="fa fa-fw fa-arrow-down"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {# 重量サイズ編集パネル #}
+                <div class="panel panel-default">
+                  <div class="panel-body">
+
+                    <div class="row row10 focusInputGroup">
+
+                      {# 重量 #}
+                      <div class="col-xs-12 col-sm-9 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon w60">
+                            <span class="input-group-text">重量</span>
+                          </div>
+                          <input type="number"
+                                 class="form-control text-right"
+                                 v-bind:value="state.currentSku.weight"
+                                 v-on:input="state.currentSku.weight=$event.target.value"
+                                 v-on:keypress.enter.stop="focusNext($event)"
+                                 v-on:focus="selectAll($event)"
+                          >
+                          <div class="input-group-addon w50">
+                            <span class="input-group-text">g</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 幅 #}
+                      <div class="col-xs-12 col-sm-4 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon w60">
+                            <span class="input-group-text" data-toggle="tooltip" title="最長辺">幅</span>
+                          </div>
+                          <input type="number"
+                                 step="0.1"
+                                 class="form-control text-right"
+                                 v-model="state.currentSku.width"
+                                 v-on:input="state.currentSku.width=sdf($event.target.value)"
+                                 v-on:focus="selectAll($event)"
+                                 v-on:keypress.enter.stop="focusNext($event)"
+                          >
+                          <div class="input-group-addon w50">
+                            <span class="input-group-text">cm</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 奥行 #}
+                      <div class="col-xs-12 col-sm-4 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon w60">
+                            <span class="input-group-text" data-toggle="tooltip" title="中辺">奥行</span>
+                          </div>
+                          <input type="number"
+                                 step="0.1"
+                                 class="form-control text-right"
+                                 v-model="state.currentSku.depth"
+                                 v-on:input="state.currentSku.depth=sdf($event.target.value)"
+                                 v-on:focus="selectAll($event)"
+                                 v-on:keypress.enter.stop="focusNext($event)"
+                          >
+                          <div class="input-group-addon w50">
+                            <span class="input-group-text">cm</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 高さ #}
+                      <div class="col-xs-12 col-sm-4 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon w60">
+                            <span class="input-group-text" data-toggle="tooltip" title="最短辺">高さ</span>
+                          </div>
+                          <input type="number"
+                                 step="0.1"
+                                 class="form-control text-right"
+                                 v-model="state.currentSku.height"
+                                 v-on:input="state.currentSku.height=sdf($event.target.value)"
+                                 v-on:focus="selectAll($event)"
+                                 v-on:keypress.enter.stop="focusNext($event)"
+                          >
+                          <div class="input-group-addon w50">
+                            <span class="input-group-text">cm</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 横軸 #}
+                      <div class="col-md-offset-4 col-xs-12 col-sm-6 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon">
+                            <span>横軸</span>
+                          </div>
+                          <input type="text" class="form-control readonlyFieldName" v-bind:value="currentSkuColname" readonly>
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-info" v-on:click="copySameSizeList('size', 'col')">
+                              <i class="fa fa-fw fa-angle-double-down"></i>
+                              一括
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 縦軸 #}
+                      <div class="col-xs-12 col-sm-6 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon">
+                            <span>縦軸</span>
+                          </div>
+                          <input type="text" class="form-control readonlyFieldName" v-bind:value="currentSkuRowname" readonly>
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-info" v-on:click="copySameSizeList('size', 'row')">
+                              <i class="fa fa-fw fa-angle-double-down"></i>
+                              一括
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# すべて一括 #}
+                      <div class="col-xs-12 col-sm-6 col-md-2 mb10">
+                        <button type="button" id="btn-sync-size" class="btn btn-info btn-sm" v-on:click="syncAll('size')">
+                          <i class="fa fa-fw fa-angle-double-down"></i>
+                          すべて一括
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>{# 重量サイズ編集panel終わり #}
+
+
+
+                <!-- DESCRIPTION編集パネル -->
+                <div class="panel panel-default">
+                  <div class="panel-body">
+
+                    <div class="row row10">
+                    <div class="col-xs-12 col-sm-12 col-md-12 mb10 form-inline">
+
+                      {# DESCRIPTION #}
+                      <div class="input-group input-group-sm mr10">
+                        <div class="input-group-addon w60">
+                          <span class="input-group-text">DESCRIPTION</span>
+                        </div>
+                        <select class="form-control w150" v-model="idDesc" @change="onChangeDesc()">
+                          <option v-for="option in listDesc.slice().sort(function(a, b) {
+                              let textA = a.description_en;
+                              let textB = b.description_en;
+                              return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                            })" v-if="option.description_en != '' && option.description_en != null && option.description_delete_flg != 1" v-bind:value="option.id" v-text="option.description_en"></option>
+                        </select>
+                      </div>
+
+                      {# 材質商品説明 #}
+                      <div class="input-group input-group-sm mr10">
+                        <div class="input-group-addon w60">
+                          <span class="input-group-text">材質商品説明</span>
+                        </div>
+                        <select class="form-control w150" v-model="idHint" @change="onChangeHint()">
+                          <option v-for="option in listDesc.slice().sort(function(a, b) {
+                              let textA = a.hint_ja;
+                              let textB = b.hint_ja;
+                              return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                            })" v-if="option.hint_ja != '' && option.hint_ja != null  && option.hint_delete_flg != 1" v-bind:value="option.id" v-text="option.hint_ja"></option>
+                        </select>
+                      </div>
+
+                      {# 歯車 #}
+                      <button type="button" class="btn btn-default" style="padding: 3px 8px;" v-on:click="toggleSettingsDES">
+                        <i class="fa fa-cog" aria-hidden="true"></i>
+                      </button>
+
+                      </div>
+
+                      {# 横軸 #}
+                      <div class="col-md-offset-4 col-xs-12 col-sm-6 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon">
+                            <span>横軸</span>
+                          </div>
+                          <input type="text" class="form-control readonlyFieldName" v-bind:value="currentSkuColname" readonly>
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-info" v-on:click="copySameSizeList('desc', 'col')">
+                              <i class="fa fa-fw fa-angle-double-down"></i>
+                              一括
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# 縦軸 #}
+                      <div class="col-xs-12 col-sm-6 col-md-3 mb10">
+                        <div class="input-group input-group-sm">
+                          <div class="input-group-addon">
+                            <span>縦軸</span>
+                          </div>
+                          <input type="text" class="form-control readonlyFieldName" v-bind:value="currentSkuRowname" readonly>
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-info" v-on:click="copySameSizeList('desc', 'row')">
+                              <i class="fa fa-fw fa-angle-double-down"></i>
+                              一括
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {# すべて一括 #}
+                      <div class="col-xs-12 col-sm-6 col-md-2 mb10">
+                        <button type="button" id="btn-sync-desc" class="btn btn-info btn-sm" v-on:click="syncAll('desc')">
+                          <i class="fa fa-fw fa-angle-double-down"></i>
+                          すべて一括
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>{# panel終わり #}
+
+                {#clear button#}
+                <div class="" style="float:right;">
+                  <button style="margin-right:0px!important;" type="button" class="btn mr10 w150" v-on:click="clearCurrentItem">クリア</button>
+                </div>
+
+                <div class="row row10 icons">
+                  <div class="label label-danger" v-if="state.currentSku.isTooLight()">軽すぎ</div>
+                  <div class="label label-danger" v-if="state.currentSku.isTooHeavy()">重すぎ</div>
+                  <div class="label label-danger" v-if="state.currentSku.isClickpostSizeOver() || state.currentSku.isClickpostWeightOver()">クリックポスト便規定外</div>
+                </div>
+              </div>
+            </div>
+            <div class="alert alert-info" v-else>
+              商品が取得されていません。
+            </div>
+          </div>
+
+        </div>
+
+        <div class="panel panel-default" v-if="showSettingsDES">
+          <div class="panel-heading">
+            <div class="clearfix">
+              <div class="pull-left panelTitle">
+              設定
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="wrapper-content">
+              <div class="row text-center">
+                <div class="col-md-4">DESCRIPTION</div>
+                <div class="col-md-8">材質商品説明</div>
+              </div>
+              <div class="row text-center">
+                <div class="col-md-4">
+                  <div class="col-md-6">英語</div>
+                  <div class="col-md-6">中国語</div>
+                </div>
+                <div class="col-md-8">
+                  <div class="col-md-6">日本語</div>
+                  <div class="col-md-6">中国語</div>
+                </div>
+              </div>
+              <div class="row row-item">
+                <div class="col-md-6"  style="float: left;">
+                  <div class="col-md-12 row row-item" v-for="(item, i) in listDesc" v-if="item.description_delete_flg != 1">
+                    <div class="col-md-5" v-if="item.description_delete_flg != 1"><input class="form-control" v-model="item.description_en" type="text"/></div>
+                    <div class="col-md-5" v-if="item.description_delete_flg != 1"><input class="form-control" v-model="item.description_cn" type="text"/></div>
+                    <div class="col-md-2" v-if="item.description_delete_flg != 1">
+                      <a class="btn btn-xs btn-warning" v-on:click="removeDescription(i)" style="margin-top: 5px;">
+                        <i class="fa fa-minus"></i>
+                      </a>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-lg btn-success mr10 mb10" v-on:click="createDescription()">+</button>
+                </div>
+                <div class="col-md-6" style="float: right;">
+                  <div class="col-md-12 row row-item" v-for="(item, i) in listDesc" v-if="item.hint_delete_flg != 1">
+                    <div class="col-md-5" v-if="item.hint_delete_flg != 1"><input class="form-control" v-model="item.hint_ja" type="text"/></div>
+                    <div class="col-md-5" v-if="item.hint_delete_flg != 1"><input class="form-control" v-model="item.hint_cn" type="text"/></div>
+                    <div class="col-md-1" v-if="item.hint_delete_flg != 1">
+                      <a class="btn btn-xs btn-warning" v-on:click="removeHint(i)" style="margin-top: 5px;">
+                        <i class="fa fa-minus"></i>
+                      </a>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-lg btn-success mr10 mb10" v-on:click="createHint()">+</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="btn-save-desc" v-on:click="updateDesc()">保存</button>
+            </div>
+
+          <!--body--></div>
+        <!--panel--></div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="clearfix">
+              <div class="pull-left panelTitle">
+                SKU
+              </div>
+
+              <div class="pull-right mb10">
+                <button type="button" class="btn btn-primary mr10 w150" v-on:click="updateAll">保存</button>
+              </div>
+
+              <div class="pull-right mr20 mb10">
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn btn-default" v-bind:class="{ 'active': listUnsetOnly == true }" v-on:click="setListUnsetOnly(true)">
+                    <i v-bind:class="listUnsetOnlyIconOn"></i>
+                    未設定のみ表示
+                  </label>
+                  <label class="btn btn-default" v-bind:class="{ 'active': listUnsetOnly == false }" v-on:click="setListUnsetOnly(false)">
+                    <i v-bind:class="listUnsetOnlyIconOff"></i>
+                    全て表示
+                  </label>
+                </div>
+              </div>
+
+              <div class="pull-right mr20 mb10">
+              <button type="button" class="btn mr10 w150" v-on:click="clearAll">一括クリア</button>
+              </div>
+
+
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div is="skuListTable"
+                 :sku-list="displaySkuList"
+                 :state="state"
+                 @clicked-show-parent="clickedShowParent"
+              >
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+
+
+
+    {#<!-- 完了処理ダイアログ -->#}
+    {#<el-dialog#}
+      {#:visible.sync="completeModalVisible" title="完了処理"#}
+    {#>#}
+      {#<div v-if="transport.transportCode == 'FBA納品'">#}
+        {#<div class="alert alert-info">#}
+          {#この伝票をFBA納品完了として処理します。よろしいですか？#}
+        {#</div>#}
+      {#</div>#}
+      {#<div v-else>#}
+        {#<div class="alert alert-info">#}
+          {#<p>移動伝票から作成するロケーションのロケーションコードを入力してください。</p>#}
+          {#<p>※空白の場合、自動生成コード NE_T_xxxxxxxx</p>#}
+        {#</div>#}
+
+        {#<el-form :model="completeModalForm" label-width="120px">#}
+          {#<el-form-item label="ロケーションコード">#}
+            {#<el-input v-model="completeModalForm.locationCode"></el-input>#}
+          {#</el-form-item>#}
+        {#</el-form>#}
+      {#</div>#}
+
+      {#<span slot="footer" class="dialog-footer">#}
+        {#<el-button v-on:click="completeModalVisible = false">閉じる</el-button>#}
+        {#<el-button type="primary" v-on:click="completeTransport">実行</el-button>#}
+      {#</span>#}
+    {#</el-dialog>#}
+
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateGoodsWeightSizeSkuListTableRow">
+    <tr v-on:click="changeCurrentSku" v-bind:class="rowCss" data-list-desc="{{ listDesc|json_encode }}">
+      <td v-text="item.neSyohinSyohinCode"></td>
+      <td class="text-left" v-text="item.colname"></td>
+      <td class="text-left" v-text="item.rowname"></td>
+      <td class="text-right" v-text="item.weight"></td>
+      <td class="text-right" v-text="item.width"></td>
+      <td class="text-right" v-text="item.depth"></td>
+      <td class="text-right" v-text="item.height"></td>
+      <td class="text-left" v-text="item.descriptionEn"></td>
+      <td class="text-left" v-text="item.hintJa"></td>
+    </tr>
+  </script>
+
+  {# テーブルテンプレート #}
+  <script type="text/x-template" id="templateGoodsWeightSizeSkuListTable">
+    <div>
+      <div class="clearfix mb20">
+        <table class="table table-condensed table-hover">
+          <tbody>
+          <tr>
+            <th class="col-xs-2 text-left">商品コード</th>
+            <th class="col-xs-2 text-left">横軸</th>
+            <th class="col-xs-1 text-left">縦軸</th>
+
+            <th class="col-xs-1 text-left">重量<span class="hidden-xs">(g)</span></th>
+            <th class="col-xs-1 text-left" data-toggle="tooltip" title="最長辺">幅<span class="hidden-xs">(cm)</span></th>
+            <th class="col-xs-1 text-left" data-toggle="tooltip" title="中辺">奥行<span class="hidden-xs">(cm)</span></th>
+            <th class="col-xs-1 text-left" data-toggle="tooltip" title="最短辺">高さ<span class="hidden-xs">(cm)</span></th>
+            <th class="col-xs-2 text-left">DESCRIPTION</th>
+            <th class="col-xs-2 text-left">材質商品説明</th>
+          </tr>
+          <tr v-for="item in skuList"
+              is="listItem"
+              :item="item"
+              :state="state"
+              @clicked-show-detail="clickedShowDetail"
+            ></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </script>
+
+  <!-- 確認ダイアログ -->
+  <div id="modalInputCheckConfirm" class="modal fade"  tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h5 class="modal-title" id="modal-label">
+            <span style="color:red">【警告】</span>
+            <span class="confirmCurrentSku"></span>
+          </h5>
+        </div>
+        <div class="modal-body">
+          <div class="confirmMsg" ></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">OK</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

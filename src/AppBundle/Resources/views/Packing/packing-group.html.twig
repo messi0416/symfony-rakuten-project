@@ -1,0 +1,53 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.packing-group-index.js' %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets%}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block headerTitle %}梱包グループ{% endblock %}
+
+{% block contents %}
+  <script type="text/javascript">
+    const ITEM = {{ item|raw }};
+  </script>
+  <div id="packingGroup" v-cloak>
+    <div v-if="item">
+      <div class="row row10 mb30">
+        <h2 class="text-center"><a href="{{ path('packing_packing_group_list') }}" v-text="'[' + item.packing_group.name + ']'"></a></h2>
+        <div class="text-center mt10" v-text="item.packing_group.comment"></div>
+      </div>
+
+      {# 出荷伝票グループのリスト #}
+      <div class="list-group">
+        <a
+          class="h50 list-group-item inputHeight"
+          v-for="shippingVoucher in item.shippingVoucherList"
+          :class="decideClass(shippingVoucher.status)"
+          :href="shippingVoucher.url"
+        >
+          <div class="row row10">
+            <div class="col-xs-2" v-text="shippingVoucher.symbol"></div>
+            <div class="col-xs-4" v-text="shippingVoucher.statusName"></div>
+            <div class="col-xs-4" v-text="shippingVoucher.packingAccount ? shippingVoucher.packingAccount : '-'"></div>
+            <div class="col-xs-2" v-text="shippingVoucher.amount"></div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div v-else>
+      <div class="col-xs-12">
+          <div class="alert alert-info">梱包グループはありません。</div>
+        </div>
+    </div>
+  </div>
+{% endblock %}

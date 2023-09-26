@@ -1,0 +1,1208 @@
+MiscBundle\Entity\TbSalesDetailVoucherCateOrderYmTrasition24:
+    type: entity
+    table: tb_sales_detail_voucher_cate_order_ym_trasition24
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: ID
+            generator:
+                strategy: IDENTITY
+#    fields:
+#        cateLevel:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '1'
+#            column: cate_level
+#        cateRoot:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#            column: cate_root
+#        cateCode:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#            column: cate_code
+#        cateName:
+#            type: string
+#            nullable: false
+#            length: 255
+#            options:
+#                fixed: false
+#            column: cate_name
+#        cateOrder:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: cate_order
+#        出品数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        受注年月01:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数01:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額01:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額01:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率01:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額01:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額01:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月02:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数02:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額02:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額02:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率02:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額02:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額02:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月03:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数03:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額03:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額03:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率03:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額03:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額03:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月04:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数04:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額04:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額04:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率04:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額04:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額04:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月05:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数05:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額05:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額05:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率05:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額05:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額05:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月06:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数06:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額06:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額06:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率06:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額06:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額06:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月07:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数07:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額07:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額07:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率07:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額07:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額07:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月08:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数08:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額08:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額08:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率08:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額08:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額08:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月09:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数09:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額09:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額09:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率09:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額09:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額09:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月10:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数10:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額10:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額10:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率10:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額10:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額10:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月11:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数11:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額11:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額11:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率11:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額11:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額11:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月12:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数12:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額12:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額12:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率12:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額12:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額12:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月13:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数13:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額13:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額13:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率13:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額13:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額13:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月14:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数14:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額14:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額14:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率14:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額14:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額14:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月15:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数15:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額15:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額15:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率15:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額15:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額15:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月16:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数16:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額16:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額16:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率16:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額16:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額16:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月17:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数17:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額17:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額17:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率17:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額17:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額17:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月18:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数18:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額18:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額18:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率18:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額18:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額18:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月19:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数19:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額19:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額19:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率19:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額19:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額19:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月20:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数20:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額20:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額20:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率20:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額20:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額20:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月21:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数21:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額21:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額21:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率21:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額21:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額21:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月22:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数22:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額22:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額22:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率22:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額22:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額22:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月23:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数23:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額23:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額23:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率23:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額23:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額23:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        受注年月24:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#                default: ''
+#        伝票数24:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票金額24:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利額24:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        伝票粗利率24:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1伝票粗利額24:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        1出品粗利額24:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+    lifecycleCallbacks: {  }

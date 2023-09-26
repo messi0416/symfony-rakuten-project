@@ -1,0 +1,86 @@
+MiscBundle\Entity\TbOrderListExport:
+    type: entity
+    table: tb_order_list_export
+    repositoryClass: MiscBundle\Entity\Repository\TbOrderListExportRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        vendor:
+            type: integer
+            nullable: true
+            length: 11
+            fixed: false
+            column: vendor
+        exportStatus:
+            type: integer
+            nullable: false
+            length: 11
+            fixed: false
+            default: 0
+            column: export_status
+        totalProducts:
+            type: integer
+            nullable: true
+            length: 11
+            fixed: false
+            column: total_products
+        account:
+            type: integer
+            nullable: true
+            length: 11
+            fixed: false
+            column: account
+        isForestStaff:
+            type: integer
+            nullable: true
+            length: 1
+            fixed: false
+            column: is_forest_staff
+        isClient:
+            type: integer
+            nullable: true
+            length: 1
+            fixed: false
+            column: is_client
+        isYahooAgent:
+            type: integer
+            nullable: true
+            length: 1
+            fixed: false
+            column: is_yahoo_agent
+        lastDownload:
+            type: datetime
+            nullable: true
+            fixed: false
+            default: CURRENT_TIMESTAMP
+            column: last_download
+        file:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            column: file
+        message:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            default: ''
+            column: message
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

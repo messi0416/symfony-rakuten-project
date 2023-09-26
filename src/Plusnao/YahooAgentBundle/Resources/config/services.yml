@@ -1,0 +1,7 @@
+services:
+    plusnao.yahoo_agent.before_filter_controller_listener:
+      class: Plusnao\YahooAgentBundle\EventListener\BeforeFilterControllerEventListener
+      tags:
+        - name: kernel.event_listener
+          event: kernel.controller
+          method: onKernelController

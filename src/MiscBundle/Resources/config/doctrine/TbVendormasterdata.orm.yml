@@ -1,0 +1,419 @@
+MiscBundle\Entity\TbVendormasterdata:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbVendormasterdataRepository
+    table: tb_vendormasterdata
+    indexes:
+        Index_2:
+            columns:
+                - sire_name
+    id:
+        sireCode:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+            id: true
+            column: sire_code
+            generator:
+                strategy: IDENTITY
+    fields:
+
+        sireName:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: sire_name
+
+#        sireKana:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: sire_kana
+#        yubinBangou:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: yubin_bangou
+#        jyusyo1:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        jyusyo2:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        denwa:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#        fax:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#        mailAdr:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: mail_adr
+#        busyo:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        tantouName:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: tantou_name
+#        tantouKana:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: tantou_kana
+#        busyoJyusyo1:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: busyo_jyusyo1
+#        busyoJyusyo2:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: busyo_jyusyo2
+#        busyoDenwa:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: busyo_denwa
+#        busyoFax:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: busyo_fax
+#        busyoMailAdr:
+#            type: string
+#            nullable: true
+#            length: 100
+#            options:
+#                fixed: false
+#            column: busyo_mail_adr
+#        hachuKbn:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: hachu_kbn
+#        suJyoken:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: su_jyoken
+#        kinJyoken:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: kin_jyoken
+#        hachuJyokenKbn:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: hachu_jyoken_kbn
+#        hachuHoryuBi:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: hachu_horyu_bi
+#        siharaiHouhouKbn:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: siharai_houhou_kbn
+#        simeBi:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: sime_bi
+#        siharaiSightBi:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: siharai_sight_bi
+#        hachuMukouFlg:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: hachu_mukou_flg
+#        hachuKinsiBi:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#            column: hachu_kinsi_bi
+#        bikou:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        メーカー次回出荷予定日:
+#            type: date
+#            nullable: true
+#        出荷修正日数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+        status:
+            type: integer
+            nullable: false
+            column: 取引状態
+        displayOrder:
+            type: integer
+            nullable: false
+            column: 表示順
+
+#        フルオーダー完了日時:
+#            type: datetime
+#            nullable: true
+#        フリー在庫金額:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        memo:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        storenumber:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        dummy:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        netseaper:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        netseaenddate:
+#            type: datetime
+#            nullable: true
+#        arrivalspan:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        shippingschedule:
+#            type: date
+#            nullable: true
+#        netseaMakerId:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: netsea_maker_id
+#        makeshopRegistrationFlug:
+#            type: boolean
+#            nullable: true
+#            options:
+#                default: '0'
+#            column: makeshop_Registration_flug
+#        superdeliveryMakerId:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: superdelivery_maker_id
+#        superdeliveryPcp:
+#            type: boolean
+#            nullable: true
+#            column: superdelivery_pcp
+#        perweightPostage:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 従量送料
+#                default: '0'
+#            column: perweight_postage
+
+        costRate:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                comment: 原価率
+                default: 0
+            column: cost_rate
+
+#        additionalCostRate:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                comment: 仕入先費用率(%)
+#            column: additional_cost_rate
+#        grossMargin:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 粗利益率
+#                default: '50'
+#            column: gross_margin
+#        guerrillaMargin:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: ゲリラSALE粗利益率
+#                default: '40'
+#            column: guerrilla_margin
+#        aFlg:
+#            type: boolean
+#            nullable: false
+#            options:
+#                comment: 仕入先Aフラグ
+#                default: '0'
+#            column: a_flg
+#        bFlg:
+#            type: boolean
+#            nullable: false
+#            options:
+#                comment: 仕入先Bフラグ
+#                default: '0'
+#            column: b_flg
+#        availableItemcnt:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 有効商品数
+#                default: '0'
+#            column: available_itemcnt
+#        stockAmount:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 在庫金額
+#                default: '0'
+#            column: stock_amount
+#        crawlFrequency:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 巡回頻度（何日に１回か？0の場合は無条件で対象、-1の場合は対象外）
+#                default: '1'
+#            column: crawl_frequency
+#        lastCrawlDate:
+#            type: datetime
+#            nullable: false
+#            options:
+#                comment: 最終巡回日時
+#            column: last_crawl_date
+#        workerPayment:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 内職報酬単価
+#                default: '0'
+#            column: worker_payment
+#        要ロット入荷f:
+#            type: boolean
+#            nullable: false
+#            options:
+#                comment: 仕入単位が複数個か否か
+#                default: '0'
+#            column: 要ロット入荷F
+#        maxPages:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: max_pages
+#        発注点計算期間:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '1'
+#        発注点倍率:
+#            type: float
+#            nullable: false
+#            precision: 2
+#            scale: 1
+#            options:
+#                default: '1.0'
+
+        remainingOrderUrlString:
+            type: string
+            nullable: false
+            length: 64
+            options:
+                fixed: false
+            column: remaining_order_url_string
+
+    lifecycleCallbacks: {  }

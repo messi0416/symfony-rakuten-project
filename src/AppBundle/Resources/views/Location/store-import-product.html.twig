@@ -1,0 +1,234 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+   {% stylesheets
+   '@AppBundle/Resources/public/css/app.location-store-import-product.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.location-store-import-product.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+
+{% block headerTitle %}商品箱振り{% endblock %}
+
+{% block headerButtons %}
+  {% if choice %}
+  <a class="btn btn-sm btn-default mr10" href="{{ path('location_product_sku_list', { daihyoSyohinCode: choice.daihyoSyohinCode }) }}">
+    商品
+  </a>
+  <a class="btn btn-sm btn-default" href="{{ path('location_product_detail', { syohinCode: choice.neSyohinSyohinCode }) }}">
+    詳細
+  </a>
+  {% else %}
+    <a class="btn btn-sm btn-default" href="{{ path('location_product_list') }}">
+      検索
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block contents %}
+
+  <script type="text/javascript">
+    const SIRECOMMENT = {{ sireComment | raw }};
+    const REVIEW_AVERAGE = {{ reviewAverage | raw }};
+  </script>
+
+  <div id="locationStoreImportProduct"
+      data-search-url-base="{{ path('location_import_products_barcode', {barcode: '__CODE__'}) }}"
+      data-submit-move-url="{{ path('location_import_products_store_submit') }}"
+      data-location-list="{{ locationListJson }}" {# プルダウン用 移動元ロケーション #}
+      data-data-hash="{{ hashData ? hashData.dataHash : '' }}"
+      {% if choice %}
+      data-ne-syohin-syohin-code="{{ choice.neSyohinSyohinCode }}"
+      {% endif %}
+    >
+
+    {#<div class="panel panel-default mt10 mb10">#}
+      {#<div class="panel-body">#}
+
+    <div class="mt10 mb10">
+      {# 端末アプリ #}
+      <div v-if="inputMode == 'scan'" class="row row10">
+        <div class="col-xs-9">
+          <a href="{{ barcodeUrl }}" class="btn btn-lg btn-default fullWidth">
+            <i class="fa fa-barcode"></i>
+          </a>
+        </div>
+        <div class="col-xs-3">
+          <button type="button" class="btn btn-lg btn-default fullWidth" v-on:click="changeInputMode('input')">
+            <i class="fa fa-exchange"></i>
+          </button>
+        </div>
+      </div>
+      <template v-else>{# v-else-if は Vue2.x～ #}
+        {# テキストボックス(bluetooth等) #}
+        <div v-if="inputMode == 'input'" class="row row10">
+          <div class="col-xs-9">
+            <div class="input-group">
+              <input type="text" class="form-control input-lg" v-model="inputBarcode" v-on:keypress.enter="searchByInputBarcode">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-lg btn-default" v-on:click="searchByInputBarcode">
+                <i class="fa fa-chevron-right"></i>
+              </button>
+            </span>
+            </div>
+          </div>
+          <div class="col-xs-3">
+            <button type="button" class="btn btn-lg btn-default fullWidth" v-on:click="changeInputMode('scan')">
+              <i class="fa fa-exchange"></i>
+            </button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+      {#</div>#}
+    {#</div>#}
+
+    {% if choice %}
+
+    <div class="mb10">
+      <button type="button" class="btn btn-default fullWidth">{{ choice.neSyohinSyohinCode }}</button>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+
+        {# 重厚未計測 #}
+        {% if not choice.isSetWeightSize() %}
+          <div class="row row10 mb10">
+            {#<a href="{{ path('location_product_sku_list', { daihyoSyohinCode: choice.daihyoSyohinCode }) }}#locationProductWeightEdit" class="btn btn-danger btn-lg fullWidth">重厚未計測・未チェック</a>#}
+            <a href="{{ path('goods_weight_size_edit', { code: choice.neSyohinSyohinCode }) }}" class="btn btn-danger btn-lg fullWidth" target="goodsWeightSizeEdit">重厚未計測・未チェック</a>
+          </div>
+        {% endif %}
+
+        <div class="row row10 mb10">
+          <div class="col-xs-9">
+            <select class="form-control" v-model="selectedLocationId">
+              <option v-for="location in locationList" v-bind:value="location.locationId" v-text="location.locationCode"></option>
+            </select>
+          </div>
+          <div class="col-xs-3">
+            <input type="text" class="form-control" readonly v-bind:value="selectedLocationStock">
+          </div>
+        </div>
+
+        <div class="row row10 mb10">
+          <div class="col-xs-9">
+
+            <div class="input-group" v-bind:class="formCssMoveTo">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="locationHistoryDropDown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li v-for="location in locationHistory"><a href="#" v-text="location" v-on:click.stop.prevent="setHistoryLocationToMoveTo(location)"></a></li>
+              </ul>
+            </span>
+              <input type="text" required class="form-control" placeholder="移動先" v-model="moveTo">
+            </div>
+
+          </div>
+          <div class="col-xs-3" v-bind:class="formCssMoveNum">
+            <input type="number" required class="form-control" v-model="moveNum" number>
+          </div>
+        </div>
+
+        <div class="row row10 mb10">
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-default fullWidth" v-on:click="reload">
+              <i class="fa fa-repeat"></i>
+              再読込
+            </button>
+          </div>
+
+          {# 仕入備考のデータが空でなけばチェックボックスとボタンを連動させる #}
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-primary fullWidth" :disabled="!confirmFlg" v-on:click="submitMove(false)">
+              確定
+            </button>
+          </div>
+
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-danger fullWidth" :disabled="!confirmFlg" v-on:click="submitMove(true)">
+              確定＋完了
+            </button>
+          </div>
+        </div>
+
+        <div class="sireComment row row10 bg-warning p10 mb10" v-show="hasSireComment">
+          <div>
+            <i class="fa fa-exclamation-circle attention-large-icon" aria-hidden="true"></i>
+            <span class="vTop bold">仕入備考</span>
+          </div>
+          <div>
+            {{ choice.getProduct().getOrderComment() }}
+          </div>
+          <div class="mt10 text-center">
+            <input id="sireCommentCheck" type="checkbox" v-model="confirmFlg">
+            <label for="sireCommentCheck" class="checkbox-inline vTop p0">確認しました</label>
+          </div>
+        </div>
+
+        <div class="reviewAverage row row10 p10" :class="displayReviewRank.css" v-if="displayReviewRank.message !== ''">
+          <div>
+            <i class="fa fa-exclamation-circle attention-large-icon" aria-hidden="true" v-if="displayReviewRank.css === 'bg-danger'"></i>
+            <span class="vTop bold mr10">レビュー平均</span>
+            <a href="{{ path('goods_list_review', { code: choice.daihyoSyohinCode, df: reviewDateFrom}) }}">
+              <span class="vTop" v-text="displayReviewRank.message"></span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% if variationImage %}
+      <div class="panel panel-success mb10">
+        <div class="panel-heading">カラー画像</div>
+        <div class="panel-body">
+          <img src="{{ variationImageUrl }}/{{ variationImage.getFileDirPath() }}" class="img-responsive">
+        </div>
+      </div>
+    {% elseif images %}
+      <div class="panel panel-default mb10">
+        <div class="panel-heading">(メイン画像)</div>
+        <div class="panel-body">
+          <img src="{{ imageUrl }}/{{ images[0].getFileDirPath() }}" class="img-responsive">
+        </div>
+      </div>
+    {% else %}
+      <div class="panel panel-default mb10">
+        <div class="panel-heading">画像なし</div>
+        <div class="panel-body"></div>
+      </div>
+    {% endif %}
+
+
+    <div class="row">
+      {% for image in images %}
+      <div class="col-xs-12 mb5">
+        <img src="{{ imageUrl }}/{{ image.getFileDirPath() }}" class="img-responsive">
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+      <div class="alert alert-info">データなし</div>
+    {% endif %}
+
+  </div>
+{% endblock %}

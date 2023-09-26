@@ -1,0 +1,8 @@
+parameters:
+  level: 5
+  paths:
+    - src
+  ignoreErrors:
+    - '#If condition is always true.#'
+    - '#Negated boolean expression is always false.#'
+    

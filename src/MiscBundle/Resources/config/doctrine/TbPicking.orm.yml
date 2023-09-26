@@ -1,0 +1,86 @@
+MiscBundle\Entity\TbPicking:
+    type: entity
+    table: tb_picking
+    id:
+        # 商品コード:
+        id:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            id: true
+            generator:
+                strategy: IDENTITY
+#    fields:
+#        日時:
+#            type: datetime
+#            nullable: false
+#        商品名:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        フリー在庫数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        在庫数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        総ピッキング数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: true
+#        ロケーションコード:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        型番:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        janコード:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        仕入先コード:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        仕入先名:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        lastUpdate:
+#            type: datetime
+#            nullable: true
+#            column: last_update
+#        colname:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        rowname:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+    lifecycleCallbacks: {  }

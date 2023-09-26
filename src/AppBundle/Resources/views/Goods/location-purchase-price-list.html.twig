@@ -1,0 +1,134 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {# pagination コンポーネント#}
+    {% include 'AppBundle::parts/pagination.html.twig' %}
+
+    {% javascripts
+        '@AppBundle/Resources/public/js/app.goods-location-purchase-price-list.js'
+    %}
+      <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    {% if pagination %}
+      const PAGINATION_DATA = {
+          pageItemNum: Number("{{ pagination.getPaginationData().numItemsPerPage }}")
+        , totalItemNum: Number("{{ pagination.getPaginationData().totalCount }}")
+        , page: Number("{{ pagination.getPaginationData().current }}")
+      };
+    {% endif %}
+  </script>
+
+  <div id="goodsLocationPurchasePriceList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>ロケーション在庫 原価一覧</h2>
+        </div>
+
+        <div class="pull-right mt20">
+          {#<a class="btn btn-default" href="#">全削除</a>#}
+        </div>
+      </div>
+
+      {#&#123;&#35; global-message コンポーネント &#35;&#125;#}
+      {#<div is="parts-global-message" :state="messageState"></div>#}
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="stockListTable">
+      {# 検索フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline inlineBlock" role="form" action="{{ path('goods_location_purchase_price_list') }}" method="post" id="searchForm">
+            <div class="form-group mr5">
+              <label for="uploadStockCsv" class="mr5 inputHeight vTop">ロケーションコード</label>
+              <textarea class="form-control h100 mr10 mb10" name="location_codes">{% if codeList %}{% for code in codeList %}{{ code ~ "\n" }}{% endfor %}{% endif %}</textarea>
+
+              <button type="submit" class="btn btn-primary vTop">取得</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {% if pagination and pagination.count() > 0 %}
+
+          {# pagination (Vue component) #}
+        <div
+          is="parts-table-pagination"
+          :init-page-item-num="pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :related-page-item-num="pageItemNum"
+          :item-num="totalItemNum"
+          :page="page"
+          v-on:change-page="showPage"
+        >
+        </div>
+
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th class="col-xs-4 clearfix" v-show="showColumns.warehouseId">
+              倉庫
+              <span class="pull-right">
+                <button class="btn btn-default btn-sm" v-on:click="omitColumn('warehouseId')"><i class="fa fa-fw fa-times"></i></button>
+              </span>
+            </th>
+            <th class="col-xs-4" v-show="showColumns.locationCode">
+              ロケーション
+              <span class="pull-right">
+                <button class="btn btn-default btn-sm" v-on:click="omitColumn('locationCode')"><i class="fa fa-fw fa-times"></i></button>
+              </span>
+            </th>
+            <th class="col-xs-2" v-show="showColumns.purchasePrice">
+              原価合計
+              <span class="pull-right">
+                <button class="btn btn-default btn-sm" v-on:click="omitColumn('purchasePrice')"><i class="fa fa-fw fa-times"></i></button>
+              </span>
+            </th>
+            <th class="col-xs-2" v-show="showColumns.stock">
+              数量
+              <span class="pull-right">
+                <button class="btn btn-default btn-sm" v-on:click="omitColumn('stock')"><i class="fa fa-fw fa-times"></i></button>
+              </span>
+            </th>
+          </tr>
+
+          {% for row in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-4" v-show="showColumns.warehouseId">{{ row['warehouse_name'] }}</td>
+            <td class="col-xs-4" v-show="showColumns.locationCode">{{ row['location_code'] }}</td>
+            <td class="col-xs-2 text-right" v-show="showColumns.purchasePrice">{{ row['purchase_price']|number_format }}</td>
+            <td class="col-xs-2 text-right" v-show="showColumns.stock">{{ row['stock']|number_format }}</td>
+          </tr>
+          {% endfor %}
+
+        </table>
+
+      {% else %}
+        データがありません。
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}

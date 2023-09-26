@@ -1,0 +1,3311 @@
+{# main block #}
+<div class="row main" id="functionsMainBlock">
+
+  <div class="col-lg-12 col-sm-12">
+    <h3 class="header">データ取込</h3>
+    <div class="well btn-group-lg">
+      {# 2016/07/29 在庫管理改修リリースでコメントアウト
+      <button class="btn btn-lg btn-primary mr10 mb10" data-toggle="modal" data-target="#modalUpdateStockList">在庫取込</button>
+      #}
+      {# 2017/11/22 しばらく手動では使っていないのでそのまま隠す #}
+      {#{% if is_granted('ROLE_ADMIN') %}#}
+      {#<button class="btn btn-lg btn-info mr10 mb10" data-toggle="modal" data-target="#modalUpdateOrderList">受注明細取込</button>#}
+      {#{% endif %}#}
+
+      <button class="btn btn-lg btn-dodger-blue mr10 mb10" data-toggle="modal" data-target="#modalUpdateOrderListIncremental">受注明細差分更新</button>
+
+      <button class="btn btn-lg btn-dark-blue mr10 mb10" data-toggle="modal" data-target="#modalUpdateInOut">入出庫データ取込</button>
+
+      {# 2016/07/29 在庫管理改修リリースでコメントアウト
+      <button class="btn btn-lg btn-brown mr10 mb10" data-toggle="modal" data-target="#modalRefreshLocation">ロケーション更新</button>
+      #}
+      {# 納品書印刷待ち伝票一覧画面へ移動
+      <button class="btn btn-lg btn-slate-blue mr10 mb10" data-toggle="modal" data-target="#modalImportPickingList">ピッキングリスト取込</button>
+      #}
+
+      {% if is_granted('ROLE_ADMIN') %}
+      {# 2018/07/25 エラーで動作せず。また、Access「アクセス分析」の元データを楽天アクセスカウントデータに切り替えたため、不要につきコメントアウト。
+      <button class="btn btn-lg btn-kite mr10 mb10" data-toggle="modal" data-target="#modalUpdateViewRanking">閲覧ﾗﾝｷﾝｸﾞ取込</button>
+      #}
+      {# 2016/02/03 自動取込化によりコメントアウト
+      <button class="btn btn-lg btn-brown mr10 mb10" data-toggle="modal" data-target="#modalUpdateRakutenReview">楽天レビュー取込</button>
+      #}
+      {% endif %}
+
+      {# 2018/02/27 ロケーションの自動並べ変えを停止。また、再開するとしてもアルファベット順にはならないため、一旦ボタンコメントアウト #}
+      {#
+      <button class="btn btn-lg btn-dark-green mr10 mb10" data-toggle="modal" data-target="#modalSortLocationOrder">ロケーション並べ替え</button>
+      #}
+
+      <a class="btn btn-lg btn-carmine mr10 mb10" href="{{ path('mall_order_list') }}" target="_blank">モール受注CSV</a>
+
+
+      <button class="btn btn-lg btn-midnight-blue mr10 mb10" data-toggle="modal" data-target="#modalImportAmazonStock">Amazon在庫取込</button>
+
+
+      <button class="btn btn-lg btn-wowma-orange mr10 mb10" data-toggle="modal"
+              data-target="#modalImportWowmaLotNumber">Wowma ロットナンバー取込
+      </button>
+
+      <button class="btn btn-lg btn-dark-slate-gray mr10 mb10" data-toggle="modal"
+              data-target="#modalExternalWarehouseStockFetchSetting">外部倉庫在庫取得設定
+      </button>
+
+      <button class="btn btn-lg btn-dark-slate-gray mr10 mb10" data-toggle="modal"
+              data-target="#modalImportOrderListSetting">受注明細取込設定
+      </button>
+
+
+    </div>
+  </div>
+
+  <div class="col-lg-12 col-sm-12">
+    <h3 class="header">統計処理</h3>
+    <div class="well btn-group-lg">
+      <button class="btn btn-lg btn-goldenrod mr10 mb10" data-toggle="modal" data-target="#modalAggregateSalesDetail">伝票毎利益再集計</button>
+
+      <a href="{{ path('sales_research_cost_rate_list') }}" target="_blank" class="btn btn-lg btn-success mr10 mb10">仕入先原価率</a>
+      <a href="{{ path('products_discount_list_copy') }}" target="_blank" class="btn btn-lg btn-maroon mr10 mb10">値下げ</a>
+
+      <a href="{{ path('sales_research_vendor_stockout_list') }}" target="_blank" class="btn btn-lg btn-thistle mr10 mb10">欠品率</a>
+      <a href="{{ path('sales_rakuten_keyword_ranking_index') }}" target="_blank" class="btn btn-lg btn-pastel-pink mr10 mb10">楽天ｷｰﾜｰﾄﾞ</a>
+
+      <a href="{{ path('products_mall_price_list') }}" target="_blank"
+         class="btn btn-lg btn-azure mr10 mb10">SHOPLIST価格</a>
+
+      <a href="{{ path('delivery_remain_order_status_date_list') }}" target="_blank"
+         class="btn btn-lg btn-info mr10 mb10">注残履歴集計</a>
+
+      <button class="btn btn-lg btn-midnight-blue mr10 mb10" data-toggle="modal"
+         data-target="#modalExternalWarehouseBoxMoveSetting">倉庫間箱移動設定
+      </button>
+      <a href="{{ path('delivery_method_conversion') }}" target="_blank" class="btn btn-lg btn-carmine mr10 mb10">発送方法変換</a>
+      <a href="{{ path('products_cost_rate_list') }}" target="_blank" class="btn btn-lg btn-dim-gray mr10 mb10">商品別原価率</a>
+      <button class="btn btn-lg btn-wine-red mr10 mb10" data-toggle="modal" data-target="#modalImportCsvOtoriyosePurchaseData">Yahooおとりよせ購買データ</button>
+      <button
+        class="btn btn-lg btn-garnet mr10 mb10"
+        data-toggle="modal"
+        data-target="#modalAggregateProductSalesAccountResultHistory">
+        商品売上実績集計
+      </button>
+    </div>
+  </div>
+  {% if is_granted('ROLE_SYSTEM_MANAGER') or is_granted('ROLE_DELIVERY_MANAGER') or is_granted('ROLE_CUSTOMER_MANAGER') %}
+    <div class="col-lg-12 col-sm-12">
+      <h3 class="header">CSV出力</h3>
+      <div class="well btn-group-lg">
+        <button class="btn btn-lg btn-sea-green mr10 mb10" data-toggle="modal" data-target="#modalExportCsvNextEngineUpdateStock">NextEngine在庫同期</button>
+        <button class="btn btn-lg btn-warning mr10 mb10" data-toggle="modal" data-target="#modalExportCsvNextEngine">NextEngineCSV出力</button>
+        <button class="btn btn-lg btn-pastel-brown mr10 mb10" data-toggle="modal" data-target="#modalExportMallProductCsvNextEngine">NextEngineモール商品CSV出力</button>
+        {% if  is_granted('ROLE_SYSTEM_MANAGER') or is_granted('ROLE_DELIVERY_MANAGER') %}
+          <button class="btn btn-lg btn-garnet mr10 mb10" data-toggle="modal" data-target="#modalExportCsvRakuten">楽天CSV出力</button>
+
+          <button class="btn btn-lg btn-wine-red mr10 mb10" data-toggle="modal" data-target="#modalExportCsvRakutenUpdateStock">楽天在庫更新CSV出力</button>
+
+          <button class="btn btn-lg btn-wine-red mr10 mb10" data-toggle="modal" data-target="#modalExportCsvRakutenRppExclude">楽天RPP除外設定</button>
+          <button class="btn btn-lg btn-wine-red mr10 mb10" data-toggle="modal" data-target="#modalExportCsvRakutenGold">楽天GOLD CSV出力</button>
+          <button class="btn btn-lg btn-pastel-deep-blue mr10 mb10" data-toggle="modal" data-target="#modalExportCsvYahoo">YahooCSV出力</button>
+
+          <button class="btn btn-lg btn-amazon-blue mr10 mb10" data-toggle="modal" data-target="#modalExportCsvAmazon">Amazon CSV出力</button>
+          {#<button class="btn btn-lg btn-amazon-blue mr10 mb10" data-toggle="modal" data-target="#modalExportCsvAmazonCom">Amazon(US) CSV出力</button>#}
+          <button class="btn btn-lg btn-dim-gray mr10 mb10" data-toggle="modal" data-target="#modalExportCsvShoplist">SHOPLIST CSV出力</button>
+
+
+          <button class="btn btn-lg btn-midnight-blue mr10 mb10" data-toggle="modal"
+                  data-target="#modalExportCsvAmazonFbaOrder">Amazon FBA出荷用CSV出力
+          </button>
+
+          <button class="btn btn-lg btn-midnight-blue mr10 mb10" data-toggle="modal"
+                  data-target="#modalExportCsvAmazonSnlOrder">Amazon S&L出荷用CSV出力
+          </button>
+
+          <button class="btn btn-lg btn-lamp-black mr10 mb10" data-toggle="modal"
+                  data-target="#modalExportCsvShoplistSpeedBinOrder">SHOPLIST スピード便出荷用CSV出力
+          </button>
+
+          <button class="btn btn-lg btn-dark-slate-gray mr10 mb10" data-toggle="modal"
+                  data-target="#modalExportCsvYahooOtoriyose">YahooおとりよせCSV出力
+          </button>
+
+          <button class="btn btn-lg btn-goldenrod mr10 mb10" data-toggle="modal"
+                  data-target="#modalExportDeleteImagesCsvPPM">PPM画像削除用CSV出力
+          </button>
+        {% endif %}
+
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="col-lg-12 col-sm-12">
+    <h3 class="header">取引先様用</h3>
+    <div class="well btn-group-lg">
+      <a href="{{ path('plusnao_sales_ranking') }}" target="_blank" class="btn btn-lg btn-default mr10 mb10">売れ筋ランキング</a>
+      {# 2017/11/22 一回も使われないままコメントアウト。後に削除する、はず #}
+      {#<a href="{{ path('plusnao_chouchou_clair') }}" target="_blank" class="btn btn-lg btn-default mr10 mb10">シュシュクレール在庫連携</a>#}
+
+      <button class="btn btn-lg btn-default mr10 mb10" data-toggle="modal" data-target="#modalVendorOrderList">注残一覧</button>
+    </div>
+  </div>
+
+  {#
+  <div class="col-lg-12 col-sm-12">
+    <h4>※開発用</h4>
+    <div class="well btn-group-lg">
+      <button class="btn btn-xs btn-warning" id="notifyTest" v-on:click="notifyTest">通知テスト</button>
+
+      <a class="btn btn-lg btn-pastel-deep-blue mr10 mb10" href="{{ path('service_auth_yahoo') }}" target="_blank">Yahoo APIログイン</a>
+    </div>
+  </div>
+  #}
+
+</div>
+
+
+{# modals #}
+<div class="modal"
+     id="modalUpdateStockList"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_stock_list') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalUpdateOrderList"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_order_list') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form">
+          <div class="radio">
+            <label for="radioMonth" class="radio-inline">
+              <input type="radio" value="month" id="radioMonth" name="term" v-model="term" />
+              <select name="startMonth" v-model="startMonth">
+                <option value="15">15ヶ月前</option>
+                <option value="14">14ヶ月前</option>
+                <option value="13">13ヶ月前</option>
+                <option value="12">12ヶ月前</option>
+                <option value="11">11ヶ月前</option>
+                <option value="10">10ヶ月前</option>
+                <option value="9">9ヶ月前</option>
+                <option value="8">8ヶ月前</option>
+                <option value="7">7ヶ月前</option>
+                <option value="6">6ヶ月前</option>
+                <option value="5">5ヶ月前</option>
+                <option value="4">4ヶ月前</option>
+                <option value="3">3ヶ月前</option>
+                <option value="2">2ヶ月前</option>
+                <option value="1">1ヶ月前</option>
+                <option value="0">今月</option>
+              </select>
+              の1日から取得 (% downloadTermString %)
+            </label>
+          </div>
+
+          {#
+          <div class="form-group">
+            <label for="radioAll" class="radio-inline">
+              <input type="radio" value="all" id="radioAll" name="term" v-model="term" />
+              全期間を取得 ( (% dataStartDate %) ～ )
+            </label>
+          </div>
+          #}
+
+          <div class="form-group">
+            <label for="checkAggregate" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkAggregate" name="aggregate" v-model="aggregate" />
+              受注明細取り込み後、再集計を行う（処理予約）
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalUpdateOrderListIncremental"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_order_list_incremental') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-check-url="{{ path('api_check_print_diff') }}"
+     data-detail-num-url="{{ path('get_detail_num_average') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+        <div v-bind:class="{ hidden: alertHidden }">
+          <div>
+            <div v-bind:class="alertClass" v-text="alert"></div>
+          </div>
+        </div>
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioUpdateOrderListIncremental" class="radio-inline">
+                <input type="radio" value="default" id="radioUpdateOrderListIncremental" name="mode" v-model="mode" /> 通常差分更新
+              </label>
+            </div>
+          </div>
+          <div class="radio">
+            <div class="form-group">
+              &nbsp;&nbsp;&nbsp;&nbsp;差分更新時に古いデータも同期
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group">
+                <label for="radioUpdateOrderListIncremental_3" class="radio-inline">
+                  <input type="radio" value="past_3" id="radioUpdateOrderListIncremental_3" name="mode" v-model="mode" /> 3時間
+                </label>
+                <label for="radioUpdateOrderListIncremental_6" class="radio-inline">
+                  <input type="radio" value="past_6" id="radioUpdateOrderListIncremental_6" name="mode" v-model="mode" /> 6時間
+                </label>
+                <label for="radioUpdateOrderListIncremental_12" class="radio-inline">
+                  <input type="radio" value="past_12" id="radioUpdateOrderListIncremental_12" name="mode" v-model="mode" /> 12時間
+                </label>
+                <label for="radioUpdateOrderListIncremental_24" class="radio-inline">
+                  <input type="radio" value="past_24" id="radioUpdateOrderListIncremental_24" name="mode" v-model="mode" /> 24時間
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="text-right mb10">
+          <div>
+            平均明細数 <span title="平均明細数の取得基準：
+  過去分：過去1カ月の、SHOPLIST以外の、自社倉庫からの出荷分について処理する。
+  現在分：SHOPLIST以外の、「納品書印刷待ち・納品書印刷済み」のものについて処理する。
+平均明細数の計算式：　明細数 / 伝票数。例えば、総伝票数が 10000、明細数が 20000 であれば、平均明細数は2となる。受注数は考慮しない。" data-toggle="tooltip">
+               <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+             </span>
+          </div>
+          <div>
+            現在 <span v-text='currentDetailAve'></span> / 過去1ヵ月 <span v-text='pastDetailAve'></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+
+      <div class="modal-footer">
+        <div class="col-xs-10 text-left">現在のNEとデータベースの納品書印刷済み件数チェックを行います。<br>（差分更新は行いません、少々時間がかかります）</div>
+        <button type="button" class="btn btn-lg btn-warning" v-on:click="onCheck()">チェック</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="modal"
+     id="modalUpdateInOut"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_stock_in_out') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        {#
+        <form role="form">
+          <div class="form-group">
+            <label for="checkUseFtpCsv" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkUseFtpCsv" name="checkUseFtpCsv" v-model="checkUseFtpCsv" />
+              手動でダウンロードしたファイルを利用する。(WEB_CSV/Import/ne_inout)
+            </label>
+          </div>
+        </form>
+        #}
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalUpdateViewRanking"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_view_ranking') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 2016/02/03 自動取込化によりコメントアウト
+<div class="modal"
+     id="modalUpdateRakutenReview"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_update_rakuten_review') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+#}
+
+<div class="modal"
+     id="modalImportAmazonStock"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_import_amazon_stock') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# Wowma ロットナンバー取込 モーダル #}
+<div class="modal"
+     id="modalImportWowmaLotNumber"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-upload-url="{{ path('upload_wowma_lot_number_csv') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-info">
+          下記ファイルをWow! Managerから取得し、アップロードしてください。
+        </div>
+        <div class="panel-group" id="wowmaLotNumberDownloadDescription">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#amazonFbaOrderUploadSessionCsv">
+                  一括商品CSVダウンロード オリジナルテンプレート「ロットナンバー取得」
+                </a>
+              </h4>
+            </div>
+            <div id="amazonFbaOrderUploadSessionCsv" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h4>商品・画像・デザイン ＞ 一括商品CSVダウンロード</h4>
+                <p class="wordBreakAll">
+                  <a href="https://manager.wowma.jp/wmshopclient/productCsvDl/index" target="_blank">
+                    <img class="img-responsive" src="{{ asset('bundles/app/img/description/wowma-lot-number-download.png') }}">
+                  </a>
+                </p>
+                <p>
+                  絞込条件に注意。クリック後数分程度でダウンロード可能になります。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+          {# アップロード #}
+        <form action="{{ path('upload_wowma_lot_number_csv') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="uploadWowmaLotNumber" name="upload[]" type="file" class="file-loading" multiple>
+                {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message" v-show="message && message.length > 0"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+          {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">CSVを更新する</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal"
+     id="modalAggregateSalesDetail"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_aggregate_sales_detail') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-get-setting-url="{{ path('get_aggregate_sales_detail_setting') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="mb10 ml5">
+            <input
+              id="part"
+              type="radio"
+              value="part"
+              v-model="setting.type"
+              class="vMiddle"
+              :checked="setting.type === 'part'"
+            />
+            <label for="part" class="radio-inline pl5">
+              <input type="text" class="w60 form-control fullWidth inlineBlock" maxlength="3" placeholder="月数" v-model="setting.months">
+              か月分+今月分
+            </label>
+          </div>
+          <div class="pull-right">
+            <button type="button" class="btn btn-info" @click="onSubmit(true)">設定を保存</button>
+          </div>
+          <div class="ml5">
+            <input
+              id="all"
+              type="radio"
+              value="all"
+              v-model="setting.type"
+              class="vTop"
+              :checked="setting.type === 'all'"
+            />
+            <label for="all" class="radio-inline pl5">
+              全期間
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">表示中の設定で実行</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NextEngine在庫同期 -->
+<div class="modal"
+     id="modalExportCsvNextEngineUpdateStock"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_next_engine_update_stock') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form">
+          <div class="form-group">
+            <div>
+              <label for="radioExportCsvNextEngineStockDoDownloadAuto">
+                <input type="radio" value="1" id="radioExportCsvNextEngineStockDoDownloadAuto" name="doDownload" v-model="doDownload" /> 在庫CSVを自動ダウンロード
+              </label>
+            </div>
+            <div>
+              <label for="radioExportCsvNextEngineStockDoDownloadManual">
+                <input type="radio" value="0" id="radioExportCsvNextEngineStockDoDownloadManual" name="doDownload" v-model="doDownload" /> サーバ上の在庫CSVを使用する
+              </label>
+              <div>
+                <div class="alert alert-info">
+                  <p>「サーバ上の在庫CSVを利用」の場合、バッチサーバにアップロードされた在庫データ（オリジナル）データファイルを取り込んで処理します。</p>
+                  <p>下記の古いデータを全て削除し、新しいファイルがアップロードされたことを確認して実行してください。（自動で削除はされません）</p>
+                  <p>ファイルは「差分のみ」で取得してください。</p>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">取込対象</div>
+                    <div class="panel-body">
+                      WEB_CSV/NextEngine/Downloaded/OriginalStocks/InStock 以下の *.csv ファイル全て<br>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="checkNeCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkNeCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、NextEngineへアップロードする（処理予約）
+            </label>
+          </div>
+        </form>
+
+        <p>
+          最終処理日時 : <span v-text="lastProcessed"></span>
+        </p>
+
+        <form method="post" id="downloadCsvFileForm" action="{{ path('export_csv_next_engine_update_stock_download_csv') }}">
+          <input type="hidden" name="path" v-model="inventoryCsvFile.path">
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row row10">
+          <div class="col-xs-4 text-left">
+            <button class="btn btn-lg btn-default" v-bind:class="inventoryCsvFileDisabled" v-on:click="downloadInventoryCsvFile">
+              棚卸CSV
+              <small v-text="inventoryCsvFileDate"></small>
+            </button>
+          </div>
+          <div class="col-xs-8">
+            <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal"
+     id="modalExportCsvNextEngine"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_next_engine') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div v-if="isUploading && upload">
+          <div class="alert alert-warning">前の実行分のアップロードが完了していないため、実行できません。</div>
+        </div>
+        <div v-else>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form">
+          <div class="form-group">
+            <div>
+              <label for="radioExportCsvNextEngineDoDownloadAuto">
+                <input type="radio" value="1" id="radioExportCsvNextEngineDoDownloadAuto" name="doDownload" v-model="doDownload" /> 在庫CSVを自動ダウンロード
+              </label>
+            </div>
+            <div>
+              <label for="radioExportCsvNextEngineDoDownloadManual">
+                <input type="radio" value="0" id="radioExportCsvNextEngineDoDownloadManual" name="doDownload" v-model="doDownload" /> サーバ上の在庫CSVを使用する
+              </label>
+              <div>
+                <div class="alert alert-info">
+                  <p>「サーバ上の在庫CSVを利用」の場合、バッチサーバにアップロードされた在庫データ（オリジナル）データファイルを取り込んで処理します。</p>
+                  <p>下記の古いデータを全て削除し、新しいファイルがアップロードされたことを確認して実行してください。（自動で削除はされません）</p>
+                  <p>ファイルは「全商品」で取得してください。</p>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">取込対象</div>
+                    <div class="panel-body">
+                      WEB_CSV/NextEngine/Downloaded/OriginalStocks/All 以下の *.csv ファイル全て<br>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="form-group mb30">
+            <p>
+              <label for="checkNeCsvUploadExportCsv" class="checkbox-inline">
+                <input type="checkbox" value="1" id="checkNeCsvUploadExportCsv" name="upload" v-model="upload" />
+                CSV作成後、NextEngineへアップロードする（処理予約）
+              </label>
+            </p>
+            <p>※チェックを外した場合は、前回アップ内容のバックアップは更新されません。</p>
+          </div>
+
+          <div class="form-group mb30">
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">販売終了後</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="delDaysFromSalesEnd" value="{{ delDaysFromSalesEnd }}">
+              </div>
+              <div>
+                日間を過ぎると削除します。
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mb30">
+            <label for="ignorePriceDiff" class="checkbox-inline mr20">
+              <input type="checkbox" value="1" id="ignorePriceDiff" name="ignorePriceDiff" v-model="ignorePriceDiff" :checked="{{ ignorePriceDiff }}"/>
+              原価・売価の差分は無視する
+            </label>
+            <button type="button" class="btn btn-md btn-info" v-on:click="onSubmit(true)">原価・売価設定を保存</button>
+            <span v-if="savetMsgShow" class="text-success">設定を保存しました。</span>
+          </div>
+
+          <div class="form-group mb30">
+            <label for="createSetProduct" class="checkbox-inline mr20">
+              <input type="checkbox" value="1" id="createSetProduct" name="createSetProduct" v-model="createSetProduct" />
+              セット商品も同時に生成・アップロードする
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="doUpdateOrderListIncremental" class="checkbox-inline">
+              <input type="checkbox" value="1" id="doUpdateOrderListIncremental" name="doUpdateOrderListIncremental" v-model="doUpdateOrderListIncremental" />
+              事前に受注明細差分更新を実行する（最終受注日が更新されます）
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()" :disabled="upload && isUploading">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportMallProductCsvNextEngine"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-export-url="{{ path('queue_export_csv_ne_mall_product') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div :class="{ hidden: noticeHidden }">
+          <div :class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group mb10">
+                <label for="radioExportMallProductPlusnao" class="checkbox-inline">
+                  <input type="checkbox" value="rakuten" id="radioExportMallProductPlusnao" name="exportShops[rakuten]" v-model="exportShops" /> 楽天plusnao
+                </label>
+                <label for="radioExportMallProductMotto" class="checkbox-inline">
+                  <input type="checkbox" value="motto" id="radioExportMallProductMotto" name="exportShops[motto]" v-model="exportShops" /> 楽天motto-motto
+                </label>
+                <label for="radioExportMallProductLaforest" class="checkbox-inline">
+                  <input type="checkbox" value="laforest" id="radioExportMallProductLaforest" name="exportShops[laforest]" v-model="exportShops" /> 楽天LaForest
+                </label>
+                <label for="radioExportMallProductDolcissimo" class="checkbox-inline">
+                  <input type="checkbox" value="dolcissimo" id="radioExportMallProductDolcissimo" name="exportShops[dolcissimo]" v-model="exportShops" /> 楽天dolcissimo
+                </label>
+              </div>
+              <div class="form-group mb10">
+                <label for="radioExportMallProductGekipla" class="checkbox-inline">
+                  <input type="checkbox" value="gekipla" id="radioExportMallProductGekipla" name="exportShops[gekipla]" v-model="exportShops" /> 楽天激安プラネット
+                </label>
+              </div>
+              <div class="form-group mb10">
+                <label for="radioExportMallProductYahooPlusnao" class="checkbox-inline">
+                  <input type="checkbox" value="yahooPlusnao" id="radioExportMallProductYahooPlusnao" name="exportShops[yahooPlusnao]" v-model="exportShops" /> Yahoo plusnao
+                </label>
+                <label for="radioExportMallProductKawaemon" class="checkbox-inline">
+                  <input type="checkbox" value="kawaemon" id="radioExportMallProductKawaemon" name="exportShops[kawaemon]" v-model="exportShops" /> Yahoo kawa-e-mon
+                </label>
+              </div>
+              <div class="form-group mb10">
+                <label for="radioExportMallProductWowma" class="checkbox-inline">
+                  <input type="checkbox" value="wowma" id="radioExportMallProductWowma" name="exportShops[yahooPlusnao]" v-model="exportShops" /> Wowma
+                </label>
+              </div>
+              <div class="form-group mb0">
+                <label for="radioExportMallProductPpm" class="checkbox-inline">
+                  <input type="checkbox" value="ppm" id="radioExportMallProductPpm" name="exportShops[ppm]" v-model="exportShops" /> ﾎﾟﾝﾊﾟﾚﾓｰﾙ
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group mb0">
+                <label for="radioExportMallProductOnlyDiff" class="radio-inline">
+                  <input type="radio" value="onlyDiff" id="radioExportMallProductOnlyDiff" name="exportTarget" v-model="exportTarget" /> 差分のみ
+                </label>
+                <label for="radioExportMallProductAll" class="radio-inline">
+                  <input type="radio" value="all" id="radioExportMallProductAll" name="exportTarget" v-model="exportTarget" /> 全商品
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkNextEngineMallProductCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkNextEngineMallProductCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、NextEngineへアップロードする（処理予約）
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportCsvYahoo"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_yahoo') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-update-url="{{ path('update_csv_yahoo_setting') }}"
+     data-get-setting-url="{{ path('get_csv_yahoo_setting') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group">
+                <label for="radioYahooCsvTypeAll" class="radio-inline">
+                  <input type="radio" value="all" id="radioYahooCsvTypeAll" name="exportType" v-model="exportType" /> 全て（商品CSV・削除・在庫）
+                </label>
+              </div>
+              <div class="form-group mb0">
+                <label for="radioYahooCsvTypeStock" class="radio-inline">
+                  <input type="radio" value="stock" id="radioYahooCsvTypeStock" name="exportType" v-model="exportType" v-bind:disabled="updateStockDisabledAttr" />
+                  <span v-bind:class="updateStockDisabledCss">在庫更新</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="radioExportPlusnao" class="checkbox-inline">
+              <input type="checkbox" value="plusnao" id="radioExportPlusnao" name="exportTarget[plusnao]" v-model="exportTarget.plusnao" /> plus-nao
+            </label>
+            <label for="radioExportKawaemon" class="checkbox-inline">
+              <input type="checkbox" value="kawaemon" id="radioExportKawaemon" name="exportTarget[kawaemon]" v-model="exportTarget.kawaemon" /> kawa-e-mon
+            </label>
+          </div>
+
+          <div v-text="selectedTarget"></div>
+
+          <div class="form-group">
+            <label for="checkYahooCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkYahooCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、Yahooへアップロードする（処理予約）
+            </label>
+          </div>
+
+          <div class="form-group" v-show="exportType == 'all'">
+            <label for="checkYahooCsvMakeDelete" id="makeDeleteCheckBoxLabel" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkYahooCsvMakeDelete" name="makeDelete" v-model="makeDelete" class="top04em" v-bind:disabled="deleteDisabledAttr" />
+              <span v-bind:class="deleteDisabledCss">削除CSVを作成する</span>
+              <template v-if="deleteDisabled">
+                <a class="btn btn-info" href="{{ path('service_auth_yahoo') }}" target="_blank" v-on:click="closeModal()">Yahoo API認証</a>
+              </template>
+            </label>
+          </div>
+
+          <div class="form-group" v-show="exportType == 'all'">
+            <label>即納予定日</label>
+            <input type="date" class="form-control" v-model="immediateShippingDate" value="{{ immediateShippingDate }}" />
+          </div>
+
+          <hr>
+          <div class="form-group mb10">
+            <div class="text-left mb5">
+              ■優良配送設定　（次回CSV出力から反映されます）
+            </div>
+          
+            <label for="radioYahooExcellentAvailable" class="radio-inline">
+              <input type="radio" value="1" id="radioYahooExcellentAvailable" name="yahooExcellentAvailable" v-model="setting.YAHOO_EXCELLENT_DELIVERY_AVAILABLE" />
+              有効（配送方法に従って設定）
+            </label>
+            <label for="radioYahooExcellentUnavailable" class="radio-inline">
+              <input type="radio" value="0" id="radioYahooExcellentUnavailable" name="yahooExcellentAvailable" v-model="setting.YAHOO_EXCELLENT_DELIVERY_AVAILABLE" />
+              無効（配送方法なし、全て3営業日以内）
+            </label>
+          </div>
+          
+          
+          <div class="form-group">
+            <div class="text-left mb5">
+              ■kawa-e-monページ非公開設定
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2">
+                Yahoo<br>Plusnaoで
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.YAHOO_KAWA_E_MON_QUANTITY_DAYS">
+              </div>
+              <div class="col-xs-2 text-left">日間の販売数量が</div>
+              <div class="col-xs-3">
+                <input type="text" class="form-control fullWidth" maxlength="72" v-model="setting.YAHOO_KAWA_E_MON_QUANTITY">
+              </div>
+              <div class="col-xs-2">
+                個以上<br>の商品
+              </div>
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2">
+                Yahoo<br>Plusnaoで
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.YAHOO_KAWA_E_MON_SALES_DAYS">
+              </div>
+              <div class="col-xs-2 text-left">日間の販売金額が</div>
+              <div class="col-xs-3">
+                <input type="text" class="form-control fullWidth" maxlength="72" v-model="setting.YAHOO_KAWA_E_MON_SALES">
+              </div>
+              <div class="col-xs-2">
+                円以上<br>の商品
+              </div>
+            </div>
+
+          </div>
+        </form>
+        <div>
+          <button type="button" class="btn btn-primary" v-on:click="onUpdate()">優良配送・ページ非公開設定を保存</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportCsvAmazon"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_amazon') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div v-show="nowLoading" class="row">
+          <div class="col-sm-12 text-center">
+            <img src="{{ asset('img/loading.gif') }}" />
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioExportAmazonAll" class="radio-inline">
+                <input type="radio" value="all" id="radioExportAmazonAll" name="exportTarget" v-model="exportTarget" /> 全商品（価格・在庫含む）
+              </label>
+            </div>
+          </div>
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioExportAmazonDiffAndStocks" class="radio-inline">
+                <input type="radio" value="diffAndStocks" id="radioExportAmazonDiffAndStocks" name="exportTarget" v-model="exportTarget" /> 商品データ差分 + 価格・在庫差分
+              </label>
+            </div>
+          </div>
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioExportStocks" class="radio-inline">
+                <input type="radio" value="stocks" id="radioExportStocks" name="exportTarget" v-model="exportTarget" /> 在庫差分のみ
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkAmazonCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkAmazonCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、Amazonへアップロードする（処理予約）
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>即納予定日</label>
+            <input type="date" class="form-control" v-model="immediateShippingDate" value="{{ immediateShippingDate }}" />
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{#<div class="modal"#}
+     {#id="modalExportCsvAmazonCom"#}
+     {#tabindex="-1"#}
+     {#data-backdrop="static" data-keyboard="false"#}
+     {#data-url="{{ path('queue_export_csv_amazon_com') }}"#}
+     {#data-verify-url="{{ path('api_verify_enqueue') }}"#}
+  {#>#}
+
+  {#<div class="modal-dialog">#}
+    {#<div class="modal-content">#}
+      {#<div class="modal-header">#}
+        {#<button type="button" class="close" data-dismiss="modal">#}
+          {#<span aria-hidden="true">&times;</span>#}
+        {#</button>#}
+        {#<h4 class="modal-title" id="modal-label">#}
+          {#(% caption %)#}
+        {#</h4>#}
+      {#</div>#}
+
+      {#<div class="modal-body">#}
+        {#<div>#}
+          {#<div v-bind:class="messageClass" v-text="message"></div>#}
+        {#</div>#}
+
+        {#<div v-bind:class="{ hidden: noticeHidden }">#}
+          {#<div v-bind:class="noticeClass">#}
+            {#<ul>#}
+              {#<li v-for="notice in notices" track-by="$index">(% notice %)</li>#}
+            {#</ul>#}
+          {#</div>#}
+        {#</div>#}
+
+        {#<div v-show="nowLoading" class="row">#}
+          {#<div class="col-sm-12 text-center">#}
+            {#<img src="{{ asset('img/loading.gif') }}" />#}
+          {#</div>#}
+        {#</div>#}
+
+        {#<form role="form" class="dialogForm">#}
+
+          {#<div class="radio">#}
+            {#<div class="form-group">#}
+              {#<label for="radioExportAmazonComAll" class="radio-inline">#}
+                {#<input type="radio" value="all" id="radioExportAmazonComAll" name="exportTarget" v-model="exportTarget" /> 全商品（価格・在庫含む）#}
+              {#</label>#}
+            {#</div>#}
+          {#</div>#}
+          {#<div class="radio">#}
+            {#<div class="form-group">#}
+              {#<label for="radioExportAmazonComDiffAndStocks" class="radio-inline">#}
+                {#<input type="radio" value="diffAndStocks" id="radioExportAmazonComDiffAndStocks" name="exportTarget" v-model="exportTarget" /> 商品データ差分 + 価格・在庫差分#}
+              {#</label>#}
+            {#</div>#}
+          {#</div>#}
+          {#<div class="radio">#}
+            {#<div class="form-group">#}
+              {#<label for="radioExportAmazonComStocks" class="radio-inline">#}
+                {#<input type="radio" value="stocks" id="radioExportAmazonComStocks" name="exportTarget" v-model="exportTarget" /> 在庫差分のみ#}
+              {#</label>#}
+            {#</div>#}
+          {#</div>#}
+
+          {#<div class="form-group">#}
+            {#<label for="checkAmazonComCsvUpload" class="checkbox-inline">#}
+              {#<input type="checkbox" value="1" id="checkAmazonComCsvUpload" name="upload" v-model="upload" />#}
+              {#CSV作成後、Amazonへアップロードする（処理予約）#}
+            {#</label>#}
+          {#</div>#}
+
+        {#</form>#}
+      {#</div>#}
+
+      {#<div class="modal-footer">#}
+        {#<button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>#}
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>#}
+      {#</div>#}
+    {#</div>#}
+  {#</div>#}
+{#</div>#}
+
+
+
+<div class="modal"
+     id="modalExportCsvShoplist"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_shoplist') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+        >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioExportShoplistDiffAndStocks" class="radio-inline">
+                <input type="radio" value="diffAndStocks" id="radioExportShoplistDiffAndStocks" name="exportTarget" v-model="exportTarget" /> 商品データ差分 + 在庫差分
+              </label>
+            </div>
+          </div>
+          <div class="radio">
+            <div class="form-group">
+              <label for="radioExportShoplistStocks" class="radio-inline">
+                <input type="radio" value="stocks" id="radioExportShoplistStocks" name="exportTarget" v-model="exportTarget" /> 在庫差分のみ
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkShoplistCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkShoplistCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、SHOPLISTへアップロードする（処理予約）
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal"
+     id="modalExportCsvRakuten"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_rakuten') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-update-url="{{ path('update_csv_rakuten_motto_setting') }}"
+     data-get-setting-url="{{ path('get_csv_rakuten_motto_setting') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="alert alert-info">
+            <p>この処理は、バッチサーバにアップロードされた楽天商品データファイルを取り込んで処理します。</p>
+            <p>下記の古いデータを全て削除し、新しいファイルがアップロードされたことを確認して実行してください。（自動で削除はされません）</p>
+            <div class="panel panel-default">
+              <div class="panel-heading">取込対象</div>
+              <div class="panel-body">
+                WEB_CSV ディレクトリ以下:<br>
+                  楽天plusnao : /Rakuten/Downloaded/RakutenPlusnao 以下の *.csv ファイル全て<br>
+                  楽天motto-motto : /Rakuten/Downloaded/MottoMotto 以下の *.csv ファイル全て<br>
+                  楽天LaForest : /Rakuten/Downloaded/LaForest 以下の *.csv ファイル全て<br>
+                  楽天dolcissimo : /Rakuten/Downloaded/dolcissimo 以下の *.csv ファイル全て<br>
+                  楽天激安プラネット : /Rakuten/Downloaded/gekipla 以下の *.csv ファイル全て<br>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="form-group">
+            <label for="radioExportRakutenPlusnao" class="checkbox-inline">
+              <input type="checkbox" value="rakutenPlusnao" id="radioExportRakutenPlusnao" name="exportTarget[rakutenPlusnao]" v-model="exportTarget.rakutenPlusnao" /> 楽天plusnao
+            </label>
+            <label for="radioExportRakutenMotto" class="checkbox-inline">
+              <input type="checkbox" value="rakutenMotto" id="radioExportRakutenMotto" name="exportTarget[rakutenMotto]" v-model="exportTarget.rakutenMotto" /> 楽天motto-motto
+            </label>
+            <label for="radioExportRakutenLaforest" class="checkbox-inline">
+              <input type="checkbox" value="rakutenLaforest" id="radioExportRakutenLaforest" name="exportTarget[rakutenLaforest]" v-model="exportTarget.rakutenLaforest" /> 楽天LaForest
+            </label>
+            <label for="radioExportRakutenDolcissimo" class="checkbox-inline">
+              <input type="checkbox" value="rakutenDolcissimo" id="radioExportRakutenDolcissimo" name="exportTarget[rakutenDolcissimo]" v-model="exportTarget.rakutenDolcissimo" /> 楽天dolcissimo
+            </label><br>
+            <label for="radioExportRakutenGekipla" class="checkbox-inline">
+              <input type="checkbox" value="rakutenGekipla" id="radioExportRakutenGekipla" name="exportTarget[rakutenGekipla]" v-model="exportTarget.rakutenGekipla" /> 楽天激安プラネット
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="checkRakutenCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkRakutenCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、楽天へアップロードする（処理予約）
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>即納予定日</label>
+            <input type="date" class="form-control" v-model="immediateShippingDate" value="{{ immediateShippingDate }}" />
+          </div>
+
+
+        </form>
+
+        <div class="form-group">
+          <div class="col-xs-12 text-left mb10">
+            motto-motto / LaForest / dolcissimo / 激安プラネット ページ非公開設定
+          </div>
+
+          <div class="row row10 mb10">
+            <div class="col-xs-2">
+              楽天<br>Plusnaoで
+            </div>
+            <div class="col-xs-2">
+              <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.MOTTO_QUANTITY_DAYS">
+            </div>
+            <div class="col-xs-2 text-left">日間の販売数量が</div>
+            <div class="col-xs-3">
+              <input type="text" class="form-control fullWidth" maxlength="72" v-model="setting.MOTTO_QUANTITY">
+            </div>
+            <div class="col-xs-2">
+              個以上<br>の商品
+            </div>
+          </div>
+
+          <div class="row row10 mb20">
+            <div class="col-xs-2">
+              楽天<br>Plusnaoで
+            </div>
+            <div class="col-xs-2">
+              <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.MOTTO_SALES_DAYS">
+            </div>
+            <div class="col-xs-2 text-left">日間の販売金額が</div>
+            <div class="col-xs-3">
+              <input type="text" class="form-control fullWidth" maxlength="72" v-model="setting.MOTTO_SALES">
+            </div>
+            <div class="col-xs-2">
+              円以上<br>の商品
+            </div>
+          </div>
+
+          <div class="col-xs-12 text-left mb10">
+            LaForest ページ非公開設定
+          </div>
+
+          <div class="row row10 mb10">
+              <p class="vMiddle">
+                商品レビュー平均点が
+                <input
+                  type="number"
+                  class="form-control inlineBlock w80 ml5 mr5"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  v-model="setting.LAFOREST_REVIEW_POINT"
+                />
+                未満の商品
+              </p>
+          </div>
+
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" v-on:click="onUpdate()">ページ非公開設定を保存</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportCsvRakutenUpdateStock"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_rakuten_update_stock') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+        >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="form-group">
+            <label for="checkRakutenUpdateStockCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkRakutenUpdateStockCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、楽天へアップロードする（処理予約）
+            </label>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportCsvRakutenRppExclude"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-export-url="{{ path('queue_export_csv_rakuten_rpp_exclude') }}"
+     data-update-url="{{ path('update_rakuten_rpp_exclude') }}"
+     data-get-list-url="{{ path('get_rakuten_rpp_exclude_list') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="form-group">
+            <textarea id="rakutenRppExcludeTargetList" v-model="targetDataList" rows="7" cols="30">
+
+            </textarea>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">商品情報保存</button>
+        <button type="button" class="btn btn-lg btn-warning" v-on:click="runConfirm()">保存して即時反映</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalExportCsvRakutenGold"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-get-setting-url="{{ path('get_csv_rakuten_gold_setting') }}"
+     data-update-setting-url="{{ path('update_csv_rakuten_gold_setting') }}"
+     data-export-url="{{ path('queue_export_csv_rakuten_gold') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div :class="messageClass" v-text="message"></div>
+        </div>
+
+        <div :class="{ hidden: noticeHidden }">
+          <div :class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group mb0">
+                <label for="radioExportRakutenGoldPlusnao" class="checkbox-inline">
+                  <input type="checkbox" value="rakuten" id="radioExportRakutenGoldPlusnao" name="exportShop[rakuten]" v-model="exportShop" /> 楽天plusnao
+                </label>
+                <label for="radioExportRakutenGoldMotto" class="checkbox-inline">
+                  <input type="checkbox" value="motto" id="radioExportRakutenGoldMotto" name="exportShop[motto]" v-model="exportShop" /> 楽天motto-motto
+                </label>
+                <label for="radioExportRakutenGoldLaforest" class="checkbox-inline">
+                  <input type="checkbox" value="laforest" id="radioExportRakutenGoldLaforest" name="exportShop[laforest]" v-model="exportShop" /> 楽天LaForest
+                </label>
+                <label for="radioExportRakutenGoldDolcissimo" class="checkbox-inline">
+                  <input type="checkbox" value="dolcissimo" id="radioExportRakutenGoldDolcissimo" name="exportShop[dolcissimo]" v-model="exportShop" /> 楽天dolcissimo
+                </label>
+              </div>
+              <div class="form-group mb0">
+                <label for="radioExportRakutenGoldGekipla" class="checkbox-inline">
+                  <input type="checkbox" value="gekipla" id="radioExportRakutenGoldGekipla" name="exportShop[gekipla]" v-model="exportShop" /> 楽天激安プラネット
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="form-group mb0">
+                <label for="radioExportRakutenGoldCategory" class="checkbox-inline">
+                  <input type="checkbox" value="category" id="radioExportRakutenGoldCategory" name="exportCsv[category]" v-model="exportCsv" /> カテゴリCSV
+                </label>
+                <label for="radioExportRakutenGoldRanking" class="checkbox-inline">
+                  <input type="checkbox" value="ranking" id="radioExportRakutenGoldRanking" name="exportCsv[ranking]" v-model="exportCsv" /> ランキングCSV
+                </label>
+                <label for="radioExportRakutenGoldPetitPrice" class="checkbox-inline">
+                  <input type="checkbox" value="petitprice" id="radioExportRakutenGoldPetitPrice" name="exportCsv[petitprice]" v-model="exportCsv" /> プチプライスCSV
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="checkRakutenGoldUpdateStockCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkRakutenGoldUpdateStockCsvUpload" name="upload" v-model="upload" />
+              CSV作成後、楽天へアップロードする（処理予約）
+            </label>
+          </div>
+
+          <hr>
+
+          <div class="form-group">
+            <div class="row row10 mb10">
+              <div class="col-xs-5">
+                <p class="vMiddle">
+                  集計期間
+                  <input type="number" class="form-control inlineBlock w80 ml5 mr5"
+                         min="1" step="1" v-model="setting.RAKUTEN_GOLD_AGGREGATE_DAYS" />日
+                </p>
+                <p class="vMiddle">
+                  レビュー下限
+                  <input type="number" class="form-control inlineBlock w80 ml5 mr5"
+                         min="0" max="5" step="0.1"
+                         v-model="setting.RAKUTEN_GOLD_MIN_REVIEW_POINT" />点
+                </p>
+              </div>
+              <div class="col-xs-7">
+                <p class="vMiddle">
+                  プチプライス価格上限
+                  <input type="number" class="form-control inlineBlock w80 ml5 mr5"
+                         min="1" step="1" v-model="setting.RAKUTEN_GOLD_MAX_PETIT_PRICE" />円
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </form>
+        <div>
+          <button type="button" class="btn btn-primary" @click="onUpdate()">出力設定を保存</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-warning" @click="onSubmit()">即時実行</button>
+        <p class="text-right">（※設定値は保存されません）</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 仕入先 注残一覧リンクモーダル #}
+<div class="modal"
+     id="modalVendorOrderList"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('api_get_vendor_order_list_urls') }}"
+        >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-if="message" v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div class="loading" v-if="nowLoading">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+        </div>
+
+        <div v-if="!(nowLoading)">
+          <div class="form-group">
+            <label>仕入先</label>
+            <input type="text" class="form-control" v-model="searchVendorKeyword" />
+          </div>
+
+          <ul class="list-group">
+            <li class="list-group-item" v-for="vendor in vendors | filterBy searchVendorKeyword in 'code' 'name'">
+              (% vendor.code %)
+              :
+              <a v-bind:href="vendor.url" target="_blank">(% vendor.name %)</a>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# Yahooおとりよせ CSV出力モーダル #}
+<div class="modal"
+     id="modalExportCsvYahooOtoriyose"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-url="{{ path('queue_export_csv_yahoo_otoriyose') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-update-url="{{ path('update_csv_yahoo_otoriyose_setting') }}"
+     data-get-setting-url="{{ path('get_csv_yahoo_otoriyose_setting') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div v-show="deleteDisabled">
+          <div class="alert alert-warning">
+            APIの利用認証がされていません。<br>
+            下記ボタンをクリックしてAPI利用の認証を行って下さい。
+          </div>
+        </div>
+
+        <form role="form" class="dialogForm">
+
+          <div class="form-group">
+            <label for="checkYahooOtoriyoseCsvUpload" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkYahooOtoriyoseCsvUpload" name="upload" v-model="upload"/>
+              CSV作成後、Yahooへアップロードする（処理予約）
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="checkYahooOtoriyoseDoCommonProcess" class="checkbox-inline">
+              <input type="checkbox" value="1" id="checkYahooOtoriyoseDoCommonProcess" name="doCommonProcess"
+                     v-model="doCommonProcess"/>
+              共通処理を実行する
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="checkYahooCsvMakeDelete" id="makeDeleteCheckBoxLabel" class="checkbox-inline">
+              <template v-if="deleteDisabled">
+                <a class="btn btn-info" v-bind:href="authUrl" target="_blank" v-on:click="closeModal()">Yahoo API認証</a>
+              </template>
+            </label>
+            <a class="btn btn-warning" v-on:click="runConfirm(setting)">即時実行</a>
+            （※設定値は保存されません）
+          </div>
+          <hr>
+          <div class="form-group">
+            <div class="col-xs-12 text-left mb10">
+              PRオプション設定（下にあるものほど優先されます。0.1%単位で設定できます）
+            </div>
+
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">商品登録後</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.YAHOO_OTORIYOSE_PR_NEW_DAYS">
+              </div>
+              <div class="col-xs-2">
+                日間　
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="0.0" v-model="setting.YAHOO_OTORIYOSE_PR_NEW_PER">
+              </div>
+              <div>
+                %とする
+              </div>
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">その他商品を</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="0.0" v-model="setting.YAHOO_OTORIYOSE_PR_OTHER_PER">
+              </div>
+              <div>
+                %とする。
+              </div>
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">季節外商品を</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="0.0" v-model="setting.YAHOO_OTORIYOSE_PR_OFF_PER">
+              </div>
+              <div>
+                %とする。
+              </div>
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">即納商品を</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="0.0" v-model="setting.YAHOO_OTORIYOSE_PR_READY_PER">
+              </div>
+              <div>
+                %とする。
+              </div>
+            </div>
+
+            <div class="row row10 mb10">
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.YAHOO_OTORIYOSE_PR_AMOUNT_DAYS">
+              </div>
+              <div class="col-xs-2 text-left">日間の販売数量が</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" v-model="setting.YAHOO_OTORIYOSE_PR_AMOUNT_NUM">
+              </div>
+              <div class="col-xs-2">
+                個以上の商品は
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="0.0" v-model="setting.YAHOO_OTORIYOSE_PR_AMOUNT_PER">
+              </div>
+              <div>
+                %とする。
+              </div>
+            </div>
+          </div>
+        </form>
+        <div>
+          <button type="button" class="btn btn-primary" v-on:click="onSubmit()">PR設定を保存</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# ロケーション更新モーダル #}
+<div class="modal"
+     id="modalRefreshLocation"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_refresh_location') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+        >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div class="alert alert-info">
+          <ul>
+            <li>在庫取込処理が最初に実行されます。</li>
+            <li>
+              入荷入力確定済みでNextEngineに反映されていないデータがある場合にはエラーとなります。<br>
+              (NE_purchase_quantity.csv が未アップロード or 未反映)
+            </li>
+          </ul>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ロケーション並べ替え モーダル #}
+<div class="modal"
+     id="modalSortLocationOrder"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_sort_location_order') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+    >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Amazon FBA出荷用CSV出力 モーダル #}
+<div class="modal"
+     id="modalExportCsvAmazonFbaOrder"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('queue_export_csv_amazon_fba_order') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-download-url="{{ path('export_csv_amazon_fba_order_download_csv') }}"
+     data-upload-url="{{ path('upload_amazon_fba_order_session_csv') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-info">
+          下記ファイルをAmazon Seller Centralから取得し、アップロードしてください。
+        </div>
+        <div class="panel-group" id="amazonFbaOrderDescription">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#amazonFbaOrderUploadSessionCsv">
+                  ビジネスレポート ASIN別 (子)商品別詳細ページ 売上・トラフィックCSV (BusinessReport-xx-xx-xx.csv)
+                </a>
+              </h4>
+            </div>
+            <div id="amazonFbaOrderUploadSessionCsv" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h4>レポート ＞ ビジネスレポート ＞ ASIN別 「(子)商品別詳細ページ 売上・トラフィック」</h4>
+                <p class="wordBreakAll">
+                  <a href="https://sellercentral.amazon.co.jp/gp/site-metrics/report.html#reportID=102%3ADetailSalesTrafficByChildItem&runDate=&fromDate=&toDate=" target="_blank">
+                    https://sellercentral.amazon.co.jp/gp/site-metrics/report.html#reportID=102%3ADetailSalesTrafficByChildItem&runDate=&fromDate=&toDate=
+                  </a>
+                </p>
+                <p>
+                  「ダウンロード」プルダウンの中の「CSV」をクリック
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        {# アップロード #}
+        <form action="{{ path('upload_amazon_fba_order_session_csv') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="amazonFbaOrderCsvUpload" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+
+        <div v-show="isExistCsvFile" class="panel panel-default">
+          <div class="panel-body">
+            <table class="table mb0">
+              <tr>
+                <th class="text-left">更新日時</th>
+                <th class="text-left">ファイル名</th>
+                <th>&nbsp;</th>
+              </tr>
+              <tr v-for="file in csvFiles">
+                <td class="text-center" v-text="file.date"></td>
+                <td class="text-left" v-text="file.name"></td>
+                <td class="text-center">
+                  <a v-bind:href="getDownloadUrl(file)" v-bind:download="file.name">
+                    <i class="fa fa-download text-success"></i>
+                    ダウンロード
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">CSVを更新する</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# Amazon S&L出荷用CSV出力 モーダル #}
+<div class="modal"
+     id="modalExportCsvAmazonSnlOrder"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-download-url="{{ path('export_csv_amazon_snl_download_csv') }}"
+     data-upload-stock-url="{{ path('upload_amazon_snl_stock_csv') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-info">
+          下記ファイルをAmazon Seller Centralから取得し、アップロードしてください。
+        </div>
+        <div class="panel-group" id="amazonSnlOrderDescription">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#amazonSnlOrderUploadStockCsv">
+                  フルフィルメント FBA小型軽量商品の在庫
+                </a>
+              </h4>
+            </div>
+            <div id="amazonSnlOrderUploadStockCsv" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h4>レポート ＞ フルフィルメント ＞ 在庫 「FBA小型軽量商品の在庫」</h4>
+                <p class="wordBreakAll">
+                  <a href="https://sellercentral-japan.amazon.com/gp/ssof/reports/search.html#recordType=FBA_UNO_INVENTORY_DATA" target="_blank">
+                    https://sellercentral-japan.amazon.com/gp/ssof/reports/search.html#recordType=FBA_UNO_INVENTORY_DATA
+                  </a>
+                </p>
+                <p>
+                  「ダウンロード」タブ ＞ 「ダウンロードのリクエスト」ボタンをクリックし、レポートが作成されたら「ダウンロード」ボタンをクリック。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        {# アップロード #}
+        <form action="{{ path('upload_amazon_snl_stock_csv') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="amazonSnlOrderCsvUpload" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+
+
+        <div v-show="isExistCsvFile" class="panel panel-default">
+          <div class="panel-body">
+
+            <table class="table mb0">
+              <tr>
+                <th class="text-center col-xs-3">更新日時</th>
+                <th class="text-center col-xs-3">NextEngine用</th>
+                <th class="text-center col-xs-3">Amazon追加</th>
+                <th class="text-center col-xs-3">Amazon削除</th>
+              </tr>
+              <tr v-for="dir in csvFiles">
+                <td class="text-center" v-text="dir.date"></td>
+                <td class="text-center">
+                  <a v-if="dir.nextEngine" v-bind:href="getDownloadUrl(dir.dirName, dir.nextEngine)" v-bind:download="dir.nextEngine">
+                    <i class="fa fa-download text-success"></i>
+                    ダウンロード
+                  </a>
+                  <span v-else=>-</span>
+                </td>
+                <td class="text-center">
+                  <a v-if="dir.amazonAdd" v-bind:href="getDownloadUrl(dir.dirName, dir.amazonAdd)"
+                     v-bind:download="dir.amazonAdd">
+                    <i class="fa fa-download text-success"></i>
+                    ダウンロード
+                  </a>
+                  <span v-else=>-</span>
+                </td>
+                <td class="text-center">
+                  <a v-if="dir.amazonDelete" v-bind:href="getDownloadUrl(dir.dirName, dir.amazonDelete)"
+                     v-bind:download="dir.amazonDelete">
+                    <i class="fa fa-download text-success"></i>
+                    ダウンロード
+                  </a>
+                  <span v-else=>-</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">CSVを更新する</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# SHOPLIST スピード便出荷用CSV出力 モーダル #}
+<div class="modal"
+     id="modalExportCsvShoplistSpeedBinOrder"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-url="{{ path('aggregate_shoplist_speedbin_delivery') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+     data-download-url="{{ path('download_shoplist_speedbin_delivery_csv') }}"
+     data-upload-url="{{ path('upload_shoplist_speedbin_approved_csv') }}"
+    >
+
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div class="alert alert-info">
+            現在の登録データを元に、SHOPLISTスピード便出荷数を計算します。
+            <ul>
+              <li>前回出荷分が取り込まれている事を、ロケーション情報とSHOPLIST側情報から確認してください。</li>
+              <li>前回出荷時の移動伝票ステータスが「完了」となっていることを確認してください。</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+            
+        <div class="panel-group" id="shoplistSpeedBinPurposePanel">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#shoplistSpeedBinPurpose">
+                  目的
+                </a>
+              </h4>
+            </div>
+            <div id="shoplistSpeedBinPurpose" class="panel-collapse collapse">
+              <div class="panel-body">
+                <div>
+                  SHOPLISTへスピード便在庫として納品するファイルを作成し納品を助ける機能です。<br>
+                  SHOPLISTの過去4週間の売上の1/4をこれから1週間の想定販売量と見込みます。<br>
+                  SHOPLIST以外の店舗の1ヶ月分の販売量はこれからの1ヶ月の想定販売量とし自社倉庫に残しておきます。<br>
+                  SHOPLIST納品可能倉庫へ最低でも残しておく数量を設定出来ます。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-group" id="shoplistSpeedBinUsagePanel">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#shoplistSpeedBinUsage">
+                  使い方
+                </a>
+              </h4>
+            </div>
+            <div id="shoplistSpeedBinUsage" class="panel-collapse collapse">
+              <div class="panel-body">
+                <p>日次で取り込んでいる「SHOPLISTスピード便在庫状況」「SHOPLIST販売情報」と、他店舗の受注情報・在庫状況を元に、SHOPLISTへの出荷数を集計します。</p>
+                <p>前回出荷分がSHOPLISTスピード便倉庫の在庫数に反映されていること、その結果を取込済みであることを確認し、前回分の移動伝票を「完了」にしてから次の集計を実施してください。</p>
+                <ol>
+                  <li>集計実行ボタンを押下し、スピード便向け出荷数の予定数ファイルを取得する。</li>
+                  <li>SHOPLIST管理画面「<a href="https://service.shop-list.com/shopadmin/orderManage" target="_blank">スピード便納入数の登録</a>の「納入予定ファイルアップロード」に、予定数ファイルを登録する。</li>
+                  <li>画面下部の表が1件追加されるので、「発注報告＞入力」リンクを押下し、発注報告画面へ遷移する。</li>
+                  <li>「データ出力」ボタンから確定ファイルフォーマットをダウンロードする。</li>
+                  <li>取得した確定ファイルフォーマットを、このダイアログの確定ファイルアップロードリンクからアップロードする。</li>
+                  <li>この画面の出荷指示日を入力し、この画面から確定ファイルをダウンロードすると、更新された確定ファイルがダウンロード出来る。</li>
+                  <li>確定ファイルを移動伝票画面にアップロードし、エラーなく移動伝票が生成できることを確認し、ピッキングを実施する。</li>
+                  <li>確定ファイルをSHOPLIST管理画面からアップロードし、発注を確定する。</li>
+                  <li>SHOPLIST管理画面の「<a href="https://service.shop-list.com/shopadmin/jancode/PrintByUploadCsvForm/" target="_blank">在庫管理＞バーコード一括出力＞出荷報告フォーマット</a>」に、「ラベル用CSV」をアップロードし、商品添付用ラベルをダウンロード</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>        
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <p class="vMiddle">
+            SHOPLIST納品可能倉庫 最低保管数量
+            <input type="number" class="form-control inlineBlock w80 ml5 mr5"
+                   min="1" step="1" v-model="keepStock" />個
+          </p>
+        </div>
+
+        <div class="form-group text-right">
+          <a class="btn btn-warning" v-on:click="onSubmit()">集計実行</a>
+        </div>
+        <hr>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <form class="form-inline pull-right">
+              <div class="form-group">
+                <label class="form-label" for="shoplistSpeedBinShippingDate">出荷予定日</label>
+
+                <div class="input-group date mb5">
+                    <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                  <input type="text" id="shoplistSpeedBinShippingDate" v-model="shippingDate" class="form-control"
+                         value="{{ "now"|date("Y-m-d") }}"/>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+
+            <table class="table mb0">
+              <tr>
+                <th class="text-center">集計日時</th>
+                <th class="text-center">集計ユーザ</th>
+                <th class="text-center">ステータス</th>
+                <th class="text-center">予定数ファイル</th>
+                <th class="text-center">確定ファイル</th>
+                <th class="text-center">ラベル用CSV</th>
+              </tr>
+              <tr v-for="(index, data) in dataList">
+                <td class="text-center" v-text="data.created"></td>
+                <td class="text-center" v-text="data.username"></td>
+                <td class="text-center" v-text="data.status_name"></td>
+                <td class="text-center">
+                　　<!-- ステータス2（集計済み）、3（確定ファイルアップロード済み）の場合、予定数ファイルダウンロード可能 -->
+                  <a v-if="data.status == 2 || data.status == 3" v-bind:href="getDownloadUrl(data.id, 'planned', shippingDate)">
+                    <i class="fa fa-download text-success"></i>
+                    ダウンロード
+                  </a>
+                  <span v-else=>-</span>
+                </td>
+                <td class="text-center">
+                  <span v-if="data.status == 2 && index == 0"><!-- アップロード出来るのは最新、かつ集計済みのみ -->
+                    <input type="file" id="shoplistSpeedbinAcceptCsv" class="" accept=".csv">
+                    <a v-bind:href="" v-on:click="uploadAcceptCsv(data.id)">
+                      <i class="fa fa-upload text-success"></i>
+                      アップロード
+                    </a>
+                  </span>
+                　 <!-- ステータス3（確定ファイルアップロード済み）の場合、確定ファイルダウンロード可能 -->
+                  <span v-if="data.status == 3">
+                    <a v-bind:href="getDownloadUrl(data.id, 'fixed', shippingDate)">
+                      <i class="fa fa-download text-success"></i>
+                      ダウンロード
+                    </a>
+                  </span>
+                </td>
+                <td>
+                  <!-- ステータス3（確定ファイルアップロード済み）の場合、ラベル用ファイルダウンロード可能 -->
+                  <span v-if="data.status == 3">
+                    <a v-bind:href="getDownloadUrl(data.id, 'label', shippingDate)">
+                      <i class="fa fa-download text-success"></i>
+                      ダウンロード
+                    </a>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 外部在庫取得設定 モーダル #}
+<div class="modal"
+     id="modalExternalWarehouseStockFetchSetting"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-url="{{ path('queue_external_warehouse_stock') }}"
+     data-update-url="{{ path('update_external_warehouse_stock_fetch_setting') }}"
+     data-get-setting-url="{{ path('get_external_warehouse_stock_fetch_setting') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          外部在庫取得設定
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index" v-text="notice"></li>
+            </ul>
+          </div>
+        </div>
+
+        <div >
+          <div v-show="mode == 'list'">
+            <div v-for="setting in settings" class="row row10 mb10">
+              <div class="col-xs-2 text-left" v-text="setting.name"></div>
+              <div class="col-xs-2 text-center">
+                <button type="button" class="btn btn-gray" v-if="setting.active == 0" v-on:click="toggleIsActive(setting)">停止中</button>
+                <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive(setting)">稼働中</button>
+              </div>
+
+              <div class="col-xs-4">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="setting.hours">
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="setting.minutes">
+              </div>
+              <div class="col-xs-2">
+                <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting)">即時実行</button>
+              </div>
+            </div>
+          </div>
+          <div v-show="mode === 'confirm'">
+            <div class="row">
+              <div class="col-xs-2 col-xs-offset-4">
+                <button class="btn btn-default" v-on:click="runProcess('no')">キャンセル</button>
+              </div>
+              <div class="col-xs-2">
+                <button class="btn btn-danger" v-on:click="runProcess('yes')">実行する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">設定を保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 受注明細取込設定 モーダル #}
+<div class="modal"
+     id="modalImportOrderListSetting"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-url="{{ path('queue_update_order_list') }}"
+     data-update-url="{{ path('update_order_list_setting') }}"
+     data-get-setting-url="{{ path('get_order_list_setting') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          受注明細取込設定
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div style="white-space:pre-line;" v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index" v-text="notice"></li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div v-show="mode == 'list'">
+            <ul class="nav nav-tabs" id="dayOfTheWeek">
+              <li id="sunday" class="active"><a data-toggle="tab" href="#tabSunday">日曜日</a></li>
+              <li id="monday"><a data-toggle="tab" href="#tabMonday">月曜日</a></li>
+              <li id="tuesday"><a data-toggle="tab" href="#tabTuesday">火曜日</a></li>
+              <li id="wednesday"><a data-toggle="tab" href="#tabWednesday">水曜日</a></li>
+              <li id="thursday"><a data-toggle="tab" href="#tabThursday">木曜日</a></li>
+              <li id="friday"><a data-toggle="tab" href="#tabFriday">金曜日</a></li>
+              <li id="saturday"><a data-toggle="tab" href="#tabSaturday">土曜日</a></li>
+            </ul>
+
+            {# TODO コンポーネント化 #}
+            <div class="tab-content tab-content-bordered">
+              {# 日曜日 #}
+              <div id="tabSunday" class="tab-pane active">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.sunday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 月曜日 #}
+              <div id="tabMonday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.monday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 火曜日 #}
+              <div id="tabTuesday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.tuesday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 水曜日 #}
+              <div id="tabWednesday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.wednesday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 木曜日 #}
+              <div id="tabThursday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.thursday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 金曜日 #}
+              <div id="tabFriday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.friday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+
+
+              {# 土曜日 #}
+              <div id="tabSaturday" class="tab-pane">
+                <div class="row row10 mb10">
+                  <div class="col-xs-2 text-left">受注明細取込</div>
+                  <div class="col-xs-2 text-center">
+                    <button type="button" class="btn btn-gray" v-if="isNotActive" v-on:click="toggleIsActive()">停止中</button>
+                    <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive()">稼働中</button>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataHours">
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="dataMinutes">
+                  </div>
+                  <div class="col-xs-2">
+                    <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting.saturday)">即時実行</button>
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-4 text-left">動作設定</div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">取込期間</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="2" placeholder="月数" v-model="dataImportOrderListMonths">
+                  </div>
+                  <div class="col-xs-4">
+                    か月分+今月分
+                  </div>
+                </div>
+                <div class="row row10 mb10">
+                  <div class="col-xs-3 text-left">実行期限</div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="dataLimitTimeHour">
+                  </div>
+                  <div class="col-xs-2">
+                    時
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control fullWidth" maxlength="72" placeholder="分" v-model="dataLimitTimeMinute">
+                  </div>
+                  <div>
+                    分までに実行
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-show="mode === 'confirm'">
+            <div class="row">
+              <div class="col-xs-2 col-xs-offset-4">
+                <button class="btn btn-default" v-on:click="runProcess('no')">キャンセル</button>
+              </div>
+              <div class="col-xs-2">
+                <button class="btn btn-danger" v-on:click="runProcess('yes')">実行する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">設定を保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 倉庫間箱移動設定 モーダル #}
+<div class="modal"
+     id="modalExternalWarehouseBoxMoveSetting"
+     tabindex="-2"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-url="{{ path('queue_external_warehouse_box_move') }}"
+     data-update-url="{{ path('update_external_warehouse_box_move_setting') }}"
+     data-get-setting-url="{{ path('get_external_warehouse_box_move_setting') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          倉庫間箱移動設定
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index" v-text="notice"></li>
+            </ul>
+          </div>
+        </div>
+
+        <div >
+          <div v-show="mode == 'list'">
+            <div class="row row10 mb10">
+              <div class="col-xs-2 text-left">倉庫間箱移動</div>
+              <div class="col-xs-2 text-center">
+                <button type="button" class="btn btn-gray" v-if="setting.active == 0" v-on:click="toggleIsActive(setting)">停止中</button>
+                <button type="button" class="btn btn-default" v-else v-on:click="toggleIsActive(setting)">稼働中</button>
+              </div>
+
+              <div class="col-xs-4">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="時" v-model="setting.hours">
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="2" placeholder="分" v-model="setting.minutes">
+              </div>
+              <div class="col-xs-2">
+                <button type="button" class="btn btn-warning fullWidth" v-on:click="runConfirm(setting)">即時実行</button>
+              </div>
+            </div>
+            <div class="row row10 mb10">
+              <div class="col-xs-4 text-left">近日出荷予測フラグの条件</div>
+            </div>
+            <div class="row row10 mb10">
+              <div class="col-xs-3 text-left">過去</div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="日" v-model="setting.order_date">
+              </div>
+              <div class="col-xs-2">
+                日の受注を
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control fullWidth" maxlength="72" placeholder="倍率" v-model="setting.magnification_percent">
+              </div>
+              <div>
+                倍する
+              </div>
+            </div>
+            <div class="row row10 mb10">
+              <div class="col-xs-3 text-left">古市倉庫に最低</div>
+              <div class="col-xs-2">
+                <input type="number" class="form-control fullWidth" maxlength="72" placeholder="在庫数" v-model="setting.stocks">
+              </div>
+              <div class="col-xs-3">
+                個の在庫は保持する
+              </div>
+            </div>
+          </div>
+          <div v-show="mode === 'confirm'">
+            <div class="row">
+              <div class="col-xs-2 col-xs-offset-4">
+                <button class="btn btn-default" v-on:click="runProcess('no')">キャンセル</button>
+              </div>
+              <div class="col-xs-2">
+                <button class="btn btn-danger" v-on:click="runProcess('yes')">実行する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">設定を保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# Yahooおとりよせ購買データ モーダル #}
+<div class="modal"
+     id="modalImportCsvOtoriyosePurchaseData"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('upload_purchase_csv_yahoo_otoriyose') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-info">
+          下記ファイルをYahooおとりよせ.comの統計画面から取得し、アップロードしてください。
+        </div>
+        <div class="panel-group" id="wowmaLotNumberDownloadDescription">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#hoge">
+                  統計 商品別 一日ごとの購買データ集計
+                </a>
+              </h4>
+            </div>
+            <div id="hoge" class="panel-collapse collapse">
+              <div class="panel-body">
+                <h4>統計 ＞ 商品別 ＞ 日付を指定（日次） ＞ CSVファイルをダウンロード</h4>
+                <p class="wordBreakAll">
+                  <a href="https://pro.store.yahoo.co.jp/pro.mignonlindo/stats/item" target="_blank">
+                    <img class="img-responsive" src="{{ asset('bundles/app/img/description/yahoo-otoriyose-purchase-download.png') }}">
+                  </a>
+                </p>
+                <p>
+                  1日単位でダウンロードしてください。このフォームからは1日分のCSVファイルのみ取り込めます。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div v-bind:class="noticeClass">
+            <ul>
+              <li v-for="notice in notices" track-by="$index">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        {# アップロード #}
+        <form action="{{ path('upload_purchase_csv_yahoo_otoriyose') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="uploadOtoriyosePurchaseCsv" name="upload[]" type="file" class="file-loading" multiple>
+              <input id="forceUpload" name="force" type="hidden" value="false">
+            </div>
+          </div>
+        </form>
+
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">CSVを更新する</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 商品売上実績集計 モーダル #}
+<div
+  class="modal"
+  id="modalAggregateProductSalesAccountResultHistory"
+  tabindex="-1"
+  data-backdrop="static" data-keyboard="false"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          商品売上実績集計 手動実行コマンド
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <strong><u>BatchSV04</u></strong>で、下記コマンドを実行してください。実行前に下記はご確認ください。
+          </br></br>
+          伝票毎利益集計・商品売上実績集計が、
+          <ol>
+            <li>実行中ではないこと</li>
+            <li>これから実行されるような時間帯でもないこと</li>
+          </ol>
+        </div>
+        <div>
+          <code>
+            /home/workuser/ne_api/app/console --env=prod batch:aggregate-product-sales-account-result-history
+          </code>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{# PPM画像削除用CSV出力 モーダル #}
+<div class="modal"
+     id="modalExportDeleteImagesCsvPPM"
+     tabindex="-2"
+     data-backdrop="static" data-keyboard="false"
+     data-update-url="{{ path('update_is_upload_image_ppm') }}"
+>
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div v-show="nowLoading">
+        <div class="col-sm-12 text-center">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+        </div>
+      </div>
+
+      <div v-show="!nowLoading" class="modal-body">
+        <div v-bind:class="messageClass">
+          (% message %)
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <a href="{{  path('get_delete_images_csv_ppm') }}" v-on:click="toggleStatus()" v-if="isNotDownload" id="ppm-del-img-csv" class="btn btn-lg btn-primary">はい</a>
+        <button type="button" class="btn btn-lg btn-success" id="update-status" v-on:click="updateImageStatus()" v-bind:disabled="isDisabled" v-else>アップロード済み</button>
+      </div>
+    </div>
+  </div>
+</div>

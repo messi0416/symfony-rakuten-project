@@ -1,0 +1,206 @@
+MiscBundle\Entity\TbNeMallOrder:
+  type: entity
+  table: tb_ne_mall_order
+  repositoryClass: MiscBundle\Entity\Repository\TbNeMallOrderRepository
+
+  id:
+    shop_code:
+      type: integer
+      nullable: false
+      column: shop_code
+
+    mall_order_id:
+      type: integer
+      nullable: false
+      column: mall_order_id
+
+  fields:
+
+    mall_order_number:
+      type: string
+      nullable: false
+      length: 30
+      default: ''
+      column: 店舗伝票番号
+
+    order_date:
+      type: datetime
+      nullable: false
+      column: 受注日
+
+    zipcode:
+      type: string
+      nullable: false
+      length: 20
+      default: ''
+      column: 受注郵便番号
+
+    payment_method:
+      type: string
+      nullable: false
+      length: 20
+      default: ''
+      column: 支払方法
+
+    shipping_method:
+      type: string
+      nullable: false
+      length: 20
+      default: ''
+      column: 発送方法
+
+    products_total:
+      type: integer
+      nullable: false
+      default: 0
+      column: 商品計
+
+    tax:
+      type: integer
+      nullable: false
+      default: 0
+      column: 税金
+
+    shipping_charge:
+      type: integer
+      nullable: false
+      default: 0
+      column: 発送料
+
+    handling_charge:
+      type: integer
+      nullable: false
+      default: 0
+      column: 手数料
+
+    point:
+      type: integer
+      nullable: false
+      default: 0
+      column: ポイント
+
+    other_charge:
+      type: integer
+      nullable: false
+      default: 0
+      column: その他費用
+
+    total:
+      type: integer
+      nullable: false
+      default: 0
+      column: 合計金額
+
+    specified_shippiing_time:
+      type: string
+      nullable: false
+      length: 20
+      default: ''
+      column: 時間帯指定
+
+    specified_shippiing_date:
+      type: date
+      length: 20
+      column: 日付指定
+
+    working_comment:
+      type: string
+      default: ''
+      column: 作業者欄
+
+    comment:
+      type: string
+      default: ''
+      column: 備考
+
+    item_name:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: 商品名
+
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      default: ''
+      column: 商品コード
+
+    price:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: 商品価格
+
+    quantity:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: 受注数量
+
+    voucher_number:
+      type: integer
+      nullable: true
+      column: 伝票番号
+
+    line_number:
+      type: integer
+      nullable: true
+      column: 明細行
+
+    daihyo_syohin_code:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: daihyo_syohin_code
+
+    imported:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: imported
+
+    converted:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: converted
+
+    downloaded:
+      type: string
+      nullable: false
+      length: 255
+      default: ''
+      column: downloaded
+
+  lifecycleCallbacks: {  }
+
+#
+#  oneToOne:
+#    salesDetail:
+#      targetEntity: TbSalesDetailAnalyze
+#      # inversedBy: mallOrder
+#      joinColumns:
+#        - name: voucher_number
+#          referencedColumnName: voucher_number
+#          nullable: true
+#        - name: line_number
+#          referencedColumnName: line_number
+#          nullable: true
+#      fetch: EAGER
+#
+#  manyToOne:
+#    mall:
+#      targetEntity: TbShoppingMall
+#      # inversedBy: mallOrder
+#      joinColumns:
+#        - name: ne_mall_id
+#          referencedColumnName: shop_code
+#          nullable: false
+#      fetch: EAGER

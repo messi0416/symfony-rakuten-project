@@ -1,0 +1,236 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.products.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.products-not-white.js'
+
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="notWhiteList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>アダルト・権利侵害チェック 商品一覧</h2>
+        </div>
+
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" v-on:click="closeWindow()">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <div>
+        <div v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {# 検索フォーム #}
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-12">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            絞込
+          </div>
+
+          <div class="panel-body">
+            <form role="form" action="{{ path('products_not_white_list', searchUrlParams) }}" method="get" id="searchForm">
+
+              <div class="form-inline mb10">
+                <div class="form-group mr10">
+                  <label for="adultCheckStatus">アダルトチェック</label>
+                  <select id="adultCheckStatus" name="adult_check_status" class="form-control">
+                    <option value=""></option>
+                    <option value="未審査"{% if conditions.adult_check_status == '未審査' %} selected{% endif %}>未審査</option>
+                    <option value="グレー"{% if conditions.adult_check_status == 'グレー' %} selected{% endif %}>グレー</option>
+                    <option value="ブラック"{% if conditions.adult_check_status == 'ブラック' %} selected{% endif %}>ブラック</option>
+                  </select>
+                </div>
+
+                <div class="form-group mr10">
+                  <label for="deliveryCode">販売状況</label>
+                  <select id="deliveryCode" name="deliverycode[]" class="form-control" multiple style="height: 50px;">
+                    <option value="0"{% if '0' in conditions.deliverycode %} selected{% endif %}>即納</option>
+                    <option value="1"{% if '1' in conditions.deliverycode %} selected{% endif %}>一部即納</option>
+                    <option value="2"{% if '2' in conditions.deliverycode %} selected{% endif %}>受発注のみ</option>
+                    <option value="3"{% if '3' in conditions.deliverycode %} selected{% endif %}>販売終了</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-inline">
+                <label>登録日</label>
+                <div class="form-group">
+                  <div class="input-group date w200 pull-left">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    <input type="text" name="date_start" class="form-control" id="dateStart" value="{{ conditions.date_start }}" />
+                  </div>
+                </div>
+                ～
+                <div class="form-group mr10">
+                  <div class="input-group date w200 pull-left">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    <input type="text" name="date_end" class="form-control" id="dateEnd" value="{{ conditions.date_end }}" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <button class="btn btn-primary">検索</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {% if pagination.count() > 0 %}
+    <div class="main" id="notWhiteListTable">
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+      <table class="table table-condensed table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center">画像</th>
+            <th class="text-center">商品コード</th>
+            <th class="text-center">登録日時</th>
+            <th class="text-center">アダルトチェック</th>
+            <th class="text-center">販売状況</th>
+          </tr>
+        </thead>
+
+        {% for product in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-2">
+              {% if product.getImageUrl() %}
+                <a href="{{ path('plusnao_pub_product_image_list', {'daihyoSyohinCode' : product.getDaihyoSyohinCode()}) }}" target="picture_list">
+                  <img src="{{ product.getImageUrl(imageParentUrl) }}" class="img-responsive">
+                </a>
+              {% endif %}
+            </td>
+            <td class="col-xs-6 big">
+              <a href="{{ linkUrl }}{{ product.getDaihyoSyohinCode() }}" target="edit_product">
+                {{ product.getDaihyoSyohinCode() }}
+              </a>
+            </td>
+            <td class="col-xs-2 text-center">
+              {% if product.getRegisteredDatetime() %}
+                {{ product.getRegisteredDatetime().format('Y-m-d H:i:s') }}
+              {% endif %}
+            </td>
+
+            <td class="col-xs-1 text-center">
+              {{ product.getCal().getAdultCheckStatus() }}
+            </td>
+            <td class="col-xs-1 text-center">
+              {{ product.getCal().getDeliverycodeDisplay() }}
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+    </div>
+
+    {% else %}
+      <div id="notWhiteListTable" class="alert alert-warning">データがありません。</div>
+    {% endif %}
+
+
+  </div>
+
+  {#&#123;&#35; modal &#35;&#125;#}
+  {#<div class="modal"#}
+       {#id="modalPopupPicture"#}
+       {#tabindex="-1"#}
+    {#>#}
+
+    {#<div class="modal-dialog modal-lg">#}
+      {#<div class="modal-content large">#}
+        {#<div class="modal-header">#}
+          {#<button type="button" class="close" data-dismiss="modal">#}
+            {#<span aria-hidden="true">&times;</span>#}
+          {#</button>#}
+          {#<h4 class="modal-title" id="modal-label">#}
+            {#(% caption %)#}
+          {#</h4>#}
+        {#</div>#}
+
+        {#<div class="modal-body">#}
+          {#<div class="clearfix">#}
+            {#<div class="modalImage">#}
+              {#<img v-bind:src="resultUrl" />#}
+            {#</div>#}
+          {#</div>#}
+        {#</div>#}
+
+        {#<div class="modal-footer">#}
+          {#<button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>#}
+        {#</div>#}
+      {#</div>#}
+    {#</div>#}
+  {#</div>#}
+
+{% endblock %}
+
+

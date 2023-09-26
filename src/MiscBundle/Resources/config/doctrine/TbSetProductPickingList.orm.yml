@@ -1,0 +1,85 @@
+MiscBundle\Entity\TbSetProductPickingList:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbSetProductPickingListRepository
+  table: tb_set_product_picking_list
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      id: true
+      generator:
+        strategy: AUTO
+
+  fields:
+    date:
+      type: date
+      nullable: false
+    number:
+      type: integer
+      nullable: false
+
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+    free_stock:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    ordered_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    move_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    picking_order:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    current_location:
+      type: string
+      length: 30
+      nullable: false
+      options:
+        default: ''
+    pict_directory:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    pict_filename:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true
+
+
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps

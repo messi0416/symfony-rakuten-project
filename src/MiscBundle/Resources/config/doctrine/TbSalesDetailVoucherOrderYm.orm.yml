@@ -1,0 +1,160 @@
+MiscBundle\Entity\TbSalesDetailVoucherOrderYm:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_voucher_order_ym
+    id:
+        # 店舗コード:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+        orderYM:
+            type: string
+            nullable: false
+            length: 6
+            column: 受注年月
+            options:
+                fixed: false
+                default: ''
+            id: true
+#    fields:
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数を含む総合計:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        平均購入額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        明細数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        伝票数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        総合計:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        商品計:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        税金:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        発送代:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        手数料:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        他費用:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        ポイント数:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        配送料額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        代引手数料額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        モールシステム料率:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        モールシステム料額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        モール別支払方法別手数料率:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        モール別支払方法別手数料額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        仕入原価:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        仕入原価の消費税:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        粗利額:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        粗利額小計:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        総合計小計:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+#        伝票数小計:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        粗利率:
+#            type: float
+#            nullable: true
+#            precision: 10
+#            scale: 0
+    lifecycleCallbacks: {  }

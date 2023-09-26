@@ -1,0 +1,200 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# '@AppBundle/Resources/public/js/partial/modal-team-edit.js' #}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.setting-mall-list.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const SETTING_DATA = {{ mallsJson|raw }};
+  </script>
+  <div id="settingList" class="container">
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>店舗一覧</h2>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div>
+      <table class="table table-bordered table-condensed" v-show="list.length > 0">
+          <tr>
+            <th class="w50">ID</th>
+            <th>NEモールID</th>
+            <th>モール名（店舗名）</th>
+            <th>付加費用率(%)</th>
+            <th>システム利用料(%)</th>
+            <th>送料設定に従う</th>
+            <th>モール説明文</th>
+            <th class="w50">&nbsp;</th>
+          </tr>
+          <tr v-for="item in list"
+              is="result-item"
+              :item="item"
+              v-on:show-edit-form="showFormModal"
+          ></tr>
+      </table>
+    </div>
+
+    <div is="setting-form-modal"
+         :state="modalState"
+         v-on:update-item="updateItem"
+      ></div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateSettingListTableRow">
+    <tr>
+      <td v-text="item.mallId" class="text-left vMiddle wordBreakAll"></td>
+      <td v-text="item.neMallId" class="text-left vMiddle wordBreakAll"></td>
+      <td class="text-left vMiddle wordBreakAll"><a v-bind:href="item.mallUrl" v-text="item.mallName" target="_blank"></a></td>
+      <td v-text="item.additionalCostRatio" class="text-left vMiddle wordBreakAll"></td>
+      <td v-text="item.systemUsageCostRatio" class="text-left vMiddle wordBreakAll"></td>
+      <td v-text="item.obeyPostageSetting" class="text-left vMiddle wordBreakAll"></td>
+      <td v-html="item.mallDescHtml" class="text-left vMiddle wordBreakAll"></td>
+
+      <td class="text-center vMiddle">
+        <div class="row row10">
+          <div class="col-xs-6 text-center vMiddle">
+            <button type="button" class="btn btn-success btn-sm" v-on:click="showEditForm">
+              <i class="fa fa-fw fa-pencil" style="font-size: 0.8em"></i>
+            </button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </script>
+
+  {# modals #}
+  <script type="text/x-template" id="templateSettingForm">
+    <div class="modal"
+         id="modalSettingForm"
+         tabindex="-1"
+         data-save-url="{{ path('setting_mall_save') }}"
+      >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <div id="modalSettingFormBody" class="row" v-show="!nowLoading">
+              <div class="col-xs-10 col-xs-offset-1">
+
+                <form role="form">
+                  <div class="row row10">
+                    <div class="form-group col-xs-6">
+                      <label for="mallId">ID</label>
+                      <input type="text" id="mallId" v-model="item.mallId" class="form-control" disabled/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                      <label for="neMallId">NEモールID</label>
+                      <input type="text" id="neMallId" v-model="item.neMallId" class="form-control" disabled/>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mallName">モール名（店舗名）</label>
+                    <input type="text" id="mallName" v-model="item.mallName" class="form-control" disabled/>
+                  </div>
+
+                  <div class="row row10">
+                    <div class="form-group col-xs-6">
+                      <label for="mallNameShort1">短縮名１</label>
+                      <input type="text" id="mallNameShort1" v-model="item.mallNameShort1" class="form-control" disabled/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                      <label for="mallNameShort2">短縮名２</label>
+                      <input type="text" id="mallNameShort2" v-model="item.mallNameShort2" class="form-control" disabled/>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="neMallName">NEモール名</label>
+                    <input type="text" id="neMallName" v-model="item.neMallName" class="form-control" disabled/>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mallUrl">モールURL</label>
+                    <input type="text" id="mallUrl" v-model="item.mallUrl" class="form-control" disabled/>
+                  </div>
+
+                  <div class="row row10">
+                    <div class="form-group col-xs-6">
+                      <label for="additionalCostRatio">付加費用率(%)</label>
+                      <input type="text" id="additionalCostRatio" v-model="item.additionalCostRatio" class="form-control"/>
+                    </div>
+
+                    <div class="form-group col-xs-6">
+                      <label for="systemUsageCostRatio">システム利用料(%)</label>
+                      <input type="text" id="systemUsageCostRatio" v-model="item.systemUsageCostRatio" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="row row10">
+                    <div class="form-group col-xs-6">
+                      <label for="obeyPostageSetting">送料設定に従う</label>
+                      <select id="obeyPostageSetting" v-model="item.obeyPostageSetting" class="form-control">
+                        <option>YES</option>
+                        <option>NO</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-xs-6">
+                      <label for="mallSort">表示順</label>
+                      <input type="text" id="mallSort" v-model="item.mallSort" class="form-control"/>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mallDesc">モール説明文</label>
+                    <textarea id="mallDesc" v-model="item.mallDesc" class="form-control h150"/></textarea>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+
+{% endblock %}

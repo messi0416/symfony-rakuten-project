@@ -1,0 +1,392 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.products-cost-rate.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{# フォーム出力カスタマイズ #}
+{% form_theme settingForm _self %}
+{% block form_errors  %}
+{% spaceless %}
+    {% if errors|length > 0 %}
+      {% for error in errors %}
+        * {{ error.message }}<br>
+      {% endfor %}
+    {% endif %}
+{% endspaceless %}
+{% endblock form_errors %}
+
+{% block body %}
+
+  <div class="container container-large" id="productCostRateList"
+       data-url="{{ path('api_home') }}"
+    >
+
+    <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+      <div class="pull-left">
+        <h2>Plusnao Web System (Products)</h2>
+      </div>
+
+      <div class="pull-left">
+        <div class="(% messageCssClass %)" v-text="message"></div>
+      </div>
+
+      <div class="pull-right">
+        <button class="btn btn-lg btn-danger" v-on:click="closeWindow()">閉じる</button>
+      </div>
+    </div>
+
+    <h2 class="page-header">商品別原価率 一覧表</h2>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'notice', 'success', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <form role="form" action="{{ path('products_cost_rate_list') }}" method="post" id="functionForm" class="form-horizontal">
+
+      <div class="row" id="functionBlock">
+
+        <div class="col-xs-7 displayTable">
+
+            <div class="searchForm displayTableCell">
+
+              <div class="mb5">
+                {# 絞込 #}
+                <label class="control-label w120" title="対象伝票">対象伝票数 / 日</label>
+                <div class="w100 inlineBlock">
+                  {% set fieldError = form_errors(settingForm.threshold_voucher_num) %}
+                  <div class="w80 inlineBlock {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.threshold_voucher_num, {'attr': {'class': 'form-control input-sm num', 'title': fieldError} }) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb5">
+                {# 絞込 #}
+                <label class="control-label w120" title="">対象判定日数</label>
+                <div class="w100 inlineBlock">
+                  {% set fieldError = form_errors(settingForm.threshold_voucher_term) %}
+                  <div class="w80 inlineBlock {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.threshold_voucher_term, {'attr': {'class': 'form-control input-sm num', 'title': fieldError} }) }}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                {# 絞込 #}
+                <label class="control-label w120" title="">履歴比較日数</label>
+                <div class="w100 inlineBlock">
+                  {% set fieldError = form_errors(settingForm.sampling_days) %}
+                  <div class="w80 inlineBlock {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.sampling_days, {'attr': {'class': 'form-control input-sm num', 'title': fieldError} }) }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="displayTableCell vBottom">
+              <button class="btn btn-bg btn-success">対象を再取得</button>
+            </div>
+
+        </div>
+
+        <div class="col-xs-5 text-right">
+
+          <div class="clearfix mb10">
+            {% set fieldError = form_errors(settingForm.shake_border) %}
+            <div class="form-group pull-right settingInputBlock {{ fieldError == '' ? '': 'has-error' }}">
+              <label class="control-label" title="直近期間の変動累積値がこの値に満たなければ揺さぶり対象">揺さぶり累積値</label><br>
+              {{ form_widget(settingForm.shake_border, {'attr': {'class': 'form-control input-sm smallInt inlineBlock num', 'title': fieldError, 'v-model': 'shakeBorder'} }) }}
+            </div>
+
+            {% set fieldError = form_errors(settingForm.move_threshold_rate) %}
+            <div class="pull-right settingInputBlock mr20 {{ fieldError == '' ? '': 'has-error' }}">
+              <label class="control-label" title="比較期間からこの割合以上変化があれば原価率を上下させる">変動閾値</label><br>
+              {{ form_widget(settingForm.move_threshold_rate, {'attr': {'class': 'form-control input-sm smallInt inlineBlock num', 'title': fieldError, 'v-model': 'threshold'} }) }}
+              %
+            </div>
+
+            {% set fieldError = form_errors(settingForm.change_amount_down) %}
+            <div class="pull-right settingInputBlock mr10 {{ fieldError == '' ? '': 'has-error' }}">
+              <label class="control-label" title="再計算・揺さぶり計算での原価率変更量 減少分">変更値(下)</label><br>
+              {{ form_widget(settingForm.change_amount_down, {'attr': {'class': 'form-control input-sm midSmallInt inlineBlock num', 'title': fieldError, 'v-model': 'changeAmountDown'} }) }}
+            </div>
+
+            {% set fieldError = form_errors(settingForm.change_amount_up) %}
+            <div class="pull-right settingInputBlock mr10 {{ fieldError == '' ? '': 'has-error' }}">
+              <label class="control-label" title="再計算・揺さぶり計算での原価率変更量 増加分">変更値(上)</label><br>
+              {{ form_widget(settingForm.change_amount_up, {'attr': {'class': 'form-control input-sm midSmallInt inlineBlock num', 'title': fieldError, 'v-model': 'changeAmountUp'} }) }}
+            </div>
+
+            {% set fieldError = form_errors(settingForm.change_amount_additional) %}
+            <div class="pull-right settingInputBlock mr10 {{ fieldError == '' ? '': 'has-error' }}">
+              <label class="control-label" title="再計算時に全商品固定で変動する値">固定変更値</label><br>
+              {{ form_widget(settingForm.change_amount_additional, {'attr': {'class': 'form-control input-sm midSmallInt inlineBlock num', 'title': fieldError, 'v-model': 'changeAmountAdditional'} }) }}
+            </div>
+          </div>
+
+          <div class="text-right">
+            <label class="btn btn-primary mb5" v-on:click="updateRates">再計算</label>
+            <label class="btn btn-pink mb5" v-on:click="unsettleRates">揺さぶり </label>
+
+            <label class="btn btn-info mb5" v-on:click="openResetConfirmDialog">リセット</label>
+            <label class="btn btn-warning mb5" v-on:click="openUpdateCostRateProcessConfirm">保存</label>
+          </div>
+        </div>
+
+      </div>
+
+      {{ form_rest(settingForm) }}
+    </form>
+
+
+    {#<script type="text/javascript">#}
+      {#var discountListTableData = {{ data | raw }};#}
+    {#</script>#}
+
+    {%  if pagination and pagination.getTotalItemCount > 0 %}
+
+      <div id="productCostRateListTable" data-url="{{ path('products_update_list_cost_rate') }}">
+
+        {# display navigation #}
+        <div class="navigation">
+          <p class="paginationInfo">
+            対象商品 {{ paginationInfo.totalCount | number_format }} 件中
+            {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }} 件を表示
+            （全商品数 {{ allProductsNum | number_format }} 件）
+          </p>
+          {{ knp_pagination_render(pagination) }}
+        </div>
+
+        <div class="tableComment">
+          <small>※SHOPLIST、フリーオーダーの受注は金額・伝票数に含まれていません。</small>
+        </div>
+        <table class="table table-bordered" >
+          <thead>
+          <tr>
+            <th class="text-center w100" rowspan="2">
+              {{ knp_pagination_sortable(pagination, '商品コード', 'p.daihyo_syohin_code') }}
+            </th>
+            <th class="text-center w100" rowspan="2">
+              画像
+            </th>
+            <th class="text-center" rowspan="2">
+              商品タイトル
+            </th>
+            <th class="text-center w80" rowspan="2">
+              {{ knp_pagination_sortable(pagination, "伝票数/日", 'p.threshold_term_voucher_num_average') }}
+            </th>
+            <th class="text-center w80" rowspan="2">
+              仕入先<br>原価率
+            </th>
+            <th class="text-center w80" colspan="2">
+              商品別原価率
+            </th>
+
+            <th class="text-center" colspan="3">
+              直近
+              <span class="weightNormal">
+                ({{ setting.getTermDate('bStart').format('m/d') }} ～ {{ setting.getTermDate('bEnd').format('m/d') }})
+              </span>
+            </th>
+            <th class="text-center" colspan="3">
+              比較
+              <span class="weightNormal">
+                ({{ setting.getTermDate('aStart').format('m/d') }} ～ {{ setting.getTermDate('aEnd').format('m/d') }})
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th class="text-center w80" rowspan="2">
+              現設定
+            </th>
+            <th class="text-center w80" rowspan="2">
+              更新値
+            </th>
+
+            <th class="text-center w80">
+              平均
+            </th>
+            <th class="text-center w80">
+              粗利額
+            </th>
+            <th class="text-center w80">
+              伝票数
+            </th>
+            <th class="text-center w80">
+              平均
+            </th>
+            <th class="text-center w80">
+              粗利額
+            </th>
+            <th class="text-center w80">
+              伝票数
+            </th>
+          </tr>
+
+          </thead>
+
+          <tbody>
+          {% for product in pagination %}
+            <tr {% if product.isShaken() %}class="unsettled"{% endif %}>
+              <td class="text-left">
+                {{ product.getDaihyoSyohinCode() }}
+              </td>
+              <td class="text-center">
+                <a href="{{ product.getProduct().getRakutenDetailUrl() }}" target="_blank">
+                  <img class="thumb" src="{{ product.getProduct().getImageUrl(imageUrl) }}">
+                </a>
+              </td>
+              <td class="text-left">
+                {{ product.getProduct().getDaihyoSyohinName() | truncate(100) }}
+                <p class="sireName">
+                  {{ product.getProduct().getVendor().getSireCode() }} : {{ product.getProduct().getVendor().getSireName() }}
+                </p>
+              </td>
+              <td class="text-center">
+                {#絞込対象期間 平均伝票数#}
+                {{ product.getThresholdTermVoucherNumAverage() }}
+              </td>
+              <td class="text-center">
+                {#仕入先原価率#}
+                {{ product.getProduct().getVendor().getCostRate() }}
+              </td>
+              <td class="text-center">
+                {#現設定#}
+                {% if product.getCal().getCostRate() == 0 %}
+                  -
+                {% else %}
+                  {{ product.getCal().getCostRate() }}
+                {% endif %}
+              </td>
+              <td class="text-center">
+                {#更新値#}
+                <p class="mb10">
+                  <input type="number" class="form-control input-sm text-right" v-on:change="updateCostRate('{{ product.getDaihyoSyohinCode() }}', $event)" value="{{ product.getCostRateAfter() }}" data-original-value="{{ product.getCostRateAfter() }}">
+                </p>
+                {% if product.getCostRateDirection() or product.getCostRateDirectionByAverage() %}
+                <p>
+                  {% if product.getCostRateDirection() %}
+                    <i class="fa {{ product.getCostRateDirection() == 'up' ? 'fa-chevron-up text-danger' : 'fa-chevron-down text-info' }}"></i>
+                  {% endif %}
+                  {% if product.getCostRateDirectionByAverage() %}
+                    <i class="fa {{ product.getCostRateDirectionByAverage() == 'up' ? 'fa-arrow-up text-danger' : 'fa-arrow-down text-info' }}"></i>
+                  {% endif %}
+                </p>
+                {% endif %}
+
+              </td>
+              <td class="text-center costRate">
+                {#B 平均#}
+                {{ product.getLogCostRateAverageB() }}
+              </td>
+              <td class="text-right">
+                {#B 粗利額#}
+                <p class="mb10">
+                  {{ product.getLogProfitB() | number_format }}
+                </p>
+                {% if product.getProfitDirection() %}
+                  <p><i class="fa {{ product.getProfitDirection() == 'up' ? 'fa-arrow-up text-danger' : 'fa-arrow-down text-info' }}"></i></p>
+                {% endif %}
+              </td>
+              <td class="text-right">
+                {#B 伝票数#}
+                <p class="mb10">
+                  {{ product.getLogVoucherNumB() | number_format }}
+                </p>
+                {% if product.getVoucherNumDirection() %}
+                <p><i class="fa {{ product.getVoucherNumDirection() == 'up' ? 'fa-arrow-up text-danger' : 'fa-arrow-down text-info' }}"></i></p>
+                {% endif %}
+              </td>
+              <td class="text-center costRate">
+                {#A 平均#}
+                {{ product.getLogCostRateAverageA() }}
+              </td>
+              <td class="text-right">
+                {#A 粗利額#}
+                {{ product.getLogProfitA() | number_format }}
+              </td>
+              <td class="text-right">
+                {#A 伝票数#}
+                {{ product.getLogVoucherNumA() | number_format }}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="navigation bottom">
+          {{ knp_pagination_render(pagination, null, {}, {'hashFragment': '#productCostRateListTable'}) }}
+        </div>
+
+      </div>
+    {% endif %}
+
+  </div>
+
+
+  {# modal #}
+  {# 保存 #}
+  <div class="modal"
+       id="modalUpdateCostRateProcess"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url="{{ path('products_cost_rate_process') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            (% caption %)
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div>
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div v-bind:class="{ 'hidden': noticeHidden }">
+            <div class="alert" v-bind:class="noticeClass">
+              <ul>
+                <li v-for="notice in notices">(% notice %)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+          <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 再計算 #}
+  {% include 'AppBundle::modal/common-modal-1.0.html.twig' with {'modalId' : 'modalUpdateRatesConfirm', 'actionUrl': path('products_cost_rate_list_update') } %}
+  {# 揺さぶり #}
+  {% include 'AppBundle::modal/common-modal-1.0.html.twig' with {'modalId' : 'modalUnsettleRatesConfirm', 'actionUrl': path('products_cost_rate_list_unsettle') } %}
+  {# リセット #}
+  {% include 'AppBundle::modal/common-modal-1.0.html.twig' with {'modalId' : 'modalResetCostRateListConfirm', 'actionUrl': path('products_cost_rate_list_reset') } %}
+
+{% endblock %}
+

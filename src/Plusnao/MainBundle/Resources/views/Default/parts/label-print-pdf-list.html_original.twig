@@ -1,0 +1,129 @@
+{# modals #}
+<div class="modal"
+     id="modalLabelPrintPdfList"
+     tabindex="-1"
+     data-caption="{{ 'default.label.label_pdf'|trans }}"
+    >
+
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          <i class="fa fa-tags"></i> (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="loading" v-if="nowLoading">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+        </div>
+
+        <div v-if="!nowLoading">
+          {#<div class="panel panel-default">#}
+          {#<div class="panel-body">#}
+          {#<form id="labelDownloadForm" class="inlineBlock" action="{{ path('plusnao_label_pdf_download') }}" method="post">#}
+          {#<a class="btn btn-default" v-on:click="downloadLabelPdf"><i class="fa fa-download"></i> {{ 'default.label.download'|trans }}</a>#}
+          {#</form>#}
+          {#</div>#}
+          {#</div>#}
+
+          <div class="content-box-header">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="pull-left">
+                  <div class="w150 inlineBlock vMiddle">
+                    <input type="text" class="form-control" v-model="filterSyohinCode" placeholder="{{ 'default.label.search.product_code'|trans }}">
+                  </div>
+                  <button class="btn" v-bind:class="cssFilterCheckOn" v-on:click="toggleFilterCheckOn"><i class="fa fa-check-square-o"></i></button>
+                  <button class="btn mr10" v-bind:class="cssFilterCheckOff" v-on:click="toggleFilterCheckOff"><i class="fa fa-square-o"></i></button>
+                  <p class="inlineBlock inputHeight mb0">
+                    <span>{{ 'default.label.print_target'|trans }} : </span>
+                    <span v-text="filteredItemCount"></span>
+                    ( <span v-text="filteredItemPrintNumCount"></span> )
+                  </p>
+                </div>
+
+                <div class="pull-right">
+                  <form id="labelDownloadForm" class="inlineBlock" action="{{ path('plusnao_label_pdf_download') }}" method="post">
+                    <a class="btn btn-default" v-on:click="downloadLabelPdf"><i class="fa fa-download"></i> {{ 'default.label.download'|trans }}</a>
+                  </form>
+                </div>
+                <div class="pull-right">
+                  {# ページ送りリンク #}
+                  <nav class="tablePagination">
+                    <ul class="pagination pagination-sm mt0 mb0 mr10">
+                      <li v-bind:class="[isStartPage ? 'disabled' : '']">
+                        <a href="#" aria-label="Previous" class="disabled" v-on:click="showPrev">
+                          <span aria-hidden="true">&laquo;</span>
+                        </a>
+                      </li>
+                      <li v-for="pageIndex in pageList" track-by="$index" v-bind:class="[isPage(pageIndex) ? 'active' : '']">
+                        <template v-if="isNaN(pageIndex)" >
+                          <span>(% pageIndex %)</span>
+                        </template>
+                        <template v-else>
+                          <a href="#" v-on:click="showPage(pageIndex, $event)">(% pageIndex %)</a>
+                        </template>
+                      </li>
+                      <li v-bind:class="[isEndPage ? 'disabled' : '']">
+                        <a href="#" aria-label="Next" v-on:click="showNext">
+                          <span aria-hidden="true">&raquo;</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-box-large box-with-header mb0 pt10">
+
+            <div class="row">
+              <div class="col-xs-12 text-right mb10">
+                <a class="btn btn-default" v-on:click="reflectionRemainNum">{{ 'default.label.num_change'|trans }}</a>：
+                <input type="tel" class="form-control text-right inlineBlock w60 mr10" v-model="updateRemainNum" number>
+                用紙印刷開始位置： <input type="text" class="form-control text-right inlineBlock w60" v-model="printStartPosition" number>
+              </div>
+            </div>
+
+            <table class="table table-responsive {#  table-condensed #} mb0">
+              <thead>
+              </thead>
+              <tbody>
+              <tr>
+                <th class="col-xs-1 text-center vMiddle"><input type="checkbox" class="checkbox checkboxLarge" v-on:change="toggleCheckBoxes" v-model="allCheck"></th>
+                <th colspan="4">&nbsp;</th>
+              </tr>
+              <tr is="pdf-label-items"
+                  v-for="item in pageData"
+                  :item="item"
+                  >
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">{{ 'default.cancel'|trans }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{# Vue.js コンポーネントテンプレート #}
+<script id="pdf-label-items" type="x-template">
+  <tr>
+    <td class="col-xs-1 text-center vMiddle"><input type="checkbox" class="checkbox checkboxLarge" v-model="item.checked"></td>
+    <td class="col-xs-5"><input type="text" class="form-control" id="labelPdfSyohinCode" v-model="item.syohinCode" readonly="readonly"></td>
+    <td class="col-xs-2 text-center" v-text="colName"></td>
+    <td class="col-xs-2 text-center" v-text="rowName"></td>
+    <td class="col-xs-2"><input type="number" class="form-control text-right" id="labelPdfNum" v-model="item.remainNum" number></td>
+  </tr>
+</script>

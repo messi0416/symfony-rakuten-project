@@ -1,0 +1,296 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.real-shop-product-stock-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="realShopProductStockList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>実店舗 商品在庫一覧</h2>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="realShopProductStockListTable"
+         class="table-responsive"
+         data-url="{{ path('real_shop_product_find') }}"
+         data-save-price-url="{{ path('real_shop_product_price_update') }}"
+         data-save-label-type-url="{{ path('real_shop_product_label_type_update') }}"
+      >
+      {# 絞込フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline inlineBlock" role="form">
+
+            <div class="form-group mr5 mb5">
+              <input class="form-control" placeholder="代表商品コード" type="text" v-model="filterSyohinCode" v-on:change="showFirstPage" v-on:keypress="searchFormKeyPress($event)">
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-bind:class="filterLabelTypeCss" v-model="filterLabelType" v-on:change="showFirstPage">
+                <option value="" class="placeholder">ラベル種別</option>
+                <option class="normal" v-for="(option, i) in labelTypeOptions" v-bind:value="option.code" v-text="option.name"></option>
+              </select>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <label for="filterShopStockOnly">
+              <input class="checkbox" id="filterShopStockOnly" type="checkbox" v-model="filterShopStockOnly" value="1" v-on:change="showFirstPage">
+              店舗在庫あり
+              </label>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <label for="filterStockOrderOnly">
+                <input class="checkbox" id="filterStockOrderOnly" type="checkbox" v-model="filterStockOrderOnly" value="1" v-on:change="showFirstPage">
+                在庫依頼あり
+              </label>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <label for="filterForestStockOnly">
+                <input class="checkbox" id="filterForestStockOnly" type="checkbox" v-model="filterForestStockOnly" value="1" v-on:change="showFirstPage">
+                フォレスト在庫あり
+              </label>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <label for="filterIncludeFinished">
+                <input class="checkbox" id="filterIncludeFinished" type="checkbox" v-model="filterIncludeFinished" value="1" v-on:change="showFirstPage">
+                販売終了含む
+              </label>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :init-page-item-num="pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :page="page"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr class="text-center">
+          <th class="col-xs-3 sortable cursorPointer" v-bind:class="getSortMarkCssClass('syohinCode')" v-on:click="toggleOrder('syohinCode')">商品コード</th>
+          <th class="col-xs-1">画像</th>
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('shopStock')" v-on:click="toggleOrder('shopStock')">店舗在庫</th>
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('orderNum')" v-on:click="toggleOrder('orderNum')">在庫依頼</th>
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('freeStock')" v-on:click="toggleOrder('freeStock')">フォ在庫</th>
+
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('cost')" v-on:click="toggleOrder('cost')">仕入れ原価</th>
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('basePrice')" v-on:click="toggleOrder('basePrice')">計算価格</th>
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('currentPrice')" v-on:click="toggleOrder('currentPrice')">販売価格(税込)</th>
+          <th class="col-xs-1">税抜価格</th>
+
+          <th class="col-xs-1 sortable cursorPointer" v-bind:class="getSortMarkCssClass('labelType')" v-on:click="toggleOrder('labelType')">ラベル種別</th>
+        </tr>
+
+        <tr v-for="item in list"
+            is="result-item"
+            :item="item"
+            :label-type-options="labelTypeOptions"
+            :tax-rate="taxRate"
+            v-on:edit-item="editItem"
+            v-on:save-price="saveItemCurrentPrice"
+            v-on:save-label-type="saveItemLabelType"
+          ></tr>
+      </table>
+
+      <div
+          is="modal-form"
+          :item="currentItem"
+          :show="editFormShown"
+          :tax-rate="taxRate"
+          v-on:hide-form="hideForm"
+          v-on:reload-current-page="reloadCurrentPage"
+          data-data-url="{{ path('real_shop_product_sku_find') }}"
+          data-save-url="{{ path('real_shop_product_sku_update') }}"
+          data-label-csv-url="{{ path('real_shop_download_label_csv_each_product') }}"
+        ></div>
+
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateRealShopProductStockListTableRow">
+    <tr>
+      <td class="cursorPointer" v-text="item.daihyoSyohinCode" v-on:click="edit"></td>
+      <td>
+        <img class="img-responsive" v-bind:src="item.image" v-show="item.image.length > 0">
+      </td>
+      <td class="text-center vMiddle cursorPointer" v-text="item.shopStock" v-on:click="edit"></td>
+      <td class="text-center vMiddle cursorPointer" v-text="item.orderNum" v-on:click="edit"></td>
+      <td class="text-center vMiddle cursorPointer" v-text="item.freeStock" v-on:click="edit"></td>
+
+      <td class="text-center vMiddle" v-text="item.cost"></td>
+      <td class="text-center vMiddle" v-text="item.basePrice"></td>
+      <td class="text-center vMiddle">
+        <div v-if="inEditCurrentPrice" class="w100 text-right">
+          <input type="number" class="form-control text-right mb5" v-model="editingTaxedPrice" ref="input" v-on:keypress="keyPressEditPrice">
+          <button class="btn btn-primary inlineBlock" v-on:click="savePrice($event)"><i class="fa fa-check-square"></i></button>
+          <button class="btn btn-default inlineBlock" v-on:click="editPriceCancel($event)"><i class="fa fa-times"></i></button>
+        </div>
+        <div v-text="taxedPrice" v-else v-on:click="editPrice" class="text-center inputHeight vMiddle cursorPointer"></div>
+      </td>
+      <td class="text-center vMiddle" v-text="displayCurrentPrice"></td>
+
+      <td class="text-center vMiddle">
+        <div v-if="inEditLabelType" class="w100 text-right">
+          <select class="form-control mb5" v-model="labelType">
+            <option v-for="(option, i) in labelTypeOptions" v-bind:value="option.code" v-text="option.name"></option>
+          </select>
+          <button class="btn btn-primary inlineBlock" v-on:click="saveLabelType($event)"><i class="fa fa-check-square"></i></button>
+          <button class="btn btn-default inlineBlock" v-on:click="editLabelTypeCancel($event)"><i class="fa fa-times"></i></button>
+        </div>
+        <div v-text="displayLabelType" v-else v-on:click="editLabelType" class="text-center inputHeight vMiddle cursorPointer"></div>
+      </td>
+    </tr>
+  </script>
+
+  {# 編集モーダル（SKU表） #}
+  <script type="text/x-template" id="templateModalRealShopProductStockForm">
+    <div class="modal"
+         id="modalRealShopProductStockForm"
+         tabindex="-1"
+         data-backdrop="static" data-keyboard="false" {# 表示フラグ(show)について、他から閉じられたときの手当をしていないので、これは大事。 #}
+      >
+
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideForm">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+            <div v-show="message && message.length > 0">
+              <div class="alert" v-bind:class="messageClass" v-text="message"></div>
+            </div>
+
+            <div v-bind:class="{ hidden: noticeHidden }">
+              <div v-bind:class="noticeClass">
+                <ul>
+                  <li v-for="notice in notices" v-text="notice"></li>
+                </ul>
+              </div>
+            </div>
+
+            <div id="modalRealShopProductStockFormBody"
+                 class="table-responsive"
+              >
+              <table class="table table-bordered table-condensed">
+                <tbody>
+                <tr>
+                  <th class="col-xs-2">商品コード</th>
+                  <th class="col-xs-1">横軸</th>
+                  <th class="col-xs-1">縦軸</th>
+                  <th class="col-xs-1">店舗在庫</th>
+                  <th class="col-xs-1">在庫依頼</th>
+                  <th class="col-xs-1">フォ在庫</th>
+                  <th class="col-xs-1">注残</th>
+                  <th class="col-xs-1">ラベル</th>
+                  <th class="col-xs-2">バーコード</th>
+                </tr>
+
+                <tr v-for="sku in list">
+                  <td v-text="sku.neSyohinSyohinCode" class="vMiddle"></td>
+                  <td v-text="sku.colname" class="vMiddle"></td>
+                  <td v-text="sku.rowname" class="vMiddle"></td>
+                  <td>
+                    <input type="number" class="form-control text-right" v-model="sku.shopStock" v-if="sku.editShopStock">
+                    <div v-text="sku.shopStock" v-else v-on:click="sku.editShopStock = true" class="text-center inputHeight vMiddle cursorPointer"></div>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control text-right" v-model="sku.orderNum">
+                  </td>
+                  <td v-text="sku.freeStock" class="vMiddle text-center"></td>
+                  <td v-text="sku.orderRemain" class="vMiddle text-center"></td>
+                  <td class="vMiddle text-center">
+                    <a v-bind:href="getLabelCsvUrl(sku)" v-bind:download="getLabelCsvFilename(sku)">
+                      <i class="fa text-success" v-bind:class="labelTypeCss"></i>
+                    </a>
+                  </td>
+
+                  <td class="text-center vMiddle">
+                    <div v-html="sku.barcodeSVG"></div>
+                    <div v-text="sku.barcode"></div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+          <div class="modal-footer">
+
+            <input type="number"
+                   class="form-control inlineBlock input-lg mr5 vMiddle w150 text-right"
+                   placeholder="販売価格"
+                   v-model="editingTaxedPrice"
+                   v-bind:disabled="item.currentPrice > 0"
+              >
+            <span class="inlineBlock mr5">円</span>
+            <span class="inlineBlock mr10">(税抜き: <span v-text="editingUntaxedPrice"></span>円)</span>
+
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideForm">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+
+{% endblock %}

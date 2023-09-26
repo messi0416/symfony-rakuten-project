@@ -1,0 +1,350 @@
+{% extends 'AppBundle::base-admin-popup.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.concierge-mail-template.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.concierge-mail-template-list.js'
+  '@AppBundle/Resources/public/js/clipboard.min.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}{{ title }} | Plusnao Web System{% endblock %}
+
+{% block body %}
+
+  <div id="mailTemplate" class="container pt10">
+
+    <div id="header">
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass">
+          <button type="button" class="close" v-on:click="clear">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <span v-text="message"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="mailTemplateList"
+         data-list-url="{{ path('concierge_mail_template_find_list', { type: type }) }}"
+         data-find-url="{{ path('concierge_mail_template_find_one', { type: type }) }}"
+         data-save-url="{{ path('concierge_mail_template_save', { type: type }) }}"
+      >
+
+      {# タブ部分は非表示 （ないとtabが動かないので記述は必要） #}
+      <ul class="nav nav-tabs hidden" id="conciergeMailTemplateNavTab">
+        <li class="active"><a href="#tabMailTemplateList" data-toggle="tab">一覧</a></li>
+        <li><a href="#tabMailTemplateDetail" data-toggle="tab">詳細</a></li>
+      </ul>
+
+      {# 一覧 #}
+      <div id="conciergeMailTemplateTabBlock" class="tab-content">
+        <div class="tab-pane active" id="tabMailTemplateList">
+
+          {# 絞込フォーム #}
+          <div class="panel panel-default mt10 mb10">
+            <div class="panel-body">
+              <form role="form" class="row row10 mb0">
+                <div class="form-group col-xs-3">
+                  <select id="filterChoices3" class="form-control" v-model="filterChoices3" v-on:change="filterChoices3Changed">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices3" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3">
+                  <select id="filterChoices4" class="form-control" v-model="filterChoices4" v-on:change="filterChoices4Changed">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices4ByChoice3" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3">
+                  <select id="filterChoices5" class="form-control" v-model="filterChoices5" v-on:change="filterChoices5Changed">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices5ByChoice4" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3">
+                  <select id="filterChoices6" class="form-control" v-model="filterChoices6">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices6ByChoice5" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3 mb0">
+                  <select id="filterChoices7" class="form-control" v-model="filterChoices7">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices7ByChoice6" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3 mb0">
+                  <select id="filterChoices8" class="form-control" v-model="filterChoices8">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices8ByChoice7" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-3 mb0">
+                  <select id="filterChoices9" class="form-control" v-model="filterChoices9">
+                    <option value=""></option>
+                    <option v-for="choice in filteredChoices9ByChoice8" v-bind:value="choice" v-text="choice"></option>
+                  </select>
+                </div>
+
+                <div class="form-group col-xs-2 mb0">
+                  <button type="button" class="btn btn-default fullWidth" v-on:click="toggleActiveOnly">
+                    <i class="fa" v-bind:class="showAllCssClass"></i>
+                    全表示
+                  </button>
+                </div>
+
+                <div class="form-group col-xs-1 mb0">
+                  <button type="button" class="btn btn-primary fullWidth" v-on:click="openDetailForNew">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+
+          {# 一覧テーブル #}
+          {# pagination (Vue component) #}
+          {#<div#}
+            {#is="parts-table-pagination"#}
+            {#:init-page-item-num="pageItemNum"#}
+            {#:init-page-item-num-list="pageItemNumList"#}
+            {#:init-page-list-max-length="10"#}
+            {#:item-num="totalItemNum"#}
+            {#:page="page"#}
+            {#:element-id="'mailTemplateListPagination'"#}
+            {#v-on:change-page="showPage"#}
+            {#></div>#}
+
+          <div class="table-responsible">
+            <table class="table table-bordered table-hover table-condensed" id="mailTemplateListTable">
+              <thead>
+                <tr>
+                  <th>LV3</th>
+                  <th>LV4</th>
+                  <th>LV5</th>
+                  <th>LV6</th>
+                  <th>LV7</th>
+                  <th>LV8</th>
+                  <th>LV9</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr v-for="item in listData"
+                  is="result-item"
+                  :item="item"
+                  v-on:open-detail="openDetail"
+                  ></tr>
+
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+
+        {# 詳細 #}
+        <div class="tab-pane" id="tabMailTemplateDetail">
+
+          <div class="row row10 mb10">
+            <div class="col-xs-1">
+              <a class="btn btn-default" v-on:click="openList">
+                <i class="fa fa-arrow-left"></i>
+              </a>
+            </div>
+            <ol class="breadcrumb levels mb0 col-xs-11">
+              <li v-text="currentItem.choices1"></li>
+              <li v-text="currentItem.choices2"></li>
+              <li><a href="#" v-text="currentItem.choices3" v-on:click="searchByCurrentChoice(3)"></a></li>
+              <li><a href="#" v-text="currentItem.choices4" v-on:click="searchByCurrentChoice(4)"></a></li>
+              <li><a href="#" v-text="currentItem.choices5" v-on:click="searchByCurrentChoice(5)"></a></li>
+              <li><a href="#" v-text="currentItem.choices6" v-on:click="searchByCurrentChoice(6)"></a></li>
+              <li><a href="#" v-text="currentItem.choices7" v-on:click="searchByCurrentChoice(7)"></a></li>
+              <li><a href="#" v-text="currentItem.choices8" v-on:click="searchByCurrentChoice(8)"></a></li>
+              <li><a href="#" v-text="currentItem.choices9" v-on:click="searchByCurrentChoice(9)"></a></li>
+            </ol>
+          </div>
+
+          <div class="row row10 mb10">
+            <div class="col-xs-10">
+              <input type="text" class="form-control" v-model="currentItem.title" id="mailTemplateTitle">
+            </div>
+            <div class="col-xs-2">
+              <button type="button" class="btn btn-default fullWidth btnCopy" data-clipboard-target="#mailTemplateTitle">コピー</button>
+            </div>
+          </div>
+
+          <div class="row row10 mb10">
+            <div class="col-xs-10">
+              <textarea class="form-control" id="mailTemplateBody" v-model="currentItem.body"></textarea>
+            </div>
+            <div class="col-xs-2">
+              <button type="button" class="btn btn-default fullWidth btnCopy" data-clipboard-target="#mailTemplateBody">コピー</button>
+            </div>
+          </div>
+
+
+          <div class="panel panel-default">
+
+            <div class="panel-heading" role="tab" id="headingCollapseForm">
+              <h4 class="panel-title">
+                <div class="row row10">
+                  <div class="col-xs-9">
+                    <a href="#" class="collapsed btn btn-default fullWidth" v-on:click="openList">
+                      戻る
+                    </a>
+                  </div>
+                  <div class="col-xs-3">
+                    <a class="collapsed btn btn-default fullWidth" role="button" data-toggle="collapse" href="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
+                      編集
+                    </a>
+                  </div>
+                </div>
+              </h4>
+            </div>
+
+            <div id="collapseForm" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingCollapseForm">
+              <div class="panel-body">
+
+                <div class="row row10 mb10">
+                  <div class="col-xs-8 text-right inputHeight vMiddle">
+                    <input type="checkbox" class="checkbox checkboxLarge inlineBlock mr5" id="checkboxActive"
+                       v-model="currentItem.active"
+                       v-bind:true-value="-1"
+                       v-bind:false-value="0"
+                      >
+                    <label for="checkboxActive">使用する</label>
+                  </div>
+                  <div class="col-xs-1"></div>
+                  <div class="col-xs-3">
+                    <button type="button" class="btn btn-primary fullWidth" v-on:click="saveItem">保存する</button>
+                  </div>
+                </div>
+
+                <div class="form-horizontal">
+
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level1">Level 1</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level1" class="form-control" v-model="currentItem.choices1">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level2">Level 2</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level2" class="form-control" v-model="currentItem.choices2">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level3">Level 3</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level3" class="form-control" v-model="currentItem.choices3">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level4">Level 4</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level4" class="form-control" v-model="currentItem.choices4">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level5">Level 5</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level5" class="form-control" v-model="currentItem.choices5">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level6">Level 6</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level6" class="form-control" v-model="currentItem.choices6">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level7">Level 7</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level7" class="form-control" v-model="currentItem.choices7">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level8">Level 8</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level8" class="form-control" v-model="currentItem.choices8">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-xs-2" for="level9">Level 9</label>
+                    <div class="col-xs-10">
+                      <input type="text" id="level9" class="form-control" v-model="currentItem.choices9">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {# カテゴリ #}
+        <div class="tab-pane" id="tabMailTemplateCategory">
+
+          <div class="row row10 mt10 mb10">
+            <div class="col-xs-3 text-right">
+              Level1
+            </div>
+            <div class="col-xs-9">
+            </div>
+          </div>
+
+          <div class="row row10">
+            <div class="col-xs-10 text-center"></div>
+            <div class="col-xs-2 text-center">
+
+              <button type="button" class="btn btn-primary">保存</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateConciergeMailTemplateListTableRow">
+    <tr class="text-left" v-on:click="openDetail">
+      <td class="vMiddle" v-text="item.choices3"></td>
+      <td class="vMiddle" v-text="item.choices4"></td>
+      <td class="vMiddle" v-text="item.choices5"></td>
+      <td class="vMiddle" v-text="item.choices6"></td>
+      <td class="vMiddle" v-text="item.choices7"></td>
+      <td class="vMiddle" v-text="item.choices8"></td>
+      <td class="vMiddle" v-text="item.choices9"></td>
+    </tr>
+  </script>
+
+{% endblock %}

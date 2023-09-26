@@ -1,0 +1,319 @@
+MiscBundle\Entity\TbIndividualorderhistory:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbIndividualorderhistoryRepository
+  table: tb_individualorderhistory
+  indexes:
+    Index_1:
+      columns:
+        - 商品コード
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      generator:
+        strategy: AUTO
+
+  fields:
+    # 発注伝票番号:
+    voucher_number:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      column: 発注伝票番号
+    shipping_type:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      column: shipping_type
+      
+    syohin_code:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+      column: 商品コード
+    order_num:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: 発注数
+    remain_num:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: 注残計
+      readOnly: true
+    scheduled_date:
+      type: date
+      nullable: true
+      column: 予定納期
+    comment:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ""
+      column: 備考
+    sire_code:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+      column: 仕入先cd
+    agent_code:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+      column: 依頼先cd
+    order_date:
+      type: date
+      nullable: true
+      column: 発行日
+
+#    商品区分:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#        default: 予約
+#
+#    受注伝票番号:
+#      type: integer
+#      nullable: true
+#
+#    商品区分値:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#        default: '10'
+
+#    option:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+
+    regularNum:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: regular
+    defectiveNum:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: defective
+    shortageNum:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: shortage
+
+#    inputRegular:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: input_regular
+#    inputDefective:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: input_defective
+#    inputShortage:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: input_shortage
+#    quantityPrice:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: quantity_price
+#    inputQuantity:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: input_Quantity
+
+    remain_status:
+      type: string
+      nullable: true
+      length: 10
+      options:
+        fixed: false
+        default: ""
+
+    remain_ordered_date:
+      type: datetime
+      nullable: true
+    remain_ordered_person:
+      type: string
+      nullable: false
+      length: 20
+      options:
+        default: ""
+    remain_arrived_date:
+      type: datetime
+      nullable: true
+    remain_arrived_person:
+      type: string
+      nullable: false
+      length: 20
+      options:
+        default: ""
+    remain_waiting_date:
+      type: datetime
+      nullable: true
+    remain_waiting_person:
+      type: string
+      nullable: false
+      length: 20
+      options:
+        default: ""
+    remain_shipping_date:
+      type: datetime
+      nullable: true
+    remain_shipping_person:
+      type: string
+      nullable: false
+      length: 20
+      options:
+        default: ""
+    remain_stockout_date:
+      type: datetime
+      nullable: true
+    remain_stockout_person:
+      type: string
+      nullable: false
+      length: 20
+      options:
+        default: ""
+
+    shipping_number:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ""
+
+    shipping_operation_number:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ""
+
+    receive_order_number:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ""
+
+    warehousing_number:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+        default: ""
+
+    support_colname:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+        default: ""
+    support_rowname:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+        default: ""
+
+    vendor_comment:
+      type: string
+      nullable: true
+      options:
+        fixed: false
+    vendor_comment_updated:
+      type: datetime
+      nullable: true
+    vendor_comment_processed:
+      type: datetime
+      nullable: true
+    unallocated_flg_updated:
+      type: datetime
+      nullable: true
+
+    checklist_comment:
+      type: string
+      nullable: true
+
+    checklist_nw:
+      type: decimal
+      precision: 10
+      scale: 2
+      nullable: true
+    checklist_meas:
+      type: decimal
+      precision: 10
+      scale: 2
+      nullable: true
+
+    unallocated_flg:
+      type: integer
+      nullable: false
+      length: 2
+      options:
+        unsigned: true
+        default: '0'
+
+  lifecycleCallbacks: {  }
+
+  manyToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: orderHistories
+      joinColumn:
+        name: 商品コード
+        referencedColumnName: ne_syohin_syohin_code

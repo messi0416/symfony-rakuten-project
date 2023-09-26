@@ -1,0 +1,313 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+
+    encoders:
+        # Symfony\Component\Security\Core\User\User: plaintext
+        MiscBundle\Entity\SymfonyUsers:
+            algorithm: bcrypt
+        MiscBundle\Entity\SymfonyUserClient:
+            algorithm: bcrypt
+        MiscBundle\Entity\SymfonyUserYahooAgent:
+            algorithm: bcrypt
+
+    providers:
+        chain_main_provider:
+            chain:
+                providers:
+                  - main_provider
+                  - plusnao_provider
+                  - plusnao_yahoo_agent_provider
+
+        # フォレスト スタッフ
+        main_provider:
+            entity:
+                class: MiscBundle:SymfonyUsers
+                property: username
+
+        # 商品情報編集者
+        product_editor_provider:
+            id: app.symfony_user_product_editor_provider
+
+        # 外部取引先
+        plusnao_provider:
+            id: app.symfony_user_client_provider
+
+        # Yahoo代理店
+        plusnao_yahoo_agent_provider:
+            entity:
+                class: MiscBundle:SymfonyUserYahooAgent
+                property: username
+
+    firewalls:
+        dev:
+          pattern:  ^/(_(profiler|wdt)|css|images|js)/
+          security: false
+
+        login:
+          pattern: ^/login$
+          security: false
+        get_username:
+          pattern: ^/get_username$
+          security: false
+        # 認証なしURL （内部用APIなど。必要に応じIP制限等、ログインとは別の手段で制限する）
+        queue:
+          host: %host_main%
+          pattern: ^/queue/job/
+          security: false
+        notification:
+          host: %host_main%
+          pattern: ^/api/notification_list
+          security: false
+        worker:
+          host: %host_main%
+          pattern: ^/api/job/worker_check
+          security: false
+        public:
+          host: %host_main%
+          pattern: ^/pub/
+          security: false
+        public_forest:
+          host: %host_plusnao%
+          pattern: ^/pub/
+          security: false
+
+#        public_forest_vendor_order_list:
+#          host: %host_plusnao%
+#          pattern: ^/vendor/order_list/
+#          security: false
+
+        # main 認証エリアの設定
+        main:
+            pattern: ^/
+            # host: %host_main% # starlingt, forest ともに共通。
+            anonymous: ~
+
+            provider: chain_main_provider
+            form_login:
+                login_path: /login
+                check_path: /login_check
+
+                use_forward: false
+
+                success_handler: misc.symfony.component.secrity.authentication_success_handler
+                failure_handler: misc.symfony.component.secrity.authentication_failure_handler
+
+                # login success redirecting options (read further below)
+                always_use_default_target_path: false
+                default_target_path:            /index
+                target_path_parameter:          _target_path
+                use_referer:                    false
+
+                # field names for the username and password fields
+                username_parameter: _username
+                password_parameter: _password
+
+                csrf_provider: security.csrf.token_manager
+
+                post_only:      true
+                remember_me:    true
+
+            remember_me:
+                key: %secret%
+                name: bourgogne
+                lifetime: 315360000 # 10 years
+                path: /
+
+            logout:
+                path:   /logout
+                target: %default_logout_target%
+                success_handler: misc.symfony.component.secrity.logout_with_target_path_success_handler
+
+#        # plusnao 認証エリアの設定 （外部向け）
+#        plusnao:
+#            pattern: ^/
+#            host: %host_plusnao%
+#            anonymous: ~
+#
+#            provider: plusnao_provider
+#            # provider: chain_provider
+#            form_login:
+#                login_path: /login
+#                check_path: /login_check
+#
+#                use_forward: false
+#
+#                # login success redirecting options (read further below)
+#                always_use_default_target_path: false
+#                default_target_path:            /index
+#                target_path_parameter:          _target_path
+#                use_referer:                    false
+#
+#                # field names for the username and password fields
+#                username_parameter: _username
+#                password_parameter: _password
+#
+#                csrf_provider: security.csrf.token_manager
+#
+#                post_only:      true
+#                remember_me:    true
+#
+#            remember_me:
+#                key: %secret%
+#                name: champagne
+#                lifetime: 315360000 # 10 years
+#                path: /
+#                domain: %host_plusnao% # 元のホストのみ有効
+#
+#            logout:
+#                path:   /logout
+#                target: /index
+
+    # ここは大事。慎重に。
+    access_control:
+        # ------------------
+        # starlight %host_main%
+        # ------------------
+        # APIログイン（入力無し 特殊ユーザログイン等）
+        - host: %host_main%
+          path: ^/api/login$
+          roles: IS_AUTHENTICATED_ANONYMOUSLY
+        - host: %host_main%
+          path: ^/api/get_login_user$
+          roles: IS_AUTHENTICATED_ANONYMOUSLY
+
+        # 仕入れアドレス検索　ログインなし
+        - host: %host_main%
+          path: ^/api/search_address$
+          roles: IS_AUTHENTICATED_ANONYMOUSLY
+        - host: %host_main%
+          path: ^/api/search/vendor_address$
+          roles: IS_AUTHENTICATED_ANONYMOUSLY
+
+        # SKU別重量・サイズ設定
+        - host: %host_main%
+          path: ^(/goods/weight_size/edit)|(/goods/weight_size/get)|(/goods/weight_size/update$)
+          roles:
+            - ROLE_PRODUCT_EDITOR_SIZE_WEIGHT
+
+        # モール商品 更新
+        - host: %host_main%
+          path: ^/product_edit/mall_product_update
+          roles:
+            - ROLE_PRODUCT_MANAGEMENT_UPDATING
+
+        # モール商品 表示
+        - host: %host_main%
+          path: ^/product_edit/mall_product
+          roles:
+            - ROLE_PRODUCT_MANAGEMENT_BROWSING
+
+        # 商品登録・編集
+        - host: %host_main%
+          # path: ^(/admin/index)|(/goods/)|(/set_product/)|(/mixed_product/)
+          path: ^(/api/find/product_list$)|(/api/find/product_sku_list$)|(/api/find/product_sku_one$)|(/goods/)
+          roles:
+            - ROLE_PRODUCT_EDITOR
+            
+        # 商品削除
+        - host: %host_main%
+          path: ^/product/edit/delete
+          roles:
+            - ROLE_SYSTEM_USER
+
+        # 商品売上担当者
+        - host: %host_main%
+          path: ^(/productSales/index)|(/productSales/account)|(/productSales/addAccount)|(/productSales/inventoryConstant)|(/product/edit/season_setting)
+          roles:
+            - ROLE_SALES_PRODUCT_ACCOUNT
+            
+        # 伝票番号検索
+        - host: %host_main%
+          path: ^(/concierge/voucherNumber)
+          roles:
+            - ROLE_CUSTOMER_MANAGER
+
+        # 全般 ※最後に記載し、ここまで指定のない全URLに適用。
+        - host: %host_main%
+          path: ^/
+          roles:
+            - ROLE_USER
+
+        # ------------------
+        # forest （外部向け） %host_plusnao%
+        # デフォルト: 認証なし。
+        # 各URLで認証を掛ける。
+        # ------------------
+        # 取引先様用
+        - host: %host_plusnao%
+          path: ^/client
+          roles:
+            - ROLE_CLIENT
+
+        # 注残一覧
+        - host: %host_plusnao%
+          path: ^/vendor/order_list
+          roles:
+            - ROLE_CLIENT
+
+        # 伝票毎注残一覧
+        - host: %host_plusnao%
+          path: ^/vendor/remain_order
+          roles:
+            - ROLE_CLIENT
+
+        # 画像一覧
+        - host: %host_plusnao%
+          path: ^/vendor/goods
+          roles:
+            - ROLE_CLIENT
+
+        # 注残履歴一覧・作業者別一覧
+        - host: %host_plusnao%
+          path: ^/vendor/remain_order_status
+          roles:
+            - ROLE_CLIENT
+
+        # シュシュクレール様専用
+        - host: %host_plusnao%
+          path: ^/chouchou_clair
+          roles:
+            - ROLE_CHOUCHOU_CLAIR
+
+        # Yahoo代理店管理
+        - host: %host_plusnao%
+          path: ^/yahoo
+          roles:
+            - ROLE_YAHOO_AGENT
+
+    role_hierarchy:
+        ROLE_PRODUCT_EDITOR_FOR_ITEM_REGIST: ~ # 新規商品登録者権限
+        ROLE_PRODUCT_EDITOR_SIZE_WEIGHT: ~ # （注残一覧画面より。SKU編集画面のみの権限）
+        ROLE_PRODUCT_EDITOR: # 商品登録・編集者権限
+            - ROLE_PRODUCT_EDITOR_SIZE_WEIGHT
+        ROLE_CLIENT: 
+            - ROLE_PRODUCT_EDITOR_SIZE_WEIGHT
+        ROLE_CHOUCHOU_CLAIR: ~
+        ROLE_SCORE_BROWSING: ~ # 箱詰め閲覧許可
+        ROLE_YAHOO_AGENT: ~ # Yahoo代理店 利用権限
+        ROLE_YAHOO_AGENT_ADMIN: # Yahoo代理店 他店舗操作権限
+            - ROLE_YAHOO_AGENT
+        ROLE_USER:
+            - ROLE_PRODUCT_EDITOR
+            - ROLE_CLIENT
+            - ROLE_CHOUCHOU_CLAIR
+        ROLE_SYSTEM_USER: # キュー処理ロック解除ボタン キュー一時停止・キャンセルボタンOK！
+            - ROLE_USER
+        ROLE_SYSTEM_MANAGER: # システム運用者 権限
+            - ROLE_SYSTEM_USER
+        ROLE_ADMIN:
+            - ROLE_CUSTOMER_MANAGER # カスタマー管理者 権限
+            - ROLE_DELIVERY_MANAGER # 梱包管理者 権限
+            - ROLE_SYSTEM_MANAGER # システム運用者 権限
+            - ROLE_SCORE_BROWSING
+            - ROLE_YAHOO_AGENT_ADMIN
+            - ROLE_SALES_PRODUCT_ACCOUNT
+            - ROLE_PRODUCT_MANAGEMENT_BROWSING
+            - ROLE_PRODUCT_MANAGEMENT_UPDATING
+        ROLE_SYSTEM_ADMIN:
+            - ROLE_ADMIN
+        ROLE_SUPER_ADMIN:
+            - ROLE_ADMIN
+            - ROLE_ALLOWED_TO_SWITCH
+

@@ -1,0 +1,96 @@
+MiscBundle\Entity\TbProductchoiceitemsShippingdivisionPending:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsShippingdivisionPendingRepository
+    table: tb_productchoiceitems_shippingdivision_pending
+    indexes:
+        index_pending:
+            columns:
+                - reflect_status
+                - daihyo_syohin_code
+                - bundle_axis
+                - axis_code
+                - target_ne_syohin_syohin_code
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SKU別送料設定保留ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            column: daihyo_syohin_code
+        bundleAxis:
+            type: string
+            nullable: true
+            length: 4
+            fixed: false
+            comment: "同時処理軸\nrowまたはcol、NULLの場合は代表商品コード全て"
+            column: bundle_axis
+        axisCode:
+            type: string
+            nullable: true
+            length: 100
+            fixed: false
+            comment: "軸コード\nNULLの場合は代表商品コード全て"
+            column: axis_code
+        targetNeSyohinSyohinCode:
+            type: string
+            nullable: true
+            length: 100
+            fixed: false
+            comment: "対象SKU\n両軸ともサイズ軸であり、1SKUのみの更新を行う場合に利用する"
+            column: target_ne_syohin_syohin_code
+        prevShippingdivisionId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "修正前送料設定\n元のSKUがnullの場合は代表商品の送料設定"
+            default: '0'
+            column: prev_shippingdivision_id
+        pendingShippingdivisionId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 反映待ち送料設定
+            default: '0'
+            column: pending_shippingdivision_id
+        targetVoucharNumber:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "登録時伝票番号\nデバッグ用。サイズ変更による更新など、該当する受注がない場合はnull"
+            column: target_vouchar_number
+        reflectStatus:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "処理ステータス\n1:保留 2:反映済み 3:却下 4:自動取消\n自動取消は以後の更新によりレコードが不要になった場合"
+            default: '1'
+            column: reflect_status
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+        updSymfonyUsersId:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "更新ユーザID\nシステムによる自動処理はnull"
+            column: upd_symfony_users_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

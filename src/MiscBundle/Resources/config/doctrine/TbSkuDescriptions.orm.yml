@@ -1,0 +1,58 @@
+MiscBundle\Entity\TbSkuDescriptions:
+    type: entity
+    table: tb_sku_descriptions
+    repositoryClass: MiscBundle\Entity\Repository\TbSkuDescriptionsRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        descriptionEn:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            column: description_en
+        descriptionCn:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            column: description_cn
+        descriptionDeleteFlg:
+            type: boolean
+            nullable: true
+            fixed: false
+            column: description_delete_flg
+        hintJa:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            column: hint_ja
+        hintCn:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            column: hint_cn
+        hintDeleteFlg:
+            type: boolean
+            nullable: true
+            fixed: false
+            column: hint_delete_flg
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

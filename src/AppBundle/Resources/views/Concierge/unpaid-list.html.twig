@@ -1,0 +1,147 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.concierge-unpaid-list.js'
+  '@AppBundle/Resources/public/js/clipboard.min.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="unpaidList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>コンシェルジュ 未入金一覧</h2>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="unpaidListTable"
+         data-url="{{ path('concierge_unpaid_list_find') }}"
+         data-update-url="{{ path('concierge_unpaid_list_update') }}"
+      >
+      {# 絞込フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline inlineBlock" role="form">
+            <div class="form-group mr5">
+              <label for="copyComment">コピー文言</label>
+              <input type="text" id="copyComment" class="form-control" v-model="copyComment">
+            </div>
+
+            <div class="form-group mr5">
+              <label for="filterIncludeRecentReminder">
+                <input class="checkbox" id="filterIncludeRecentReminder" type="checkbox" v-model="filterIncludeRecentReminder" value="1">
+                今日入金催促したデータは表示する
+              </label>
+            </div>
+          </form>
+
+          <div class="pull-right">
+          </div>
+
+        </div>
+      </div>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :init-page-item-num="pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :page="page"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="col-xs-2">伝票番号</th>
+          <th class="col-xs-2">受注日</th>
+          <th class="col-xs-2">支払方法</th>
+          <th class="col-xs-3">催促日</th>
+          <th class="col-xs-3">&nbsp;</th>
+        </tr>
+
+        <tr v-for="item in pageData"
+            is="result-item"
+            :item="item"
+            :update-url="updateUrl"
+            :opened-voucher-numbers="openedVoucherNumbers"
+            v-on:voucher-opened="addOpenedVoucherNumber"
+            v-on:update-item="updateItem"
+          ></tr>
+      </table>
+
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateConciergeUnpaidListTableRow">
+    <tr class="text-center">
+      <td class="vMiddle" v-text="item.voucherNumber"></td>
+      <td class="vMiddle" v-text="displayOrderDate"></td>
+      <td class="vMiddle" v-text="item.paymentMethod"></td>
+      <td class="vMiddle">
+        <span class="mr10" v-text="displaySunPaymentReminder" v-if="!(inEditReminderDate)" v-on:click="setEditReminderDate(true)"></span>
+        <template v-else>
+          <form class="form-inline inlineBlock">
+            <div class="form-group">
+              <input type="text" class="form-control w120" v-model="editingReminderDate" v-on:keypress="keyPressInputReminderDate">
+            </div>
+            <div class="form-group">
+              <a class="btn btn-primary xs-col-2" v-on:click="updateReminderDate">
+                <i class="fa fa-check-square-o xs-col-2"></i>
+              </a>
+              <a class="btn btn-default" v-on:click="setEditReminderDate(false)">
+                <i class="fa fa-times"></i>
+              </a>
+            </div>
+          </form>
+        </template>
+      </td>
+      <td class="vMiddle text-center">
+        <button type="button" class="btn" v-bind:class="voucherButtonCss" v-on:click="openVoucherWindow">伝票</button>
+        <button type="button" class="btn btn-default btnCopyComment" data-clipboard-target="#copyComment">コピー</button>
+        <button type="button" class="btn btn-warning" v-on:click="registerReminderDate" v-bind:disabled="item.sunPaymentReminder">催促</button>
+      </td>
+    </tr>
+  </script>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+
+{# 会社切り替え処理 #}
+<div class="modal"
+     id="modalChangeCurrentCompany"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+
+     data-company-list-url="{{ path('location_get_company_list') }}"
+     data-change-current-company-url="{{ path('location_change_current_company') }}"
+     data-current-company-id="{{ account is defined ? account.getCompanyId() : '' }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          会社切り替え
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="alert alert-info">
+          会社を切り替えます。
+          よろしいですか？
+        </div>
+
+        <div>
+          <form role="form">
+            <div class="form-group">
+              <select class="form-control" v-model="companyChangeTo">
+                <option v-for="company in companys" v-text="company.name + ' : ' + company.code" v-bind:value="company.id"></option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row row10">
+          <div class="col-xs-6">
+            <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+          </div>
+          <div class="col-xs-6">
+            <button type="button" class="btn btn-lg fullWidth btn-success" v-on:click="changeCompanySubmit">切り替えを実行</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

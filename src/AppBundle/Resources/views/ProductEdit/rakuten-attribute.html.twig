@@ -1,0 +1,213 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.product-edit-rakuten-attribute.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.product-edit-rakuten-attribute.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+  </script>
+
+  <div id="rakutenAttribute" class="container"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_80_80'}) }}"
+    data-search-url="{{ path('product_edit_rakuten_attribute_search') }}"
+    data-update-url="{{ path('product_edit_rakuten_attribute_update') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>楽天属性設定</h2>
+        </div>
+      </div>
+    </div>
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+    {# 代表商品情報 #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-bordered">
+          <tr>
+            <td
+              v-text="daihyoSyohin.code"
+              class="text-center vMiddle fz18 bold w150"
+            >
+            </td>
+            <td v-text="daihyoSyohin.name" class="vMiddle" colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="vMiddle" rowspan="2">
+              <img :src="thumbnailUrl" class="img-responsive center-block" alt="代表商品画像">
+            </td>
+            <td class="w170">NEディレクトリ名</td>
+            <td v-text="daihyoSyohin.neDir" class="vMiddle"></td>
+          </tr>
+          <tr>
+            <td >楽天ジャンル名（ID）</td>
+            <td class="vMiddle">
+              <span v-text="daihyoSyohin.rakutenGenre"></span>
+              （<span v-text="daihyoSyohin.rakutenGenreId"></span>）
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="d-flex flex-j-end">
+      <button class="btn btn-primary mb5" @click="update"
+        :disabled="modifiedList.length < 1"
+      >
+        更新
+      </button>
+    </div>
+
+    {# 属性情報 #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <ul class="nav nav-tabs" id="indexNavTab">
+          <li v-for="(data, attributeId, index) in genreAttributes" :key="attributeId"
+            :class="{ active: index === currentTabIndex }"
+          >
+            <a :href="'#'+attributeId" data-toggle="tab"
+              @click="currentTabIndex = index" :aria-expanded="index === 0"
+              :class="{ bold: data.requiredFlg == 1 }"
+            >
+              <span v-text="data.name" class="p2"
+                :class="{'shadow-modified': modifiedAttributesIds.includes(attributeId)}"
+              >
+              </span>
+            </a>
+          </li>
+        </ul>
+        <div id="indexTabBlock" class="tab-content">
+          <div v-for="(attributeData, attributeId, index) in skuAttributes" :key="attributeId"
+            :id="attributeId" class="tab-pane" :class="{ active: index === 0 }"
+          >
+            <div class="panel-body">
+              <table class="table table-bordered odd-bg-smoke">
+                <tr>
+                  <th class="vMiddle">
+                    <p v-if="genreAttributes[attributeId].hasRecommend && !genreAttributes[attributeId].isSelective"
+                      class="mb0 text-right"
+                    > 
+                      推奨値
+                      <span data-toggle="tooltip" :title="genreAttributes[attributeId].recommends.map(recommend => recommend['nameJa']).join('\n')">
+                        <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                      </span>
+                    </p>
+                    <div class="input-group input-group-sm w200 mx-auto mt8">
+                      <select v-if="genreAttributes[attributeId].isSelective"
+                        class="form-control" v-model="batchAllChangeValue"
+                      >
+                        <option v-for="recommend in genreAttributes[attributeId].recommends.map(recommend => recommend['nameJa'])" :key="recommend"
+                          :value="recommend" v-text="recommend"
+                        >
+                        </option>
+                      </select>
+                      <input v-else type="text" class="form-control weightNormal"
+                        v-model="batchAllChangeValue"
+                      >
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-info"
+                          @click="changeAllValue(attributeId)"
+                        >
+                          すべて一括
+                        </button>
+                      </div>
+                    </div>
+                    <p v-if="genreAttributes[attributeId].unit" class="mt8 mb0 text-right">
+                      単位: <span v-text="genreAttributes[attributeId].unit"></span>
+                    </p>
+                  </th>
+                  <th v-for="(colData, index) in axis.col" :key="colData.colcode" class="vMiddle">
+                    <p v-text="colData.colname" class="text-center"></p>
+                    <div class="input-group input-group-sm w200 mx-auto">
+                      <select v-if="genreAttributes[attributeId].isSelective"
+                        class="form-control" v-model="colData.batchChangeValue"
+                      >
+                        <option v-for="recommend in genreAttributes[attributeId].recommends.map(recommend => recommend['nameJa'])" :key="recommend"
+                          :value="recommend" v-text="recommend"
+                        >
+                        </option>
+                      </select>
+                      <input v-else type="text" class="form-control weightNormal"
+                        v-model="colData.batchChangeValue"
+                      >
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-info"
+                          @click="changeSameAxisValue(attributeId, 'col', colData.colcode, colData.batchChangeValue)"
+                        >
+                          <i class="fa fa-fw fa-angle-double-down"></i>
+                          一括
+                        </button>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+                <tr v-for="(rowData, index) in axis.row" :key="rowData.rowcode">
+                  <td class="vMiddle">
+                    <p v-text="rowData.rowname" class="text-center bold"></p>
+                    <div class="input-group input-group-sm w200 mx-auto">
+                      <select v-if="genreAttributes[attributeId].isSelective"
+                        class="form-control" v-model="axis.row[index].batchChangeValue"
+                      >
+                        <option v-for="recommend in genreAttributes[attributeId].recommends.map(recommend => recommend['nameJa'])" :key="recommend"
+                          :value="recommend" v-text="recommend"
+                        >
+                        </option>
+                      </select>
+                      <input v-else type="text" class="form-control"
+                        v-model="axis.row[index].batchChangeValue"
+                      >
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-info"
+                          @click="changeSameAxisValue(attributeId, 'row', rowData.rowcode, rowData.batchChangeValue)"
+                        >
+                          <i class="fa fa-fw fa-angle-double-right"></i>
+                          一括
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                  <td v-for="(colData, index) in axis.col" :key="colData.colcode" class="vMiddle">
+                    <div class="input-group input-group-sm w200 mx-auto">
+                      <select v-if="genreAttributes[attributeId].isSelective" class="form-control"
+                        :class="{'bg-modified': modifiedList.some(el => el.attributeId == attributeId && el.sku === (daihyoSyohin.code + colData.colcode + rowData.rowcode)) }"
+                        :value="attributeData[daihyoSyohin.code + colData.colcode + rowData.rowcode]"
+                        @change="changeAttributeValue($event, attributeId, daihyoSyohin.code + colData.colcode + rowData.rowcode)"
+                      >
+                        <option v-for="recommend in genreAttributes[attributeId].recommends.map(recommend => recommend['nameJa'])" :key="recommend"
+                          :value="recommend" v-text="recommend"
+                        >
+                        </option>
+                      </select>
+                      <input v-else type="text" class="form-control"
+                        :class="{'bg-modified': modifiedList.some(el => el.attributeId == attributeId && el.sku === (daihyoSyohin.code + colData.colcode + rowData.rowcode)) }"
+                        :value="attributeData[daihyoSyohin.code + colData.colcode + rowData.rowcode]"
+                        @input="changeAttributeValue($event, attributeId, daihyoSyohin.code + colData.colcode + rowData.rowcode)"
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

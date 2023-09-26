@@ -1,0 +1,26 @@
+.sticky_table thead th , .sticky_table td:first-child {
+    /* 縦スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    /* tbody内のセルより手前に表示する */
+    z-index: 200;
+}
+.sticky_table th:first-child , .sticky_table td:first-child {
+    /* 横スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+    background-color: white;
+    left: 0;
+}
+.sticky_table thead th:first-child , .sticky_table td:first-child {
+    /* ヘッダー行内の他のセルより手前に表示する */
+    z-index: 100;
+}
+.sticky_table {
+    border: 1px solid #ddd !important;
+}
+
+
+

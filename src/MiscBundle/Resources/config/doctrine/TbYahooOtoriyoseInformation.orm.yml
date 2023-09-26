@@ -1,0 +1,3 @@
+MiscBundle\Entity\TbYahooOtoriyoseInformation:
+  type: entity
+  table: tb_yahoo_otoriyose_information

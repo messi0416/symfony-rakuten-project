@@ -1,0 +1,324 @@
+#@IgnoreInspection BashAddShebang
+# Edit this file to introduce tasks to be run by cron.
+#
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+#
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').#
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
+# MAILFROM=cron@starlight.plusnao.co.jp # MAILFROMは効果がないようです。コメントアウト
+
+# ヘルスチェック
+*/1 * * * * /bin/bash /home/workuser/ne_api/bin/health_check_DBSV01.sh >> /home/workuser/ne_api/bin/health/ticket_DBSV01.log 2>&1
+*/1 0,1,6-23 * * * /bin/bash /home/workuser/ne_api/bin/health_check_DBSV02.sh >> /home/workuser/ne_api/bin/health/ticket_DBSV02.log 2>&1
+*/5 8-10 * * * /bin/bash /home/workuser/ne_api/bin/health_check_BatchSV02.sh 2>&1
+
+# DATA(一時ファイル)の自動削除
+5 6 * * * find /home/workuser/ne_api/data/dev_test/ -type f -mtime +1 -delete
+6 6 * * * find /home/workuser/ne_api/data/csv_ndl/ -type f -mtime +7 -delete
+10 6 * * * find /home/workuser/ne_api/data/stocks/ -type f -mtime +30 -delete
+15 6 * * * find /home/workuser/ne_api/data/stocks/ -type d -empty -delete
+30 6 * * * find /home/workuser/ne_api/data/review/csv/ -type f -mtime +1 -delete
+31 6 * * * find /home/workuser/ne_api/data/yahooImageXml/ -type f -mtime +2 -delete
+
+# WEB_CSVの自動削除
+0 6 * * * find /home/workuser/ne_api/WEB_CSV/ -type f -mtime +30 -delete
+10 6 * * * find /home/workuser/ne_api/WEB_CSV/ -type d -empty -delete
+
+# サムネイルの自動削除
+20 6 * * * find /home/workuser/product_images_thumbnail/ -type f -atime +90 -delete
+# 空のサムネイルディレクトリの自動削除
+30 6 * * * find /home/workuser/product_images_thumbnail/ -type d -empty -delete
+
+# モール受注CSVの自動削除（２週間）
+00 12 * * * /home/workuser/ne_api/app/console --env=prod batch:ne-mall-order-refresh
+
+# 楽天レビュー 自動取込処理(Plusnao/motto-motto/LaForest/dolcissimo)
+# 取得元でそれほどリアルタイムに反映されない(数十分の時差)ため、毎分のチェックは不要。5分おきにする。→ 1時間おきにする
+0 6-20 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-rakuten-review --only-new=1
+15 6-20 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-rakuten-review --only-new=1 --target-shop=laforest
+30 6-20 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-rakuten-review --only-new=1 --target-shop=motto
+45 6-20 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-rakuten-review --only-new=1 --target-shop=dolcissimo
+52 6-20 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-rakuten-review --only-new=1 --target-shop=gekipla
+
+# 楽天レビュー代表商品コード補正処理
+20 14 * * * /home/workuser/ne_api/app/console --env=prod batch:update-db-by-rakuten-review-invalid-data
+
+# 商品売上担当者適用終了処理
+00 15 * * * /home/workuser/ne_api/app/console --env=prod batch:update-product-sales-account-apply-end
+
+# 画像FTPアップロード処理(楽天・Yahoo(plusnao / kawaemon)・PPM)
+# ※日時画像チェック処理の実行時間と被らないように、2,3時台は実行しない（キューが遅延した時のため、コマンド側でのチェックしているので合わせる事）
+*/10 0,1,4-23 * * *  /home/workuser/ne_api/app/console --env=prod batch:product-image-upload-ftp
+
+# 商品画像アテンション画像集計処理（集計テーブルの更新のみ） 1日1回終業頃に反映
+0 20 * * * /home/workuser/ne_api/app/console --env=prod batch:aggregate-product-images-attention --attention-table-update-only=1
+
+# 各モール 一括在庫更新処理（キュー連続追加 在庫取込・楽天（即納のみ在庫）・Amazon（在庫のみ）・SHOPLIST（在庫のみ））
+# AM 03:00台の処理は、NextEngineはなにかやらしく引っかかるため、1:10にしてみる
+# → AM 1:10では、CSV出力が伸びた時にデッドロックを引き起こす。2:07にしてみる（バックアップが別DBへ退避したため空いた）
+7 2,15,21 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_product_stock_each_mall
+
+# NextEngine在庫同期 （21時台のAmazon在庫取込後の実行。出荷によってズレがでた場合の補正のため。）
+20 21 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_next_engine_update_stock
+
+# NextEngine登録・更新CSV　キュー追加
+# 1.5hごとに1ファイル処理するためにチェックジョブ化
+*/5 * * * *  /home/workuser/ne_api/app/console --env=prod --target-env=prod batch:export-csv-next-engine-product-enqueue
+
+# Amazon モール受注CSV変換処理 15分ごと
+# ※DBバックアップと被らないように、2,3時台は実行しない
+# 3-59/15 0,1,4-23 * * *  /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-amazon-mall-order --do-upload=1
+
+# mysql purge master log
+# rootでのリモート接続を許可したくないため、これはDBSV01上で実行する。
+# 00 2,5,8,11,14,17,20,23 * * * /home/workuser/ne_api/bin/backup/purge_master_logs.sh >> /home/workuser/backup/purge.log 2>&1
+
+# SKU別カラー種別更新処理
+# yahooのcsv出力で利用するので、そのコマンドより先に実行する
+30 22 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_sku_color
+
+# CSV自動出力 ＆ アップロード
+# -- 即納予定日更新処理 ： CSV出力の前に実行する
+00 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:update-immediate-shipping-date
+# -- Amazon 在庫確認テーブル更新処理 (.co.jp)
+01 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-amazon-product-stock --shop=vogue
+# -- 受注明細差分更新（キュー追加） ※各モールCSV出力前 引当数・フリー在庫数更新
+02 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_order_list_incremental
+# -- Amazon 在庫確認テーブル更新処理 (.com) ※ vogue処理が終わるのを待つために間を開ける。
+# 2018/01/29 Amazon.com 販売休止
+# 04 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-amazon-product-stock --shop=us_plusnao
+# -- 最新在庫データ更新（キュー追加）
+*/15 * * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_stock_list_next_engine_api
+
+# -- 23:05 PPM （キュー追加 -- ダウンロードを待つため、先にキューを入れる）
+05 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_ppm
+
+### SFTP対応に伴う暫定処置。キューを使うとエラーになるのでシェル実行
+06 00 * * * /bin/bash /home/workuser/ne_api/workaround/rakutenCsvUpLater.sh
+# -- 23:07 楽天 （キュー追加）
+### 07 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_rakuten
+# -- 23:13 楽天Gold （キュー追加）
+### 13 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_rakuten_gold
+
+# -- 23:20 yahoo （キュー追加） download -> export の順で呼ばれる。otoriyoseも含め3サイトともこの中で処理される
+### FTP対応に伴う暫定処置。楽天CSVでキューを使えないので、念の為開始時間を調整
+### 20 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_yahoo
+45 01 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_yahoo
+# -- 23:25 Amazon 在庫確認テーブル FBA在庫数更新（後続処理としてAmazonCSV出力が必要のため、その前に終わるタイミングで）
+25 23 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-amazon-fba-stock
+# -- 23:30 Amazon （キュー追加）
+### FTP対応に伴う暫定処置。楽天CSVでキューを使えないので、念の為開始時間を調整
+### 30 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_amazon
+55 01 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_amazon
+# -- 23:40 SHOPLIST （キュー追加）
+### FTP対応に伴う暫定処置。楽天CSVでキューを使えないので、念の為開始時間を調整
+### 40 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_shoplist
+05 02 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_shoplist
+# -- 23:50 Wowma （キュー追加）
+### FTP対応に伴う暫定処置。楽天CSVでキューを使えないので、念の為開始時間を調整
+### 50 23 1-31/2 * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_wowma
+15 02 1-31/2 * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_wowma
+# -- 23:59 Q10 （キュー追加）
+### FTP対応に伴う暫定処置。楽天CSVでキューを使えないので、念の為開始時間を調整
+### 50 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_q10
+25 02 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_q10
+
+# -- 23:50 Amazon.com （キュー追加）
+# 2018/01/29 Amazon.com 販売休止
+# 50 23 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_amazon_com
+
+# 楽天RPP除外商品登録 楽天CSV出力完了後、楽天側に取り込まれ次第実行されるのが望ましい
+0 3 * * * /home/workuser/ne_api/app/console --env=prod batch:export-csv-rakuten-rpp-exclude
+
+# WebChecker 巡回処理実装 新商品巡回・在庫確認巡回
+# -- Alibaba (scraping)
+# 2017/07/07 ログイン要求画面ばかり表示されるようになったため、巡回を一時停止
+# 15 00 * * * /usr/bin/php /home/workuser/ne_api/vendor/forestlib/AlibabaCheck/check_1688.php >> /home/workuser/ne_api/app/logs/web_checker_alibaba_scraiping_prod.log
+# -- Alibaba open.1688.com API利用
+# -- 2018/06/21 AppKey無効化のため、一旦停止。
+# -- -- 1688.com 店舗一括更新
+# 10 00 * * * /home/workuser/ne_api/app/console --env=prod batch:fetch-update-1688-companies
+
+# -- -- 1688.com 未取得商品一括更新
+# 20 00 * * * /home/workuser/ne_api/app/console --env=prod batch:fetch-update-1688-new-products
+
+# -- -- 1688.com 登録商品巡回 キュー追加処理
+# 30 00 * * * /home/workuser/ne_api/app/console --env=prod batch:web-check-alibaba-api-queue
+
+# -- Taobao (scraping)
+# 2019/03/13 廃止
+# 45 00 * * * /usr/bin/php /home/workuser/ne_api/vendor/forestlib/TaobaoCheck/check_taobao.php >> /home/workuser/ne_api/app/logs/web_checker_taobao_scraiping_prod.log
+
+# 2017/02/02 日本メーカーの取扱停止のため、巡回処理も停止。
+# -- NETSEA
+# 2019/03/13 廃止
+#01 00 * * * /home/workuser/ne_api/app/console --env=prod batch:web-check-vendor-products-netsea
+# -- SUPER DELIVERY
+# 2017/01/19 DBバックアップのロックのため、この日のみ時間をずらす。
+# 02 00 * * 1,2,3,4,5,6 /home/workuser/ne_api/app/console --env=prod batch:web-check-vendor-products-super-delivery
+# 02 04 * * 0 /home/workuser/ne_api/app/console --env=prod batch:web-check-vendor-products-super-delivery
+# -- AKF
+# 2019/03/13 廃止
+# 03 00 * * * /home/workuser/ne_api/app/console --env=prod batch:web-check-vendor-products-akf
+# -- Vivica Duo
+# 04 00 * * * /home/workuser/ne_api/app/console --env=prod batch:web-check-vendor-products-vivica-duo
+
+# ----------------------------------------------
+# 共通日次バッチ処理 (01:02)
+#  * 在庫履歴記録
+#  * 在庫定数リセット処理
+# ----------------------------------------------
+# -- 受注明細差分更新（キュー追加） ※共通日次バッチ処理前。
+55 00 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_order_list_incremental
+# 共通日次バッチ処理
+# → 処理遅延によるCSV出力との衝突が起きたため、これもキュー処理へ変更
+02 1 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=daily_batch
+
+# 倉庫別実績集計処理
+20 1 * * * /home/workuser/ne_api/app/console --env=prod batch:aggregate-warehouse-result-history
+
+# Plusnao 原価率保存処理
+35 1 * * *  /home/workuser/ne_api/app/console --env=prod batch:log-vendor-cost-rate
+# Plusnao 商品価格保存処理
+45 1 * * * /home/workuser/ne_api/app/console --env=prod batch:log-product-price
+# Plusnao 商品ロケーションスナップショット保存処理
+50 1 * * * /home/workuser/ne_api/app/console --env=prod batch:log-product-location-snapshot
+# 楽天キーワードランキング保存処理（2022/11/25以降のデータが取れないため停止する）
+#55 1 * * * /home/workuser/ne_api/app/console --env=prod --queue-name=none batch:scrape-rakuten-keyword-ranking-log
+
+# SHOPLIST販売実績取得処理
+58 1 * * * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-shoplist-sales
+
+# 日次画像チェック処理
+# ※この処理の間は、楽天への自動アップロード処理をストップする。（本来は排他制御するべきだが、簡易的にcron設定で制御）
+01 2 * * * /home/workuser/ne_api/app/console --env=prod batch:product-image-check
+
+# アダルトチェック用 画像圧縮処理 ※Amazon 在庫確認テーブル更新処理 および Amazon CSV出力が終わった後に行う。（登録済み商品の抽出条件）
+07 2 * * * /home/workuser/ne_api/app/console --env=prod batch:archive-adult-check-image-to-zip
+
+# == 外注実装 各種取込処理 =========================================
+# Amazon FBA受注取込処理 （※ 00:00 ～ 08:59 までに実行する必要あり。（実装の都合による？））
+10 2 * * * /home/workuser/ne_api/app/console --env=prod amc:CreateCSVwithUploadNextEngine
+# ===========================================
+
+
+# mysql backup (daily, weekly)
+# => CubeSV01での実行に移行
+# 15 2 * * * /home/workuser/ne_api/bin/backup/mysqlbackup.sh >> /home/workuser/backup/cron.log 2>&1
+
+# 日次 開発用 DBミラー ＆ ミニDB作成処理 ※ --env=test （デフォルト）で実行。prood,dev はだめ。
+# => CubeSV01での実行に移行
+# 00 4 * * * /home/workuser/ne_api/app/console dev:create-mini-db --do-mirror=1
+
+# 日次 受注明細 取り込み処理
+# 2016/08/22 月曜日になぜか激重になっているため、暫定的に月曜日は処理を外す。（そして日曜日も平日と同じにする）
+# 2019/01/17 処理時間が延びた時、朝の業務を圧迫する可能性があったため、時刻を4:15から3:15に変更。
+# 2019/05/13 取り込み期間などを変更できるよう、設定画面へ移行
+#15 3 * * 0,2,3,4,5,6 /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=import_order_list --import-order-list-months=3 --limit-time=05:00:00
+
+# 週次 受注明細 取り込み処理（日）
+# 2018/07/02 日曜日も業務が開始されたため、廃止。
+# 15 4 * * 0 /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=import_order_list --import-order-list-months=12
+
+# 伝票毎利益集計(3ヶ月分+今月分) [平日]
+30 3 * * 1,2,3,4,5 /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=aggregate_sales_detail_only --target=3
+
+# 伝票毎利益集計(3ヶ月分+今月分) & 商品売上実績集計 [日曜日]
+30 3 * * 0 /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=aggregate_sales_detail_only --target=3
+
+# 伝票毎利益集計(全期間) & 商品売上実績集計 [土曜日]
+00 3 * * 6 /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=aggregate_sales_detail_only --target=3
+
+# 楽天商品属性項目マスタ更新処理
+00 4 * * * /home/workuser/ne_api/app/console --env=prod batch:update-rakuten-genre-attribute
+
+# Yahoo画像アップロードチェック（3サイト順次）
+30 4 * * * /home/workuser/ne_api/app/console --env=prod batch:image-check-yahoo --limit=500 --save-xml=1
+
+# NextEngineモール商品CSV出力処理（キュー追加）
+00 5 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_next_engine_mall_product
+
+# NextEngine在庫同期 （引当数以外の部分のみ。棚卸しは手動実行）
+15 5 * * *  /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=export_csv_next_engine_update_stock
+
+# EC-CUBE 受注反映
+40 5 * * * /home/workuser/ne_api/app/console --env=prod batch:convert-mall-order-csv-ec-cube-and-upload --target=ec01
+45 5 * * * /home/workuser/ne_api/app/console --env=prod batch:convert-mall-order-csv-ec-cube-and-upload --target=ec02
+
+# ロケーショ並べ替え、在庫移動一覧更新処理
+# 2019/04/16　廃止
+# 00 6 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=refresh_location_and_stock_move_list
+
+# 楽天キーワードランキング 商品一覧保存処理
+# ※バックアップが終わったあとに始める。（log_db のバックアップを諦めれば時間はもう少し早められる）
+# 2016/08/22 楽天への負荷が咎められないように、停止。
+# 10 3 * * * /home/workuser/ne_api/app/console --env=prod batch:scrape-rakuten-keyword-ranking-item-log
+
+# 楽天アクセスカウント 取得処理
+# （あまりに失敗が多いようならキューに入れてリトライするように変更する）
+30 09 * * *  /home/workuser/ne_api/app/console --env=prod --target-shop-name=rakuten batch:csv-download-and-update-access-count
+35 09 * * *  /home/workuser/ne_api/app/console --env=prod --target-shop-name=dolcissimo batch:csv-download-and-update-access-count
+40 09 * * *  /home/workuser/ne_api/app/console --env=prod --target-shop-name=motto batch:csv-download-and-update-access-count
+45 09 * * *  /home/workuser/ne_api/app/console --env=prod --target-shop-name=laforest batch:csv-download-and-update-access-count
+50 09 * * *  /home/workuser/ne_api/app/console --env=prod --target-shop-name=gekipla batch:csv-download-and-update-access-count
+
+# 楽天CSVダウンロードリクエスト処理
+04 4,20 * * * /home/workuser/ne_api/app/console --env=prod --target-shop=rakuten batch:export-csv-rakuten-kick-csv-download
+05 20 * * * /home/workuser/ne_api/app/console --env=prod --target-shop=motto batch:export-csv-rakuten-kick-csv-download
+06 20 * * * /home/workuser/ne_api/app/console --env=prod --target-shop=laforest batch:export-csv-rakuten-kick-csv-download
+07 20 * * * /home/workuser/ne_api/app/console --env=prod --target-shop=dolcissimo batch:export-csv-rakuten-kick-csv-download
+08 20 * * * /home/workuser/ne_api/app/console --env=prod --target-shop=gekipla batch:export-csv-rakuten-kick-csv-download
+
+# ピッキングスコアの集計
+00 17 * * * /home/workuser/ne_api/app/console --env=prod batch:aggregate-picking-score
+
+# 代表商品販売ステータス更新処理
+# 8時 ~ 16時はピッキング等の処理の邪魔にならないよう避けるようにする 変更したらgoods/list.html.twigの記載も修正するように
+00 2,7,17,22 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_product_sales_status
+
+# SKUのサイズ変更に基づく関連更新処理
+10 20 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=sku_size_change_related_update
+# 前日分の受注明細を元に、SKU別送料設定の自動設定
+15 20 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=sku_shippingdivision_auto_setting
+# SKU別送料設定を商品マスタへ反映
+20 20 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=sku_shippingdivision_reflect_mainproduct
+# SKUのサイズを商品マスタへ反映
+22 20 * * * /home/workuser/ne_api/app/console --env=prod batch:enqueue --command=update_product_size
+
+# サーバ再起動時のみ実行 通知サーバ(node.js) 起動処理
+# こちらはroot権限が必要になったため、rootのcrontabへ移動。
+# @reboot /home/workuser/.nvm/versions/node/v4.1.1/bin/node /home/workuser/.nvm/versions/node/v4.1.1/bin/forever start -p /home/workuser/.forever -l /home/workuser/.forever/node-app.log -a --workingDir /home/workuser/ne_api/bin/node /home/workuser/ne_api/bin/node/plusnao_notification_server.js -e prod
+
+# ---- 臨時処理
+# 2016/09/02 ログDB 楽天キーワードランキング商品履歴ログ バックアップ
+# 00 21 2 9 * /usr/bin/mysqldump -h160.16.50.121 -u kir084880 -pdadaabc2323 --opt plusnao_log_db tb_rakuten_keyword_ranking_item_log | gzip -c > /home/workuser/backup/monthly/tb_rakuten_keyword_ranking_item_log_20160901.sql.gz
+
+# 2018/06/11 楽天アクセスランキング 再取り込み
+# 00 13 11 6 * /home/workuser/ne_api/app/console --env=prod batch:csv-download-and-update-access-count --target-date=20180610
+
+# 2017/08/04 1688.com 定時アクセステスト
+# 12 * * * * /home/workuser/ne_api/app/console --env=prod batch:fetch-update-1688-products-multi-test 547740277633,547755241263,547759003786,547770359815,547774038765,547796580191,547798701031,547827607338,547834473542,547835659442
+
+# run resque workers on reboot
+@reboot /bin/bash /home/workuser/ne_api/bin/restart_resque_worker.sh -e prod
+
+# php-fpmログモニタプッシュ通知
+*/5 * * * * /home/workuser/ne_api/bin/php-fpm_monitor.sh >> /home/workuser/ne_api/bin/health/php-fpm_monitor.log 2>&1
+
+# -- main cron ここまで --------------------------------------------

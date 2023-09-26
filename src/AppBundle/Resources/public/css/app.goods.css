@@ -1,0 +1,34 @@
+
+div.originalText {
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  div.originalText {
+    margin-bottom: 0 !important;
+  }
+}
+
+textarea.inputTitle {
+  height: 60px;
+}
+
+textarea.inputDescription {
+  height: 160px;
+}
+
+div#attentionImageListTable {
+  max-width:1000px;
+  margin:0 auto;
+}
+
+div#imageDeleteFoldersListTable {
+  max-width:1000px;
+  margin:0 auto;
+}
+
+div#imageDeleteFilesListTable {
+  max-width:1000px;
+  margin:0 auto;
+}

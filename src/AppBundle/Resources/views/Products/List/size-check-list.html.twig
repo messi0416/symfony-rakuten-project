@@ -1,0 +1,116 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.products.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {#
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.products-missing-amazon-image.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+  #}
+{% endblock %}
+
+{% block body %}
+  <div id="missingAmazonImageList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品計測 商品一覧</h2>
+        </div>
+
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onclick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      {#<div>#}
+        {#<div v-bind:class="messageCssClass" v-text="message"></div>#}
+      {#</div>#}
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    {% if pagination.count() > 0 %}
+    <div class="main" id="sizeCheckListTable">
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+      <table class="table table-condensed table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center">画像</th>
+            <th class="text-center">商品コード</th>
+            <th class="text-center">一ヶ月販売数</th>
+          </tr>
+        </thead>
+
+        {% for product in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-2">
+              {% if product.getImageUrl() %}
+                <a href="{{ linkUrl }}{{ product.getDaihyoSyohinCode() }}" target="_blank">
+                  <img src="{{ product.getImageUrl(imageParentUrl) }}" class="img-responsive">
+                </a>
+              {% endif %}
+            </td>
+            <td class="col-xs-8">
+              <a href="{{ linkUrl }}{{ product.getDaihyoSyohinCode() }}" target="_blank">
+                {{ product.getDaihyoSyohinCode() }}
+              </a>
+            </td>
+            <td class="col-xs-2 text-center">
+                {{ product.getSalesOfMonth() }}
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+    </div>
+
+    {% else %}
+      <div id="missingAmazonImageListTable" class="alert alert-warning">データがありません。</div>
+    {% endif %}
+
+
+  </div>
+
+{% endblock %}
+
+

@@ -1,0 +1,105 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.concierge-operation-log.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.concierge-operation-log.js'
+  %}
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.23.2/vuedraggable.umd.min.js"></script>
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="operationLog" class="container"
+      data-find-task-url="{{ path('concierge_operation_log_find_task') }}"
+      data-add-task-url="{{ path('concierge_operation_log_add_task') }}"
+      data-delete-task-url="{{ path('concierge_operation_log_delete_task') }}"
+      data-sort-task-url="{{ path('concierge_operation_log_sort_task') }}"
+      data-register-url="{{ path('concierge_operation_log_register') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>コンシェルジュ作業ログ</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div class="container mt20 mb50">
+      <form>
+        <div class="form-group row mx-15 px-0 d-flex wrap">
+          <div v-for="task in dispTaskList" class="form-check col-lg-2 col-sm-3 col-xs-12 pt10">
+            <input type="radio" name="task" :id="task.attribute" :value="task.id" v-model="registerItem.taskId" />
+            <label class="form-check-label multiLineWrap" :for="task.attribute" v-text="task.name"></label>
+          </div>
+        </div>
+        <div class="form-group clearfix mx-15">
+          <button type="button" class="btn btn-default pull-right" @click="toggleSettings">
+            <i class="fa fa-cog" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        {# タスク追加画面 設定ボタン押下時のみ表示 #}
+        <div class="panel panel-default row mx-15 px-0" v-if="showSettings">
+          <div class="panel-heading">
+            <div class="panelTitle">設定</div>
+          </div>
+          <div class="panel-body">
+            <p class="text-info">ドラッグ&ドロップでタスクの順序を入れ替えられます。「保存」で反映。</p>
+            <draggable tag="div" class="d-flex wrap mb10" @sort="onSort">
+              <div
+                  v-for="task, index in dispTaskList"
+                  :key="task.id"
+                  :data-task-id="task.id"
+                  class="tasks col-lg-2 col-sm-3 col-xs-12 cursorPointer label-symbol p6"
+              >
+                <span v-text="task.name"></span>
+                <a class="btn btn-xs btn-warning pull-right mr5" @click="deleteTask(task.id)">
+                  <i class="fa fa-minus"></i>
+                </a>
+              </div>
+            </draggable>
+            <div class="form-inline">
+              <div class="form-group mr10">
+                <label for="newTaskName" class="mr10">新しいタスク名</label>
+                <input type="text" class="form-control w200" id="newTaskName" v-model="newTaskName" />
+              </div>
+              <div class="form-group mr20">
+                <button type="button" class="btn btn-success" @click="addTask">追加</button>
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-info" @click="saveSort" :disabled="!sortedFlg">並び替え保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mx-15">
+          <label for="voucherNumber">伝票番号</label>
+          <textarea class="form-control w150" id="voucherNumber" rows="5" v-model="voucherNumberStr"></textarea>
+        </div>
+        <div class="form-group mx-15">
+          <label for="note">備考</label>
+          <textarea class="form-control mw650" id="note" rows="5" v-model="registerItem.note"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary mx-15" @click="register">登録</button>
+      </form>
+    </div>
+
+  </div>
+{% endblock %}

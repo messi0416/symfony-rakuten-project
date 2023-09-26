@@ -1,0 +1,259 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/vendor/bootstrap-select/css/bootstrap-select.min.css' filter='cssrewrite'
+    'bundles/app/css/app.importability.css' filter='cssrewrite'
+  %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery-js/1.2.0/css/lightgallery.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-image-lightbox@6.4.0/dist/vue-image-lightbox.min.css">
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-select/js/bootstrap-select.min.js'
+    '@AppBundle/Resources/public/js/app.product-edit-importability.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script src="https://cdn.jsdelivr.net/npm/vue-image-lightbox@6.4.0/dist/vue-image-lightbox.min.js"></script>
+  <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script>
+  <script type="text/javascript">
+    const STATUS_LIST = {{ statusList | raw }};
+    const REMAIN_STATUS_LIST = {{ remainStatusList | raw }};
+  </script>
+  <div id="importabilityList" class="container"
+    data-search-url="{{ path('product_edit_importability_search') }}"
+    data-update-url="{{ path('product_edit_importability_update') }}"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_80_80'}) }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品輸出入可否管理</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-inline">
+          <div class="form-group mr5 mb5">
+            <input
+              type="text"
+              class="form-control w120"
+              v-model="conditions.daihyoSyohinCode"
+              @keyup.enter="search(true)"
+              placeholder="代表商品コード"
+            >
+          </div>
+          <div class="form-group mr5 mb5">
+            <input
+              class="form-control w150"
+              v-model="conditions.category"
+              @keyup.enter="search(true)"
+              placeholder="カテゴリ（部分一致）"
+            >
+          </div>
+          <div class="form-group mr5 mb5">
+            <select
+              id="filterRemainStatusKeys"
+              class="selectpicker"
+              title="注残ステータス"
+              multiple
+              data-actions-box="true"
+              data-select-all-text="全選択"
+              data-deselect-all-text="全解除"
+              v-model="conditions.filterRemainStatusKeys"
+            >
+              <option
+                v-for="(item, key) in remainStatusList"
+                :key="key"
+                :value="key"
+                v-text="item"
+              >
+              </option>
+            </select>
+          </div>
+          <div class="form-group mr5 mb5">
+            <select class="form-control w100" v-model="conditions.status">
+              <option value=""></option>
+              <option
+                v-for="(item, index) in statusList"
+                :key="index"
+                :value="index"
+                v-text="item"
+              >
+              </option>
+            </select>
+          </div>
+          <div class="form-group mr5 mb5">
+            <input
+              class="form-control w120"
+              v-model="conditions.updateUserName"
+              @keyup.enter="search(true)"
+              placeholder="最終更新者"
+            >
+          </div>
+          <div class="form-group form-inline mr5 mb5">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <input
+                id="settingDateFrom"
+                type="text"
+                class="form-control w100"
+                placeholder="設定日From"
+                v-model="conditions.settingDateFrom"
+              >
+            </div>
+            <span>
+              ～
+            </span>
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <input
+                id="settingDateTo"
+                type="text"
+                class="form-control w100"
+                placeholder="設定日To"
+                v-model="conditions.settingDateTo"
+              >
+            </div>
+          </div>
+          <div class="form-group mb5">
+            <button type="button" class="btn btn-success" @click="search(true)">
+              検索
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 結果 #}
+    <div>
+      {# pagination (Vue component) #}
+      <parts-table-pagination v-bind="paginationObj" @change-page="changePage">
+      </parts-table-pagination>
+    </div>
+
+    <div
+      v-for="(row, index) in list"
+      :key="index"
+      :index="index"
+      :row="row"
+      is="result-item"
+      v-cloak
+      @update="update"
+    >
+    </div>
+
+    <script type="text/x-template" id="templateImportabilityListRow">
+      <div class="panel panel-default p10">
+        <div class="panel-body row">
+          <div class="col-sm-2">
+            <p v-text="daihyoSyohinCode"></p>
+            <div class="mt10">
+              <input
+                type="radio"
+                :id="'available'+index"
+                :name="'status'+index"
+                value="1"
+                :checked="status === '1'"
+                @click="changeStatus"
+              />
+              <label :for="'available'+index">可</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                :id="'unavailable'+index"
+                :name="'status'+index"
+                value="2"
+                :checked="status === '2'"
+                @click="changeStatus"
+              />
+              <label :for="'unavailable'+index">不可</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                :id="'pending'+index"
+                :name="'status'+index"
+                value="3"
+                :checked="status === '3'"
+                @click="changeStatus"
+              />
+              <label :for="'pending'+index">保留</label>
+            </div>
+          </div>
+          <div class="col-sm-5">
+            <div>
+              <span v-text="category" class="bg-blue py2"></span>
+            </div>
+            <div v-text="daihyoSyohinName" class="mt10"></div>
+            <div class="mt10 d-flex f-wrap">
+              <span v-for="description in descriptions" v-text="description" class="bg-yellow py2 mr5 mb5">
+              </span>
+            </div>
+            <div class="mt10 d-flex f-wrap">
+              <span v-for="hint in hints" v-text="hint" class="bg-green py2 mr5 mb5"></span>
+            </div>
+          </div>
+          <div class="col-sm-5">
+            <div
+              v-for="n in ~~(images.length / ($parent.maxImgDisplayPerColum + 1)) + 1"
+              class="d-flex"
+            >
+              <div 
+                v-for="i in $parent.maxImgDisplayPerColum"
+                @click="showEnlargedImage((n - 1) * $parent.maxImgDisplayPerColum + (i - 1))" 
+                class="flex1 d-flex align-items-center cursorPointer mr3 mb5"
+                :class="{'image-frame': thumbList[(n - 1) * $parent.maxImgDisplayPerColum + (i - 1)]}"
+              >
+                <img
+                  v-if="thumbList[(n - 1) * $parent.maxImgDisplayPerColum + (i - 1)]"
+                  :src="thumbList[(n - 1) * $parent.maxImgDisplayPerColum + (i - 1)]"
+                  class="fullWidth"
+                />
+              </div>
+              <light-box
+                ref="lightbox"
+                :images="images"
+                :show-light-box="false"
+                :show-caption="true"
+              >
+              </light-box>
+            </div>
+          </div>
+          <div class="col-sm-12 mt20">
+            <textarea
+              v-model="note"
+              class="d-block w80v mxauto"
+              placeholder="輸出入用備考"
+              @change="changeNote"
+            >
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </script>
+  </div>
+{% endblock %}

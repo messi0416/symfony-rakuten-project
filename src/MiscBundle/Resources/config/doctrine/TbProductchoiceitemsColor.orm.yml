@@ -1,0 +1,31 @@
+MiscBundle\Entity\TbProductchoiceitemsColor:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsColorRepository
+  table: tb_productchoiceitems_color
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+  fields:
+    ne_syohin_syohin_code:
+      type: string
+      length: 50
+      nullable: false
+    yahoo_spec_value_id:
+      type: string
+      length: 255
+      nullable: true
+      default: null
+    color_name:
+      type: string
+      length: 50
+      nullable: false
+    configured_flg:
+      type: integer
+      length: 1
+      nullable: false
+      default: 0

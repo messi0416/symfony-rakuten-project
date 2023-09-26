@@ -1,0 +1,22 @@
+/** 配送ラベル再発行伝票・不使用問い合わせ番号関連 共通CSS */
+
+.transform2 {
+  transform: scale(2);
+}
+#shippingInquiryNumberReissueList .badge, #shippingInquiryNumberNoneedList .badge {
+  border-radius: 5px;
+  padding: 5px 10px;
+  display: inline-block;
+  min-width: 50px;
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+}
+.badge.badge-done {
+  background-color: #5cb85c;
+}
+.badge.badge-delete {
+  background-color: #f0ad4e;
+}

@@ -1,0 +1,91 @@
+MiscBundle\Entity\TbWarehouse:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbWarehouseRepository
+  table: tb_warehouse
+  id:
+    id:
+      type: integer
+      nullable: false
+      generator:
+          strategy: IDENTITY
+
+  fields:
+    name:
+      type: string
+      length: 50
+      nullable: false
+    symbol:
+      type: string
+      length: 1
+      nullable: false
+      options:
+        default: ''
+    display_order:
+      type: integer
+      nullable: false
+      options:
+        default: 9999
+    shipment_enabled:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    shipment_priority:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    sale_enabled:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    transport_priority:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    fba_transport_priority:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    shoplist_flag:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    result_history_display_flg:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    own_flg:
+      type: integer
+      nullable: false
+      comment: "自社倉庫フラグ\n0:他社倉庫, 1:自社倉庫"
+      options:
+        default: 0
+    asset_flg:
+      type: integer
+      nullable: false
+      comment: "資産勘定フラグ\n0:資産勘定しない 1:資産勘定する\n倉庫内の商品在庫を、在庫金額などに含めるかのフラグ。\n他社からの預かり品など、自社の資産でなく、在庫金額に含めたくない在庫を置いている仮想倉庫に1を設定する。"
+      options:
+        default: 0
+    terminate_flg:
+      type: integer
+      nullable: false
+      comment: "使用終了フラグ\n0:使用中, 1:使用終了"
+      options:
+        default: 0
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

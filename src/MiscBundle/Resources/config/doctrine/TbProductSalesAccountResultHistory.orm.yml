@@ -1,0 +1,100 @@
+MiscBundle\Entity\TbProductSalesAccountResultHistory:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductSalesAccountResultHistoryRepository
+    table: tb_product_sales_account_result_history
+    indexes:
+        index_target_date:
+            columns:
+                - target_date
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 商品売上実績ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        productSalesAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 商品売上担当者ID
+            column: product_sales_account_id
+        targetDate:
+            type: date
+            nullable: false
+            comment: 集計対象日
+            column: target_date
+        salesAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 売上
+            default: '0'
+            column: sales_amount
+        profitAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 利益額
+            default: '0'
+            column: profit_amount
+        shoplistSalesAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLIST売上
+            default: '0'
+            column: shoplist_sales_amount
+        shoplistProfitAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SHOPLIST利益額
+            default: '0'
+            column: shoplist_profit_amount
+        stockQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 在庫数量
+            default: '0'
+            column: stock_quantity
+        stockAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 在庫金額
+            default: '0'
+            column: stock_amount
+        remainQuantity:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 注残数量
+            default: '0'
+            column: remain_quantity
+        remainAmount:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 注残金額
+            default: '0'
+            column: remain_amount
+        created:
+            type: datetime
+            nullable: true
+            comment: 作成日
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps
+    manyToOne:
+        productSalesAccount:
+            targetEntity: TbProductSalesAccount
+            joinColumn:
+                name: product_sales_account_id
+                referencedColumnName: id
+            fetch: EAGER

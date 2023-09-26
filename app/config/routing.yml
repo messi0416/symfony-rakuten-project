@@ -1,0 +1,32 @@
+# -- 対外用 ホスト (forest.plusnao.co.jp)
+# 取引先用
+plusnao:
+    resource: "@PlusnaoMainBundle/Resources/config/routing.yml"
+    prefix:   /
+    host: "%host_plusnao%"
+
+# Yahoo代理店
+plusnao_yahoo_agent:
+    resource: "@PlusnaoYahooAgentBundle/Resources/config/routing.yml"
+    prefix:   /yahoo
+    host: "%host_plusnao%"
+
+# -- 社内用 ホスト (starlight.plusnao.co.jp)
+ne_api:
+    resource: "@NeApiBundle/Resources/config/routing.yml"
+    prefix:   /api
+    host: "%host_main%"
+
+# WEBアプリ
+app:
+    resource: "@AppBundle/Resources/config/routing.yml"
+    prefix:   /
+    host: "%host_main%"
+
+# BCCResqueBundle
+BCCResqueBundle:
+    resource: "@BCCResqueBundle/Resources/config/routing.xml"
+    prefix:   /resque
+    host: "%host_main%"
+
+

@@ -1,0 +1,39 @@
+.header h1 {
+  color: #fff;
+}
+
+.header div.name {
+  color: #fff;
+  text-align: right;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 10px;
+}
+
+#productImageEdit {
+  background-color: #fff;
+  font-size: 14px;
+}
+
+/**
+ * サイズの違う画像を横に並べるときにキレイにならぶ、らしい。
+ * ただ、col-xs-12 の時に高さが足りないので変。
+ */
+ .grid-img {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 30%;
+}
+
+.grid-img img {
+  max-width: 100%;
+}
+
+.grid-img img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}

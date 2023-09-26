@@ -1,0 +1,19 @@
+# crontab FOR CubeSV01
+# ※手動反映。実際にはcube-batch の処理もあるので、これはメモ用。
+MAILTO=hirai.forest@gmail.com
+
+# mysql backup (daily, weekly)
+#15 2 * * * /home/workuser/ne_api/bin/backup/mysqlbackup.sh >> /home/workuser/backup/cron.log 2>&1
+
+# 日次 開発用 DBミラー ＆ ミニDB作成処理 ※ --env=test （デフォルト）で実行。prood,dev はだめ。
+#00 4 * * * /home/workuser/ne_api/app/console --env=test dev:create-mini-db --do-mirror=1
+
+# 商品画像更新（＆バックアップ）
+20 6 * * * /bin/bash /home/workuser/cube-batch/bin/sync_images.sh
+
+# 商品情報更新処理
+02 4 * * * /usr/bin/php /home/workuser/cube-batch/bin/console --env=prod ec:convert-update-plusnao-products --target=ec02
+02 5 * * * /usr/bin/php /home/workuser/cube-batch/bin/console --env=prod ec:convert-update-plusnao-products --target=ec01
+
+# Redmine SVの古いBKファイルを削除
+0 2 * * * find /home/workuser/backup/redmine/*.sql -type f -mtime "+30" -delete

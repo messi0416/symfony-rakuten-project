@@ -1,0 +1,60 @@
+MiscBundle\Entity\TbImageCheck:
+    type: entity
+    table: tb_image_check
+    id:
+        mallKbn:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+            id: true
+            column: mall_kbn
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+                default: ''
+            id: true
+            column: daihyo_syohin_code
+        idx:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                comment: 'P:1-9 M:10-12'
+            id: true
+    fields:
+        pcMKbn:
+            type: string
+            nullable: false
+            length: 1
+            options:
+                fixed: false
+            column: pc_m_kbn
+        'no':
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        picfolder:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        picname:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        url:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }

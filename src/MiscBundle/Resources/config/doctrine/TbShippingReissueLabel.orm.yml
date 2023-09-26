@@ -1,0 +1,52 @@
+MiscBundle\Entity\TbShippingReissueLabel:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShippingReissueLabelRepository
+    table: tb_shipping_reissue_label
+    indexes:
+        index_shipping_voucher_packing_id:
+            columns:
+                - shipping_voucher_packing_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 発送ラベル再発行伝票ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        shippingVoucherPackingId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 出荷伝票梱包ID
+            default: '0'
+            column: shipping_voucher_packing_id
+        deliveryMethodId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 発送方法
+            default: '0'
+            column: delivery_method_id
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n0:未発行 1:発行済み 9:削除"
+            default: '0'
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\nバッチ登録は0"
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

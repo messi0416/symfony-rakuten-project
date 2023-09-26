@@ -1,0 +1,164 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-rfid-location-editor.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}RFID連動 ロケーション編集{% endblock %}
+
+{% block headerButtons %}
+{% endblock %}
+
+{% block contents %}
+<div
+  id="rfidLocationEditor"
+  data-search-url="{{ path('location_rfid_location_editor_search') }}"
+  data-location-detail-url="{{ path('location_location_detail', {'locationId': 'DUMMY' }) }}"
+  data-product-detail-url="{{ path('location_product_detail', { 'syohinCode': 'DUMMY' }) }}"
+  data-update-url="{{ path('location_product_update', { 'syohinCode': 'DUMMY' }) }}"
+>
+  {# メッセージ #}
+  <div class="row" v-show="hasError" style="display: none">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <button type="button" class="close" v-on:click="clearError">
+          &times;
+        </button>
+        <p class="multiLineWrap" v-text="errorMessage"></p>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="hasLocationData" class="row locationBlock mb20">
+    <div class="col-xs-12 locationCode">
+      <span class="label label-symbol" v-text="warehouse.symbol"></span>
+      <a :href="locationDetailUrl">
+        <span class="label label-info" v-text="location.locationCode"></span>
+      </a>
+    </div>
+  </div>
+  <div class="form-inline mr10 mb20">
+    <input
+      type="text"
+      class="form-control w200"
+      v-model="locationCode"
+      placeholder="ロケーションコード"
+      @keyup.enter="search"
+    />
+    <button type="button" class="btn btn-success" @click="search">
+      ロケーション<span v-text="locationFormStr"></span>
+    </button>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <template v-if="hasLocationData">
+        <button class="btn btn-default pull-left mr10 mb10" v-on:click="checkAll">
+          <i class="fa fa-check-square-o"></i>
+          全て選択
+        </button>
+        <button
+          class="btn btn-default pull-left mr10 mb10"
+          v-on:click="unCheckAll"
+        >
+          <i class="fa fa-square-o"></i>
+          選択解除
+        </button>
+        <div
+          class="btn btn-default pull-right"
+          @click="reloadPage"
+        >
+          <i class="fa fa-repeat"></i>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <table class="table mb10" id="locationList">
+        <tr>
+          <th class="col-xs-3 text-center">画像</th>
+          <template v-if="hasLocationData">
+            <th class="col-xs-2 text-center">現在登録在庫数</th>
+            <th class="col-xs-2 text-center">RFID読取在庫数</th>
+            <th class="col-xs-2 text-center">差分</th>
+          </template>
+          <template v-else>
+            <th class="col-xs-6 text-center">RFID読取在庫数</th>
+          </template>
+          <th class="col-xs-3 text-center">SKU</th>
+        </tr>
+        <tr
+          is="result-item"
+          v-for="product in products"
+          :item="product"
+          :has-location-data="hasLocationData"
+        ></tr>
+      </table>
+    </div>
+  </div>
+  <div v-if="hasLocationData" class="row mt10">
+    <div class="col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span v-text="productsNum"></span> 件中
+          <span class="bold" v-text="checkedProductsNum"></span> 商品
+          ( <span v-text="checkedRfidStockTotal"></span> 個 ) を
+        </div>
+        <div class="panel-body">
+          <div class="row row10">
+            <div>
+              <button
+                class="btn btn-primary fullWidth"
+                :disabled="checkedProductsNum == 0"
+                @click="updateStocks"
+              >
+                RFID読取内容で在庫数を更新
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr class="text-center" v-bind:class="rowCss">
+    <td>
+      <a v-bind:href="productDetailUrl">
+        <img class="img-responsive" v-bind:src="image" />
+      </a>
+    </td>
+    <template v-if="hasLocationData">
+      <td v-on:click="toggleCheck">
+        <span class="label label-default stock" v-text="stock"></span>
+      </td>
+      <td v-on:click="toggleCheck">
+        <span class="label label-primary stock" v-text="rfidStock"></span>
+      </td>
+      <td v-on:click="toggleCheck">
+        ( <span class="stock bold" :class="displayDiff.css" v-text="displayDiff.value">
+        </span> )
+      </td>
+      <td v-on:click="toggleCheck">
+        <span v-text="neSyohinSyohinCode"></span>
+      </td>
+    </template>
+    <template v-else>
+      <td>
+        <span class="label label-primary stock" v-text="rfidStock"></span>
+      </td>
+      <td>
+        <span v-text="neSyohinSyohinCode"></span>
+      </td>
+    </template>
+  </tr>
+</script>
+
+{% endblock %}

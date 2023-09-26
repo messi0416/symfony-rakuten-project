@@ -1,0 +1,29 @@
+MiscBundle\Entity\TbMallPaymentMethod:
+    type: entity
+    table: tb_mall_payment_method
+    id:
+        neMallId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: ne_mall_id
+        paymentId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+            column: payment_id
+    fields:
+        paymentCostRatio:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            options:
+                default: '0'
+            column: payment_cost_ratio
+    lifecycleCallbacks: {  }

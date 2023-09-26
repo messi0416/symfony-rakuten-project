@@ -1,0 +1,62 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+   %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}保留伝票リスト{% endblock %}
+
+{% block contents %}
+
+  <div id="holdShippingVoucherList">
+    {% if pagination.count() > 0 %}
+      <div class="navigation text-right">
+        <p class="paginationInfo forceInlineBlock vMiddle mb0">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        <span class="vMiddle">
+          {{ knp_pagination_render(pagination) }}
+        </span>
+      </div>
+
+      <table class="table table-bordered table-condensed scroll-table">
+        <tr>
+          <th class="text-center vMiddle">伝票番号</th>
+          <th class="text-center vMiddle">ピッキング<br>日付</th>
+          <th class="text-center vMiddle">ピッキング<br>リスト</th>
+          <th class="text-center vMiddle">発送先</th>
+          <th class="text-center vMiddle">納品書特記事項</th>
+        </tr>
+        {% for row in pagination.getItems() %}
+          <tr>
+            <td class="text-center vMiddle">
+              <a href="{{ path('packing_shipping_voucher_detail', {warehouseId: row.warehouseId, pickingListDate: row.pickingListDate.format('Y-m-d'), pickingListNumber: row.pickingListNumber, voucherNumber: row.voucherNumber}) }}">
+                {{ row.voucherNumber }}
+              </a>
+            </td>
+            <td class="text-center vMiddle">{{ row.pickingListDate.format('Y-m-d') }}</td>
+            <td class="text-center vMiddle">{{ row.symbol }} - {{ row.warehouseDailyNumber }}</td>
+            <td class="text-center vMiddle">{{ row.shippingAccountName }}</td>
+            <td class="text-center vMiddle">{{ row.notices }}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+
+    {% else %}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          データがありません。
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

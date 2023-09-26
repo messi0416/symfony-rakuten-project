@@ -1,0 +1,268 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: parameters.env.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: ja
+    app_notification_url: %plusnao_notification_host%
+    app_notification_path: %plusnao_notification_path%
+
+framework:
+    #esi:             ~
+    translator:
+        fallbacks: ["%locale%"]
+    secret:          "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    #serializer:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        #assets_version: SomeVersionScheme
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        # handler_id set to null will use default session handler from php.ini
+        handler_id: session.handler.native_file
+        save_path: "%kernel.root_dir%/../data/sessions"
+        name: plssc
+        cookie_domain: %auth_cookie_host%
+        cookie_path: /
+    fragments:       ~
+    http_method_override: true
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+    globals:
+      host_main   : "%host_main%"
+      host_plusnao: "%host_plusnao%"
+      host_sub    : "%host_sub%"
+      url_sub_product_detail: "http://%host_sub%/product/detail"
+
+# Assetic Configuration
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:
+        - AppBundle
+        - PlusnaoMainBundle
+        - PlusnaoYahooAgentBundle
+    #java: /usr/bin/java
+    filters:
+        cssrewrite: ~
+        #closure:
+        #    jar: "%kernel.root_dir%/Resources/java/compiler.jar"
+        #yui_css:
+        #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        default_connection: main
+        connections:
+            main:
+                driver:   pdo_mysql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            log:
+                driver:   pdo_mysql
+                host:     "%log_database_host%"
+                port:     "%log_database_port%"
+                dbname:   "%log_database_name%"
+                user:     "%log_database_user%"
+                password: "%log_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            tmp:
+                driver:   pdo_mysql
+                host:     "%tmp_database_host%"
+                port:     "%tmp_database_port%"
+                dbname:   "%tmp_database_name%"
+                user:     "%tmp_database_user%"
+                password: "%tmp_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            # agnDB
+            agnDBmain:
+                driver:   pdo_mysql
+                host:     "%agn_database_host%"
+                port:     "%agn_database_port%"
+                dbname:   "%agn_database_name%"
+                user:     "%agn_database_user%"
+                password: "%agn_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            agnDBlog:
+                driver:   pdo_mysql
+                host:     "%agnLog_database_host%"
+                port:     "%agnLog_database_port%"
+                dbname:   "%agnLog_database_name%"
+                user:     "%agnLog_database_user%"
+                password: "%agnLog_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            agnDBtmp:
+                driver:   pdo_mysql
+                host:     "%agnTmp_database_host%"
+                port:     "%agnTmp_database_port%"
+                dbname:   "%agnTmp_database_name%"
+                user:     "%agnTmp_database_user%"
+                password: "%agnTmp_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            # CubeSV01 DB
+            ec_batch:
+                driver:   pdo_mysql
+                host:     "%ec_batch_database_host%"
+                port:     "%ec_batch_database_port%"
+                dbname:   "%ec_batch_database_name%"
+                user:     "%ec_batch_database_user%"
+                password: "%ec_batch_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec01:
+                driver:   pdo_mysql
+                host:     "%ec01_database_host%"
+                port:     "%ec01_database_port%"
+                dbname:   "%ec01_database_name%"
+                user:     "%ec01_database_user%"
+                password: "%ec01_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec02:
+                driver:   pdo_mysql
+                host:     "%ec02_database_host%"
+                port:     "%ec02_database_port%"
+                dbname:   "%ec02_database_name%"
+                user:     "%ec02_database_user%"
+                password: "%ec02_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec_cube:
+                driver:   pdo_mysql
+                host:     "%ec_cube_database_host%"
+                port:     "%ec_cube_database_port%"
+                dbname:   "%ec_cube_database_name%"
+                user:     "%ec_cube_database_user%"
+                password: "%ec_cube_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+        types:
+            datetime:  MiscBundle\Extend\Doctrine\Types\DateTimeType
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        # naming_strategy: doctrine.orm.naming_strategy.underscore
+        default_entity_manager:   main
+        entity_managers:
+            main:
+                connection:       main
+                mappings:
+                    AppBundle:    ~
+                    MiscBundle:   ~
+            log:
+                connection:       log
+                mappings:
+                    AppBundle:    ~
+                    MiscBundle:   ~
+            tmp:
+                connection:       tmp
+                mappings:
+                    AppBundle:    ~
+                    MiscBundle:   ~
+
+services:
+    log_formatter:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            - "[%%datetime%%] %%channel%%.%%level_name%%: %%context%% %%extra%%: %%message%%\n"
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    spool:     { type: memory }
+
+# BCCResqueBundle
+bcc_resque:
+    class: BCC\ResqueBundle\Resque
+    vendor_dir: %kernel.root_dir%/../vendor
+    redis:
+        host: localhost
+        port: 6379
+        database: 0 # ここが本番用
+    auto_retry:
+        BatchBundle\Job\MainJob             : []
+        BatchBundle\Job\NextEngineUploadJob : []
+        BatchBundle\Job\NonExclusiveJob     : []
+
+knp_paginator:
+    page_range: 5                      # default page range used in pagination control
+    default_options:
+        page_name: page                # page query parameter name
+        sort_field_name: sort          # sort field query parameter name
+        sort_direction_name: direction # sort direction query parameter name
+        distinct: true                 # ensure distinct results, useful when ORM queries are using GROUP BY statements
+    template:
+        # pagination: KnpPaginatorBundle:Pagination:sliding.html.twig     # sliding pagination controls template
+        pagination: AppBundle:Default:parts/pagination.html.twig
+        sortable: KnpPaginatorBundle:Pagination:sortable_link.html.twig # sort link template
+
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltopdf
+        options:    []
+    image:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltoimage
+        options:    []
+
+    temporary_folder: %kernel.cache_dir%/snappy

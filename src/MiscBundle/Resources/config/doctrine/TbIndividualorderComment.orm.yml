@@ -1,0 +1,28 @@
+MiscBundle\Entity\TbIndividualorderComment:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbIndividualorderCommentRepository
+  table: tb_individualorder_comment
+
+  id:
+    order_voucher_number:
+      type: integer
+      length: 10
+    agent_id:
+      type: integer
+      length: 11
+
+  fields:
+    note:
+      type: string
+      length: 255
+      options:
+        default: ""
+      nullable: true
+    update_account_id:
+      type: integer
+      options:
+        default: 0
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true

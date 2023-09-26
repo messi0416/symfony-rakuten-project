@@ -1,0 +1,3 @@
+misc_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: MiscBundle:Default:index }

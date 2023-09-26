@@ -1,0 +1,35 @@
+MiscBundle\Entity\TbProductRfid:
+  type: entity
+  table: tb_product_rfid
+  repositoryClass: MiscBundle\Entity\Repository\TbProductRfidRepository
+  id:
+    neSyohinSyohinCode:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: SKUコード
+      id: true
+      column: ne_syohin_syohin_code
+    sequenceNum:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "連番\nSKUコードごとの連番。RFIDの発行数分だけ確保する。"
+      id: true
+      column: sequence_num
+  fields:
+    createAccountId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "発番ユーザID\nsymfony_users.id"
+      column: create_account_id
+    created:
+      type: datetime
+      nullable: false
+      comment: 発番日
+      default: CURRENT_TIMESTAMP
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

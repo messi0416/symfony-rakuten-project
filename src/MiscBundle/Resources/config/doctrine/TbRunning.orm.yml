@@ -1,0 +1,42 @@
+MiscBundle\Entity\TbRunning:
+    type: entity
+    table: tb_running
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: ID
+            generator:
+                strategy: IDENTITY
+    fields:
+        proc:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        queueName:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: queue_name
+        startDatetime:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: start_datetime
+        estimateTime:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: estimate_time
+    lifecycleCallbacks: {  }

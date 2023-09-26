@@ -1,0 +1,363 @@
+# トップページ
+plusnao_homepage:
+    path:     /
+    defaults: { _controller: PlusnaoMainBundle:Default:index }
+
+plusnao_homepage_index:
+  path:     /index
+  defaults: { _controller: PlusnaoMainBundle:Default:index }
+
+## ログイン
+plusnao_login:
+    path: /login
+    defaults: { _controller: PlusnaoMainBundle:Default:login }
+
+# ログイン確認
+plusnao_login_check:
+    path: /login_check
+
+# ログアウト
+plusnao_logout:
+    path: /logout
+
+# ログイン
+plusnao_agent_login:
+    path: /login/{agentName}
+    defaults: { _controller: PlusnaoMainBundle:Default:login }
+
+api_check_job_request:
+  path:   /pub/api/check_job_request/{key}
+  defaults:
+    _controller: AppBundle:Api:processJobRequest
+  requirements:
+    key: "^[A-Za-z0-9_-]*[a-f0-9\.]{20,64}"
+
+api_check_job_request_status:
+  path:   /pub/api/check_job_request_status/{key}
+  defaults:
+    _controller: AppBundle:Api:jobRequestStatus
+  requirements:
+    key: "^[A-Za-z0-9_-]*[a-f0-9\.]{20,64}"
+
+
+# -----------------------------------------
+# Default
+# -----------------------------------------
+
+# 売れ筋ランキング 表示
+plusnao_sales_ranking:
+  path:     /client/sales_ranking
+  defaults: { _controller: PlusnaoMainBundle:Default:salesRanking }
+
+# 売れ筋ランキング 検索
+plusnao_sales_ranking_search:
+  path:     /client/sales_ranking/search
+  defaults: { _controller: PlusnaoMainBundle:Default:salesRankingSearch }
+
+plusnao_redirect_product_location_detail:
+  path:     /product/detail/{syohinCode}
+  defaults: { _controller: PlusnaoMainBundle:Default:redirectProductLocationDetail }
+
+
+# -----------------------------------------
+# 注残一覧画面 ※認証あり
+# -----------------------------------------
+# 一覧画面（トップページ: agent指定アクセス ※ Forest Staff用）
+plusnao_vendor_order_list_change_agent_name:
+  path:     /vendor/order_list/change/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:changeAgentName
+
+# 一覧画面（トップページ）
+plusnao_vendor_order_list:
+  path:     /vendor/order_list/{_locale}/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:orderList
+    _locale: ja
+    agentName: ~
+  requirements:
+    _locale: ja|cn
+    
+# 注残検索・ページング
+plusnao_vendor_find_order_list:
+  path:     /vendor/find_order_list/{_locale}/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:findOrderList
+    _locale: ja
+    agentName: ~
+  requirements:
+    _locale: ja|cn
+
+# 注残検索（全件・ラベル用)
+plusnao_vendor_find_order_list_for_label:
+  path:     /vendor/find_order_list_for_label/{_locale}/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:findOrderListForLabel
+    _locale: ja
+    agentName: ~
+  requirements:
+    _locale: ja|cn
+    
+# 一覧画面（トップページ）オリジナル
+plusnao_vendor_order_list_original:
+  path:     /vendor/order_list_original/{_locale}/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:orderListOriginal
+    _locale: ja
+    agentName: ~
+  requirements:
+    _locale: ja|cn
+
+# 注残一覧: 未引当フラグ更新
+plusnao_vendor_order_list_reassessment:
+  path: /vendor/order_list/reassessment/{_locale}/{agentName}/{update}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:reassessUnallocatedFlg
+    _locale: ja
+    update: individual
+  requirements:
+    _locale: ja|cn
+
+# 商品画像表示画面
+plusnao_vendor_goods_image:
+  path:     /vendor/goods/image/{daihyoSyohinCode}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:goodsImage
+    daihyoSyohinCode: ~
+
+# Ajax: 注残ステータス更新
+plusnao_vendor_order_list_bulk_update:
+  path:     /vendor/order_list/{_locale}/{agentName}/bulk/update
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:orderListBulkUpdate
+    _locale: ja
+  requirements:
+    _locale: ja|cn
+
+plusnao_vendor_order_list_export_excel:
+  path:     /vendor/order_list/{_locale}/{agentName}/export_excel
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:orderListExportExcel
+    _locale: ja
+  requirements:
+    _locale: ja|cn
+
+plusnao_vendor_download_file_excel_order_list:
+  path:     /vendor/order_list/download
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:downloadExcelOrderList
+
+plusnao_vendor_list_download_export_excel:
+  path:     /vendor/order_list/list/download/{page}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:listDownloadExportExcel
+    page: 1
+  requirements:
+    page:  \d+
+
+plusnao_vendor_order_get_rate:
+  path:     /vendor/order_list/get_rate
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:getRate
+
+plusnao_vendor_order_update_rate:
+  path:     /vendor/order_list/update_rate
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:updateRate
+
+# Ajax: 注残ステータス更新
+plusnao_vendor_order_list_update_status:
+  path:     /vendor/order_list/{agentName}/update/status
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateRemainStatus }
+# Ajax: 発送番号更新
+plusnao_vendor_order_list_update_shipping_number:
+  path:     /vendor/order_list/{agentName}/update/shipping_number
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateShippingNumber }
+# Ajax: 受注番号更新
+plusnao_vendor_order_list_update_receive_order_number:
+  path:     /vendor/order_list/{agentName}/update/receive_order_number
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateReceiveOrderNumber }
+# Ajax: 入庫番号更新
+plusnao_vendor_order_list_update_warehousing_number:
+  path:     /vendor/order_list/{agentName}/update/warehousing_number
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateWarehousingNumber }
+
+# Ajax: 連絡事項取得
+plusnao_vendor_order_list_get_vendor_comment:
+  path:     /vendor/order_list/{agentName}/get/vendor_comment
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListGetVendorComment }
+# Ajax: 連絡事項更新
+plusnao_vendor_order_list_update_vendor_comment:
+  path:     /vendor/order_list/{agentName}/update/vendor_comment
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateVendorComment }
+
+# Ajax: 発注数更新
+plusnao_vendor_order_list_update_order_num:
+  path:     /vendor/order_list/{_locale}/{agentName}/update/order_num
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateOrderNum }
+
+# CSVダウンロード
+plusnao_vendor_order_csv_download:
+  path:     /vendor/order_list/{_locale}/{agentName}/csv/download
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListCsvDownload }
+
+# CSVアップロード
+plusnao_vendor_order_csv_upload:
+  path:     /vendor/order_list/{_locale}/{agentName}/csv/upload
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListCsvUpload }
+
+# DESCRIPTIONマスタCSVダウンロード
+plusnao_description_list_csv_download:
+  path:     /vendor/description_list/csv/download
+  defaults: { _controller: PlusnaoMainBundle:Vendor:descriptionListCsvDownload }
+
+# 材質商品説明マスタCSVダウンロード
+plusnao_hint_list_csv_download:
+  path:     /vendor/hint_list/csv/download
+  defaults: { _controller: PlusnaoMainBundle:Vendor:hintListCsvDownload }
+
+# Ajax: 伝票分割処理
+plusnao_vendor_order_manipulate_split:
+  path:     /vendor/order_list/{_locale}/{agentName}/manipulate/split
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListSplitVoucher }
+
+# Ajax: 商品諸元更新処理
+plusnao_vendor_order_product_spec_update:
+  path:     /vendor/order_list/{_locale}/{agentName}/update/product_spec
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateProductSpec }
+
+# Ajax: 品質レベル更新処理
+plusnao_vendor_order_list_update_quality_level:
+  path:     /vendor/order_list/{agentName}/update/quality_level
+  defaults: { _controller: PlusnaoMainBundle:Vendor:orderListUpdateQualityLevel }
+  
+# Ajax: 発送種別変更
+plusnao_vendor_order_list_update_shipping_type:
+  path:     /vendor/order_list/{agentName}/update/shipping_type
+  defaults: { _controller: PlusnaoMainBundle:Vendor:updateShippingType }
+
+# -----------------------------------------
+# 伝票度注文管理 ※認証あり
+# -----------------------------------------
+# 伝票度注文管理画面
+plusnao_vendor_remain_order_by_voucher:
+  path:     /vendor/remain_order/{_locale}/{agentName}
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:remainOrderByVoucher
+    _locale: ja
+    agentName: ~
+  requirements:
+    _locale: ja|cn
+
+# 伝票度注文管理画面 コメント更新
+plusnao_vendor_remain_order_update_comment:
+  path:     /vendor/remain_order/update/comment
+  defaults:
+    _controller: PlusnaoMainBundle:Vendor:remainOrderUpdateComment
+
+
+# --------------------------------------------
+# 注残履歴集計 （AppBundle処理へのforward用URL）
+# --------------------------------------------
+# 注残一覧 注残ステータス設定日付 集計一覧
+plusnao_vendor_remain_order_status_date_list:
+  path:   /vendor/remain_order_status/{agentName}/date_list
+  defaults: { _controller: PlusnaoMainBundle:Vendor:remainOrderStatusDateList }
+
+# 注残一覧 注残ステータス設定日付 作業者別集計一覧
+plusnao_vendor_remain_order_status_person_list:
+  path:   /vendor/remain_order_status/{agentName}/person_list
+  defaults: { _controller: PlusnaoMainBundle:Vendor:remainOrderStatusDateListByPerson }
+
+
+
+# -----------------------------------------
+# public ※認証なし
+# -----------------------------------------
+# NextEngine コールバックURL （汎用。何もしない）
+plusnao_pub_ne_callback_default:
+  path:     /pub/ne/callback/default
+  defaults: { _controller: PlusnaoMainBundle:Public:neCallbackDefault }
+
+# Alibaba コールバックURL （汎用。何もしない）
+plusnao_pub_alibaba_callback_default:
+  path:     /pub/alibaba/callback/default
+  defaults: { _controller: PlusnaoMainBundle:Public:alibabaCallbackDefault }
+
+# 商品画像一覧表示
+plusnao_pub_product_image_list:
+  path:     /pub/image/list/{daihyoSyohinCode}
+  defaults: { _controller: PlusnaoMainBundle:Public:showProductImageList }
+
+# ラベルシール印刷PDFダウンロード
+plusnao_label_pdf_download:
+  path:     /pub/label_pdf/download
+  defaults: { _controller: PlusnaoMainBundle:Default:downloadLabelPrintPdf }
+
+# 商品コード バーコード（CODE128）
+plusnao_barcode_product_code:
+  path:     /pub/barcode/product_code/{code}
+  defaults: { _controller: PlusnaoMainBundle:Public:barcodeProductCode }
+
+# 商品カラー画像、その他画像表示（バーコード遷移前提）
+plusnao_pub_barcode_product_image_list:
+  path:     /pub/barcode/image/{barcode}
+  defaults: { _controller: PlusnaoMainBundle:Public:showProductImageWithBarcode }
+
+# 商品カラー画像、その他画像表示（商品コード）
+plusnao_pub_product_color_image_list:
+  path:     /pub/color_image/{syohinCode}
+  defaults: { _controller: PlusnaoMainBundle:Public:showProductColorImage }
+
+# サーバ生成uniqid取得処理 実装 ※ロケーション操作ログ action_key をAccessから取得するための実装
+plusnao_pub_uniqid:
+  path: /pub/uniqid/{prefix}
+  defaults:
+    _controller: PlusnaoMainBundle:Public:getUniqueId
+    prefix: a
+
+# -----------------------------------------
+# シュシュクレール様 専用画面 （在庫連携）
+# -----------------------------------------
+# トップページ
+plusnao_chouchou_clair:
+    path:     /chouchou_clair
+    defaults: { _controller: PlusnaoMainBundle:ChouchouClair:index }
+
+# CSVアップロード
+plusnao_chouchou_clair_upload_csv:
+    path:     /chouchou_clair/upload_csv
+    defaults: { _controller: PlusnaoMainBundle:ChouchouClair:uploadCsv }
+
+# CSVダウンロード
+plusnao_chouchou_clair_download_csv:
+    path:     /chouchou_clair/download_csv
+    defaults: { _controller: PlusnaoMainBundle:ChouchouClair:downloadCsv }
+
+# 在庫更新 API
+plusnao_chouchou_clair_update_stock:
+    path:     /chouchou_clair/update_stock
+    defaults: { _controller: PlusnaoMainBundle:ChouchouClair:updateStock }
+
+# -----------------------------------------
+# モデル募集フォーム ※認証なし
+# -----------------------------------------
+# キッズモデル募集
+plusnao_model_recruitment_kids_form:
+  path:     /model/kids/form
+  defaults: { _controller: PlusnaoMainBundle:ModelRecruitment:kidsForm }
+
+# キッズモデル募集 応募完了
+plusnao_model_recruitment_kids_complete:
+  path:     /model/kids/complete
+  defaults: { _controller: PlusnaoMainBundle:ModelRecruitment:kidsComplete }
+
+
+# -----------------------------------------
+# API実装
+# -----------------------------------------
+# 商品レビュー一覧取得
+plusnao_api_get_product_reviews:
+  path:   /api/get_product_reviews
+  defaults: { _controller: PlusnaoMainBundle:Api:getProductReviews }
+

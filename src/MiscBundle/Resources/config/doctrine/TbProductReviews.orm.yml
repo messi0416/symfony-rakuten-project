@@ -1,0 +1,99 @@
+MiscBundle\Entity\TbProductReviews:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductReviewsRepository
+    table: tb_product_reviews
+    indexes:
+        index_daihyo_syohin_code:
+            columns:
+                - daihyo_syohin_code
+                - review_datetime
+        index_review_datetime:
+            columns:
+                - review_datetime
+        index_score:
+            columns:
+                - score
+                - review_datetime
+        index_ne_mall_id:
+            columns:
+                - ne_mall_id
+                - review_datetime
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        neMallId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "NEモールID\ntb_shopping_mallのne_mall_id"
+            column: ne_mall_id
+        originalReviewId:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: "投稿元モールレビューID\n投稿元のレビューを一意に特定するコード。\n楽天：レビューURL"
+            default: ''
+            column: original_review_id
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            default: ''
+            column: daihyo_syohin_code
+        neSyohinSyohinCode:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: "SKUコード\nSKUが特定できない場合は空欄"
+            column: ne_syohin_syohin_code
+        voucherNumber:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "伝票番号\ntb_sales_detail_analyzeの伝票番号\nSKU違いの同一商品を複数購入された場合、明細が特定できないため明細行は持たない"
+            column: voucher_number
+        reviewDatetime:
+            type: datetime
+            nullable: false
+            comment: 投稿日時
+            column: review_datetime
+        score:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "評価\n1（最低）～5（最高）の5段階"
+        title:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: レビュータイトル
+        body:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            comment: レビュー本文
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+        deleteFlg:
+            type: boolean
+            nullable: false
+            unsigned: false
+            comment: "削除フラグ\n0:未削除, 1:削除済み\nレビューは存在するが代表商品が特定できないなど、データが不完全な場合に論理削除する\n（将来的に復旧があり得る場合に利用）"
+            column: delete_flg
+    lifecycleCallbacks: {  }

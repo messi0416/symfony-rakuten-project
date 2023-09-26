@@ -1,0 +1,13 @@
+# root cron tab
+MAILTO=""
+*/5 * * * * echo 3 > /proc/sys/vm/drop_caches
+
+# SSL renewal (Let's Encrypt)
+00 14 * * 3 /usr/bin/letsencrypt renew --post-hook "service nginx reload"
+
+# backup git repositories
+15 3 * * * /usr/bin/rsync -av /var/opt/gitlab/git-data/repositories/ /root/backup/git/
+
+# サーバ再起動時のみ実行 通知サーバ(node.js) 起動処理
+# @reboot /home/workuser/.nvm/versions/node/v4.1.1/bin/node /home/workuser/.nvm/versions/node/v4.1.1/bin/forever start -p /home/workuser/.forever -l /home/workuser/.forever/node-app.log -a --workingDir /home/workuser/ne_api/bin/node /home/workuser/ne_api/bin/node/plusnao_notification_server.js -e prod
+@reboot /home/workuser/.nvm/versions/node/v10.0.0/bin/node /home/workuser/.nvm/versions/node/v10.0.0/bin/forever start -p /home/workuser/.forever -l /home/workuser/.forever/node-app.log -a --workingDir /home/workuser/ne_api/bin/node /home/workuser/ne_api/bin/node/plusnao_notification_server.js -e prod

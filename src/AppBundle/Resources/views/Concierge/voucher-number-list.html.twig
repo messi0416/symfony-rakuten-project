@@ -1,0 +1,193 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  '@AppBundle/Resources/public/js/app.concierge-voucher-number-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="voucherNumberList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>伝票番号検索</h2>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    <div id="voucherNumberListTable"
+         data-url="{{ path('concierge_voucher_number_find') }}"
+      >
+
+      {# 絞込フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="inlineBlock" role="form">
+            <div class="pull-left mb5">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="salesDateFrom">受注日</label>
+              </div>
+              <div class="input-group date w150 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="sales_date_from" class="form-control" id="salesDateFrom"
+                    placeholder="受注日 FROM" v-model="conditions.salesDateFrom"
+                />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                ～
+              </div>
+              <div class="input-group date w150 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input type="text" name="sales_date_to" class="form-control" id="salesDateTo"
+                    placeholder="受注日 TO" v-model="conditions.salesDateTo"
+                />
+              </div>
+            </div>
+
+            <div class="pull-left mb5">
+              <div class=" pull-left text-center mr5 mb5">
+                <label for="searchCustomerName">お客様名（スペース除去）<br><span style="font-size:smaller">※DBデータからスペースを除去して検索
+                </span></label>
+              </div>
+              <div class=" pull-left text-center mr5 mb5">
+                <input type="text" name="customerNameWithoutSpace" v-model="conditions.customerNameWithoutSpace" 
+                    class="form-control mb5 mr5 w200" id="searchCustomerNameWithoutSpace" @keyup.enter="search" />
+              </div>
+            </div>
+            
+            <div class="pull-left mb5">
+              <div class=" pull-left text-center mr5 mb5">
+                <label for="searchCustomerName">お客様名<br><span style="font-size:smaller">※姓名は間にスペース</span></label>
+              </div>
+              <div class=" pull-left text-center mr5 mb5">
+                <input type="text" name="customerName" v-model="conditions.customerName" 
+                    class="form-control mb5 mr5 w200" id="searchCustomerName" @keyup.enter="search" />
+              </div>
+            </div>
+              
+            <div class="pull-left mb5">
+              <div class="pull-left text-center mr5 mb5">
+                <label for="searchCustomerNameKana">お客様名カナ<br><span style="font-size:smaller">※姓名は間にスペース</span></label>
+              </div>
+              <div class="pull-left text-center mr5 mb5">
+                <input type="text" name="customerNameKana" v-model="conditions.customerNameKana" 
+                    class="form-control mb5 mr5 w200" id="searchCustomerNameKana" @keyup.enter="search" />
+              </div>
+            </div>
+            <div class="pull-left mb5">
+              <div class="pull-left text-center mr5 mb5 mt8">
+                <label for="searchTel">電話番号</label>
+              </div>
+              <div class="pull-left text-center mr5 mb5">
+                <input type="text" name="tel" v-model="conditions.tel" 
+                    class="form-control mb5 mr5 w150" id="searchTel" @keyup.enter="search" />
+              </div>
+            </div>
+            <div class="pull-left mb5">
+              <div class="pull-left  text-center mr5 mb5 mt8">
+                <label for="searchPostCode">郵便番号</label>
+              </div>
+              <div class="pull-left mr10 mb5">
+                <input type="text" name="postCode" v-model="conditions.postCode" 
+                    class="form-control mb5 mr5 w150" id="searchPostCode" @keyup.enter="search" />
+              </div>
+            </div>
+            
+            <div class="pull-left mb5">
+              <div class="pull-left text-center mr5 mb5 mt8">
+                <label for="searchAddress">住所</label>
+              </div>
+              <div class="pull-left mr10 mb5">
+                <input type="text" name="address" v-model="conditions.address" 
+                    class="form-control mb5 mr5 w600" id="searchAddress" @keyup.enter="search" />
+              </div>
+            </div>
+            
+            <div class="pull-left mb5">
+              <div class="pull-left text-center mr5 mb5 mt8">
+                <label for="searchEmail">購入者メールアドレス</label>
+              </div>
+              <div class="pull-left mr10 mb5">
+                <input type="text" name="email" v-model="conditions.email" 
+                    class="form-control mb5 mr5 w300" id="searchEmail" @keyup.enter="search" />
+              </div>
+            </div>
+            
+            
+            <div class="pull-left mb5">
+              <div class="pull-left text-center mr5 mb5 mt8">
+                <label for="searchVoucherNumber">伝票番号</label>
+              </div>
+              <div class="pull-left mr10 mb5">
+                <input type="text" name="voucherNumber" v-model="conditions.voucherNumber" 
+                    class="form-control mb5 mr5 w100" id="searchVoucherNumber" @keyup.enter="search" />
+              </div>
+            </div>
+            
+            <div class="pull-right">
+              <button type="button" class="btn btn-success mb5 mr5" id="searchButton" v-on:click="search">検索</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="vMiddle w100">伝票番号</th>
+          <th class="vMiddle w100">受注日</th>
+          <th class="vMiddle w100">出荷日</th>
+          <th class="vMiddle w150">受注状態</th>
+          <th class="vMiddle w150">キャンセル</th>
+          <th class="vMiddle w200">店舗名</th>
+          <th class="vMiddle w200">購入者名</th>
+          <th class="vMiddle w150">購入者電話番号</th>
+          <th class="vMiddle w300">購入者住所（10文字まで）</th>
+          <th class="vMiddle w100">明細数</th>
+        </tr>
+
+        <tr v-for="item in list"
+            is="result-item"
+            :item="item"
+          ></tr>
+      </table>
+    </div>
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateVoucherNumberListTableRow">
+    <tr class="text-center">
+      <td class="vMiddle"><a v-text="item.voucherNumber" v-bind:href="item.neUrl" target="_blank"></a></td>
+      <td class="vMiddle" v-text="item.salesDate"></td>
+      <td class="vMiddle" v-text="item.shippingDate"></td>
+      <td class="vMiddle" v-text="item.status"></td>
+      <td class="vMiddle" v-text="item.cancelStatus"></td>
+      <td class="vMiddle" v-text="item.shopName"></td>
+      <td class="vMiddle" v-text="item.customerName"></td>
+      <td class="vMiddle" v-text="item.customerTel"></td>
+      <td class="vMiddle" v-text="item.customerAddress"></td>
+      <td class="vMiddle" v-text="item.detailCount"></td>
+    </tr>
+  </script>
+
+{% endblock %}

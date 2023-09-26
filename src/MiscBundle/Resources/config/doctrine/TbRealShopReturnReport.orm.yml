@@ -1,0 +1,62 @@
+MiscBundle\Entity\TbRealShopReturnReport:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbRealShopReturnReportRepository
+  table: tb_real_shop_return_report
+
+  id:
+    return_date:
+      type: datetime
+      nullable: false
+      id: true
+    number:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+      id: true
+
+  fields:
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+      id: true
+
+    shop_stock:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    move_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    create_account_id:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    create_account_name:
+      type: string
+      nullable: false
+      size: 24
+      options:
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks: {  }

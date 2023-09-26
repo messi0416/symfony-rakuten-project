@@ -1,0 +1,561 @@
+<div id="adminTopNav">
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+
+    <div class="container-fluid">
+
+      <div class="navbar-header">
+        <button class="btn navbar-toggle collapsed" data-toggle="collapse" data-target="#app-nav-top-bar" aria-expanded="false">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        {% if is_granted('ROLE_USER') %}
+        <a href="{{ path('admin_index') }}" class="navbar-brand">
+          管理画面:{{ account.getUsername() }}
+        </a>
+        {% else %}
+        <span class="navbar-brand">
+          管理画面:{{ account.getUsername() }}
+        </span>
+        {% endif %}
+      </div>
+
+      <div id="app-nav-top-bar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+
+          {% if is_granted('ROLE_PRODUCT_EDITOR') and is_granted('ROLE_PRODUCT_EDITOR_FOR_ITEM_REGIST') == false%}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              商品
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+
+              {% if is_granted('ROLE_USER') %}
+              <li>
+                <a href="{{ path('goods_list') }}">
+                  商品一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('goods_list_english') }}">
+                  英語情報
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('set_product_list') }}">
+                  セット商品
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('mixed_product_list') }}">
+                  複合出品(Amazon)
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('goods_copy_product_input') }}">
+                  商品コピー
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_stock_list') }}">
+                  商品在庫確認
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_location_purchase_price_list') }}">
+                  ロケーション在庫原価一覧
+                </a>
+              </li>
+              {% endif %}
+
+              <li>
+                <a href="{{ path('goods_image_edit', { daihyoSyohinCode: '__DUMMY__' }) }}"
+                   v-on:click.stop.prevent="showGoodsImageEditCodeModal($event)"
+                  >
+                  商品画像設定(※α版)
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_image_delete_folders') }}">
+                  商品画像削除(※α版)
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_attention_image_list') }}">
+                  商品画像アテンション画像管理
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_weight_size_edit') }}">
+                  重量・サイズ設定
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_warehouse_stock_list') }}">
+                  倉庫在庫一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ url_sub_product_detail }}" target="_blank">
+                  商品詳細
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('api_search_address') }}">
+                  仕入先アドレス検索
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_simple_product_register') }}">
+                  商品簡易登録
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('products_directory_count') }}">
+                  商品ディレクトリ集計
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_list_review') }}">
+                  商品レビュー一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_csv_format') }}">
+                  CSVフォーマット
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('goods_axis_code_index') }}">
+                  縦横軸コード管理
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('product_edit_importability') }}">
+                  輸出入可否
+                </a>
+              </li>
+
+              {% if is_granted('ROLE_SALES_PRODUCT_ACCOUNT') %}
+                <li>
+                  <a href="{{ path('product_sales_account') }}">
+                    商品売上担当者一覧
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('product_sales_add_account') }}">
+                    商品売上担当者追加
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('product_sales_inventory_constant_index') }}">
+                    商品売上担当者向け 在庫定数設定
+                  </a>
+                </li>
+              {% endif %}
+              
+              {% if is_granted('ROLE_SYSTEM_USER') %}
+                <li>
+                  <a href="{{ path('product_edit_delete') }}">
+                    商品削除
+                  </a>
+                </li>
+              {% endif %}
+              
+              {% if is_granted('ROLE_SYSTEM_USER') %}
+                <li>
+                  <a href="{{ path('product_edit_ng_word_index') }}">
+                    商品Ngワード一覧 
+                  </a>
+                </li>
+              {% endif %}
+
+            </ul>
+          </li>
+          {% endif %}
+          {% if is_granted('ROLE_PRODUCT_EDITOR_FOR_ITEM_REGIST') %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              商品
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+
+              {% if is_granted('ROLE_USER') %}
+              <li>
+                <a href="{{ path('goods_list') }}">
+                  商品一覧
+                </a>
+              </li>
+              {% endif %}
+
+              <li>
+                <a href="{{ path('goods_image_edit', { daihyoSyohinCode: '__DUMMY__' }) }}"
+                   v-on:click.stop.prevent="showGoodsImageEditCodeModal($event)"
+                  >
+                  商品画像設定(※α版)
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('api_search_address') }}">
+                  仕入先アドレス検索
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('goods_axis_code_index') }}">
+                  縦横軸コード管理
+                </a>
+              </li>
+
+            </ul>
+          </li>
+          {% endif %}
+
+          {% if is_granted('ROLE_USER') %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              実店舗
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ path('real_shop_product_stock_list') }}">
+                  商品在庫
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('real_shop_picking_report_list') }}">
+                  配送リスト
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('real_shop_return_goods_list') }}">
+                  返品リスト
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('real_shop_register_simple_product') }}">
+                  商品登録
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('real_shop_import_smaregi_stock') }}" onclick="return confirm('スマレジ取込を開始してよろしいですか？');">
+                  スマレジ在庫取込
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+          {% if is_granted('ROLE_USER') %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              コンシェルジュ
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ path('concierge_operation_log') }}">
+                  作業ログ
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('concierge_unpaid_list') }}">
+                  未入金一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('concierge_shortage_list') }}">
+                  欠品商品一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('concierge_shipping_delay_list') }}">
+                  出荷遅延一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('concierge_uncombined_order_list') }}">
+                  未同梱受注一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('concierge_fba_multi_included_order_list') }}">
+                  FBAマルチ商品混合受注一覧
+                </a>
+              </li>
+
+
+              <li>
+                <a href="{{ path('concierge_urgent_shipping_stock_list') }}">
+                  伝票商品在庫一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('concierge_unknown_product_list') }}">
+                  Accessにない商品
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('mall_order_list') }}" target="_blank">
+                  モール受注CSV変換
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('concierge_shipping_stop') }}">
+                  出荷STOP
+                </a>
+              </li>
+              <li>
+                <a v-on:click="openMailTemplateWindow('{{ path('concierge_mail_template', { type: constant('MiscBundle\\Entity\\Repository\\ForestMailtemplatesRepository::TYPE_DEFAULT') }) }}')">
+                  メールテンプレート
+                </a>
+              </li>
+              <li>
+                <a v-on:click="openMailTemplateWindow('{{ path('concierge_mail_template', { type: constant('MiscBundle\\Entity\\Repository\\ForestMailtemplatesRepository::TYPE_YAHOO') }) }}')">
+                  メールテンプレート(Y!)
+                </a>
+              </li>
+              {% if is_granted('ROLE_CUSTOMER_MANAGER') %}
+                <li>
+                  <a href="{{ path('concierge_voucher_number_list') }}">
+                    伝票番号検索
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <a
+                  class="cursorPointer"
+                  v-on:click="openRakutenInquiryCountWindow('{{ path('concierge_rakuten_inquiry_count') }}')"
+                >
+                  楽天未処理問い合わせ件数
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+          {#<li class="nav-item dropdown">#}
+            {#<a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
+              {#仕入#}
+              {#<span class="caret"></span>#}
+            {#</a>#}
+            {#<ul class="dropdown-menu">#}
+              {#<li>#}
+                {#<a href="{{ path('vendor_foreign_vendor_list') }}">#}
+                  {#アリババ店舗一覧#}
+                {#</a>#}
+              {#</li>#}
+            {#</ul>#}
+          {#</li>#}
+
+          {% if is_granted('ROLE_USER') %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              ロジ
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ path('delivery_statement_detail_product_num_list') }}" target="deliveryStatementList">
+                  納品書印刷待ち 伝票一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('delivery_shipping_voucher_list') }}">
+                  出荷リスト
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('delivery_change_shipping_method_list') }}">
+                  発送方法変更
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('delivery_create_shipping_info_csv') }}">
+                  配送情報CSV生成
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('products_sku_shippingdivision_index') }}">
+                  SKU別送料設定
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('products_sku_shippingdivision_pending_index') }}">
+                  SKU別送料設定 保留リスト
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('logistics_purchase_list_light') }}">
+                  仕入・注残一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('logistics_stock_transport_list') }}">
+                  移動伝票
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('warehouse_list') }}">
+                  倉庫マスタ
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('company_list') }}">
+                  会社マスタ
+                </a>
+              </li>
+              <li>
+                <a class="pointer" v-on:click.stop.prevent="showLabelModal">
+                  ラベルCSV
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('stock_history') }}">
+                  総在庫情報
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('stock_manual_change_history') }}">
+                  在庫数手動変更履歴
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('logistics_unallocated_shipping_slip_number_list') }}">
+                  未引当発送伝票番号リスト
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('unused_box_number_list') }}">
+                  未使用箱番号
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('logistics_rakuten_express_convert_csv_list') }}">
+                  楽天Express CSVファイル変換
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('logistics_warehouse_result_history_list') }}">
+                  出荷実績レビュー
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('shipping_inquiry_number_used_report_csv_list') }}">
+                  使用済み発送伝票番号報告CSV
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('shipping_inquiry_number_reissue_list') }}">
+                  配送ラベル再発行伝票一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('shipping_inquiry_number_noneed_list') }}">
+                  不使用問い合わせ番号一覧
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+          {% if is_granted('ROLE_USER') %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                設定
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="{{ path('purchasing_agent_list') }}">
+                    発注依頼先
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_shippingdivision') }}">
+                    送料設定
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_delivery_split_rule') }}">
+                    発送方法変換設定
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_setting_index') }}">
+                    各種設定
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_mall_index') }}">
+                    店舗情報
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_team_index') }}">
+                    チーム一覧
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('setting_maintenance_schedule_index') }}">
+                    メンテナンススケジュール
+                  </a>
+                </li>
+              </ul>
+            </li>
+          {% endif %}
+
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="{{ path('logout') }}">
+              <i class="fa fa-sign-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+  {# ラベル印刷用モーダル #}
+  <div
+    is="parts-modal-label-print"
+    :state="labelPrintModalState"
+    ></div>
+
+
+  {# 商品一覧モーダル:画像編集 #}
+  <div
+    is="parts-modal-product-list"
+    :state="goodsImageEditCodeModalState"
+    v-on:submit-product="goImageEdit"
+    ></div>
+</div>

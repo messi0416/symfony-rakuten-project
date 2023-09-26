@@ -1,0 +1,63 @@
+MiscBundle\Entity\TbMaintenanceSchedule:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbMaintenanceScheduleRepository
+    table: tb_maintenance_schedule
+    indexes:
+        updated:
+            columns:
+                - start_datetime
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        maintenanceType:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 種別
+            column: maintenance_type
+        startDatetime:
+            type: datetime
+            nullable: false
+            comment: "開始日時\n各処理は、完了までの所要時間を考慮して、開始日時の一定時間前から処理を停止する"
+            column: start_datetime
+        endDatetime:
+            type: datetime
+            nullable: false
+            comment: 終了日時
+            column: end_datetime
+        note:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: 備考
+            default: ''
+        deleteFlg:
+            type: boolean
+            nullable: false
+            comment: "削除フラグ\n0:未削除 1:削除済み\nメンテナンスが取り消しになった場合に設定"
+            default: '0'
+            column: delete_flg
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 登録・更新者ID
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 登録・更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

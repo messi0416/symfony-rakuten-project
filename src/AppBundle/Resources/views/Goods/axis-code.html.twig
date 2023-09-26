@@ -1,0 +1,306 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.axis-code.js' %}
+  <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
+{% endblock %}
+
+
+{% block body %}
+  <script type="text/javascript">
+    const SEARCH_CODE = "{{ code }}";
+  </script>
+
+  <div id="axisCode" class="container"
+    data-search-url="{{ path('goods_axis_code_search') }}"
+    data-update-url="{{ path('goods_axis_code_update') }}"
+  >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品 縦横軸コード管理</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div is="axis-code-order-form-modal"
+         :state="modalState"
+         v-on:update-axis-order="updateAxisOrder"
+      ></div>
+
+    <div is="axis-code-add-form-modal"
+         :state="addModalState"
+         v-on:refresh-axis-code-list="reloadPage"
+      ></div>
+    <div is="axis-code-del-form-modal"
+         :state="delModalState"
+         v-on:refresh-axis-code-list="reloadPage"
+      ></div>
+
+    <div class="form-inline clearfix mb10 mt10">
+      <div class="form-group pull-left mr10">
+        <span class="mr10">代表商品コード：</span>
+        <input type="text" class="form-control w300" v-model="skuCode"/>
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-success" @click="search">検索</button>
+      </div>
+    </div>
+
+    <div class="panel panel-default" v-if="product !== null">
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="row row10 mb10">
+            <div class="col-xs-4 text-left"><span v-text="product.daihyoSyohinCode"></span></div>
+            <div class="col-xs-6 text-left"><span v-text="product.daihyoSyohinName"></span></div>
+          </div>
+          <div class="row row10 mb10">
+            <button type="button" class="btn btn-primary" @click="update" v-if="isUpdatable">項目名保存</button>
+            <button type="button" class="btn btn-primary" v-on:click="showAddColModal" >横軸追加</button>
+            <button type="button" class="btn btn-primary" v-on:click="showAddRowModal" >縦軸追加</button>
+          </div>
+
+          <div class="col-xs-6">
+            <div class="row row10 mb10">
+              <div class="col-xs-2" v-text="product.colTypeName"></div>
+              <div class="col-xs-10 text-right">
+                <button type="button" class="btn btn-primary" v-if="isUpdatable" v-on:click="showColOrderModal">並び順更新（横軸優先）</button>
+              </div>
+            </div>
+            <table class="table table-bordered table-condensed">
+              <tr>
+                <th>横軸コード</th>
+                <th>横軸項目名</th>
+                <th>横軸項目英名</th>
+                <th>横軸補助項目名</th>
+                <th>並び順</th>
+                <th v-if="product.isEnableColDelete">編集</th>
+              </tr>
+              <tr v-for="col in product.colList">
+                <td v-text="col.colcode" class="vMiddle"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasColModified(col.colcode, 'colname')}" v-model="col.colname" @input="changeAxisColValue($event, col.colcode, 'colname')" :disabled="!isUpdatable"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasColModified(col.colcode, 'colname_en')}" v-model="col.colname_en" @input="changeAxisColValue($event, col.colcode, 'colname_en')" :disabled="!isUpdatable"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasColModified(col.colcode, 'support_colname')}" v-model="col.support_colname" @input="changeAxisColValue($event, col.colcode, 'support_colname')" :disabled="!isUpdatable"></td>
+                <td><input type="number" class="form-control" v-model="col.並び順No" :disabled="!isUpdatable"></td>
+                <td v-if="product.isEnableColDelete"><button type="button" class="btn btn-warning" v-if="col.enableDelFlg" v-on:click="showDelColModal(col.colcode)">削除</button></td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-xs-6">
+            <div class="row row10 mb10">
+              <div class="col-xs-2" v-text="product.rowTypeName"></div>
+              <div class="col-xs-10 text-right">
+                <button type="button" class="btn btn-primary" v-if="isUpdatable" v-on:click="showRowOrderModal">並び順更新（縦軸優先）</button>
+              </div>
+            </div>
+            <table class="table table-bordered table-condensed">
+              <tr>
+                <th>縦軸コード</th>
+                <th>縦軸項目名</th>
+                <th>縦軸項目英名</th>
+                <th>縦軸補助項目名</th>
+                <th>並び順</th>
+                <th v-if="product.isEnableRowDelete">編集</th>
+              </tr>
+              <tr v-for="row in product.rowList">
+                <td v-text="row.rowcode" class="vMiddle"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasRowModified(row.rowcode, 'rowname')}" v-model="row.rowname" @input="changeAxisRowValue($event, row.rowcode, 'rowname')" :disabled="!isUpdatable"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasRowModified(row.rowcode, 'rowname_en')}" v-model="row.rowname_en" @input="changeAxisRowValue($event, row.rowcode, 'rowname_en')" :disabled="!isUpdatable"></td>
+                <td><input type="text" class="form-control" :class="{'bg-modified': hasRowModified(row.rowcode, 'support_rowname')}" v-model="row.support_rowname" @input="changeAxisRowValue($event, row.rowcode, 'support_rowname')" :disabled="!isUpdatable"></td>
+                <td><input type="number" class="form-control" v-model="row.並び順No" :disabled="!isUpdatable"></td>
+                <td v-if="product.isEnableRowDelete"><button type="button" class="btn btn-warning" v-if="row.enableDelFlg" v-on:click="showDelRowModal(row.rowcode)">削除</button></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  {# modals #}
+  <script type="text/x-template" id="templateAxisCodeOrderForm">
+    <div class="modal"
+         id="modalAxisCodeOrderForm"
+         tabindex="-1"
+         data-save-url="{{ path('goods_axis_code_order_save') }}"
+      >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            {#<div v-show="state.message.length > 0">#}
+              {#<div class="alert" v-bind:class="state.messageCssClass" v-text="state.message">#}
+              {#</div>#}
+            {#</div>#}
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <div id="modalAxisCodeOrderFormBody" class="row" v-show="!nowLoading">
+              <div class="col-xs-10 col-xs-offset-1">
+
+                  <div v-if="item !== null && item.isAxisColSelected">
+                    <div v-for="col in item.colList">
+                      <div v-for="row in item.rowList">
+                        <span v-text="item.daihyoSyohinCode+col.colcode+row.rowcode" class="vMiddle"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="item !== null && !item.isAxisColSelected">
+                    <div v-for="row in item.rowList">
+                      <div v-for="col in item.colList">
+                        <span v-text="item.daihyoSyohinCode+col.colcode+row.rowcode" class="vMiddle"></span>
+                      </div>
+                    </div>
+                  </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="templateAxisCodeInsertForm">
+    <div class="modal"
+         id="modalAxisCodeInsertForm"
+         tabindex="-1"
+         data-save-url="{{ path('goods_axis_code_insert') }}"
+      >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label"><span v-if="isAxisColSelected">横</span><span v-else>縦</span>軸追加画面</h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <div id="modalAxisCodeOrderFormBody" class="row" v-show="!nowLoading">
+              <div class="form-group mb0 col-sm-12">
+                <div class="form-inline">
+                  <label for="shippingMethod" class="mr5 ml10"><span v-if="isAxisColSelected">横</span><span v-else>縦</span>軸コード：<strong>-</strong></label>
+                  <input type="text" class="form-control" v-model="axisCode">
+                  <span class="small">※(-)は自動で付与されます</span>
+                </div>
+                <div class="form-inline mt20">
+                  <label for="transportNumber" class="mr5 ml10"><span v-if="isAxisColSelected">横</span><span v-else>縦</span>軸項目名：</label>
+                  <input type="text" class="form-control" v-model="axisName">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="templateAxisCodeDeleteForm">
+    <div class="modal"
+         id="modalAxisCodeDeleteForm"
+         tabindex="-1"
+         data-save-url="{{ path('goods_axis_code_delete') }}"
+      >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+
+            {# global-message コンポーネント #}
+            <div is="parts-global-message" :state="messageState"></div>
+
+            <div v-show="nowLoading" class="row">
+              <div class="col-sm-12 text-center">
+                <img src="{{ asset('img/loading.gif') }}" />
+              </div>
+            </div>
+
+            <span class="mr10">以下のskuを削除します。よろしいですか。</span>
+
+            <div id="modalAxisCodeOrderFormBody" class="row" v-show="!nowLoading">
+              <div class="col-xs-10 col-xs-offset-1">
+
+                  <div v-if="item !== null">
+                    <div v-for="col in item.colList">
+                      <div v-for="row in item.rowList">
+                        <span v-text="item.daihyoSyohinCode+col.colcode+row.rowcode" class="vMiddle"></span>
+                      </div>
+                    </div>
+                  </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+            <button type="button" class="btn btn-lg btn-primary" v-on:click="save">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+{% endblock %}

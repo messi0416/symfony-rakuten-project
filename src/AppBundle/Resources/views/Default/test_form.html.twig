@@ -1,0 +1,28 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block body %}
+<div class="container">
+
+  <form action="/ne_api/app_test.php/api/add_log" method="post">
+
+    ID : <input type="text" name="ID" value="" /><br>
+    PC : <input type="text" name="PC" value="" /><br>
+    EXEC_TITLE : <input type="text" name="EXEC_TITLE" value="" /><br>
+    EXEC_TIMESTAMP : <input type="text" name="EXEC_TIMESTAMP" value="" /><br>
+    LOG_LEVEL : <input type="text" name="LOG_LEVEL" value="" /><br>
+    LOG_TITLE : <input type="text" name="LOG_TITLE" value="" /><br>
+    LOG_SUBTITLE1 : <input type="text" name="LOG_SUBTITLE1" value="" /><br>
+    LOG_SUBTITLE2 : <input type="text" name="LOG_SUBTITLE2" value="" /><br>
+    LOG_SUBTITLE3 : <input type="text" name="LOG_SUBTITLE3" value="" /><br>
+    LOG_TIMESTAMP : <input type="text" name="LOG_TIMESTAMP" value="" /><br>
+    LOG_INTERVAL : <input type="text" name="LOG_INTERVAL" value="" /><br>
+    LOG_ELAPSE : <input type="text" name="LOG_ELAPSE" value="" /><br>
+
+    <input type="submit" value="保存" >
+
+  </form>
+
+
+
+</div>
+{% endblock %}

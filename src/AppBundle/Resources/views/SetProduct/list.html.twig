@@ -1,0 +1,117 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {# 商品ダイアログ コンポーネント #}
+  {% include 'AppBundle::parts/modal-product-list.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.set-product-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="setProductList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>セット商品 一覧</h2>
+        </div>
+
+        <div class="pull-right mt20">
+          <a class="btn btn-default" href="{{ path('set_product_required_list') }}">セット作成</a>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="setProductListTable"
+         data-url="{{ path('set_product_list_find') }}"
+         data-detail-url-base="{{ path('set_product_detail', { daihyoSyohinCode: '__CODE__' }) }}"
+      >
+      {#&#123;&#35; 絞込フォーム &#35;&#125;#}
+      {#<div class="panel panel-default">#}
+        {#<div class="panel-body">#}
+          {#<form class="form-inline inlineBlock" role="form">#}
+            {#<div class="form-group mr5">#}
+              {#<label for="copyComment">コピー文言</label>#}
+              {#<input type="text" id="copyComment" class="form-control" v-model="copyComment">#}
+            {#</div>#}
+          {#</form>#}
+        {#</div>#}
+      {#</div>#}
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :init-page-item-num="pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :page="page"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="col-xs-2">商品コード</th>
+          <th class="col-xs-5">商品名</th>
+          <th class="col-xs-1">画像</th>
+          <th class="col-xs-1">セットSKU数</th>
+          <th class="col-xs-1">在庫設定</th>
+          <th class="col-xs-1">在庫数</th>
+          <th class="col-xs-1">&nbsp;</th>
+        </tr>
+
+        <tr v-for="item in pageData"
+            is="result-item"
+            :item="item"
+            :detail-url-base="detailUrlBase"
+          ></tr>
+      </table>
+
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateSetProductListTableRow">
+    <tr class="text-center">
+      <td class="vMiddle" v-text="item.daihyoSyohinCode"></td>
+      <td class="vMiddle" v-text="item.daihyoSyohinName"></td>
+      <td class="vMiddle">
+        <img class="img-responsive" v-bind:src="item.imageUrl" v-if="item.imageUrl">
+      </td>
+      <td class="vMiddle text-right" v-text="item.skuNum"></td>
+      <td class="vMiddle text-right" v-text="item.requiredStock"></td>
+      <td class="vMiddle text-right" v-text="item.stock"></td>
+      <td class="vMiddle text-center">
+        <a v-bind:href="detailUrl" class="btn btn-info">詳細</a>
+      </td>
+    </tr>
+  </script>
+
+{% endblock %}

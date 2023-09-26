@@ -1,0 +1,85 @@
+MiscBundle\Entity\TbProductchoiceitemsShippingGroupLog:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsShippingGroupLogRepository
+    table: tb_productchoiceitems_shipping_group_log
+    indexes:
+        index_daihyo_syohin_code_axis:
+            columns:
+                - daihyo_syohin_code
+                - bundle_axis
+                - axis_code
+                - created_at
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: SKU別配送方法手動設定履歴ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            column: daihyo_syohin_code
+        bundleAxis:
+            type: string
+            nullable: true
+            length: 4
+            fixed: false
+            comment: 同時処理軸。rowまたはcol、NULLの場合は代表商品コード全て
+            column: bundle_axis
+        axisCode:
+            type: string
+            nullable: true
+            length: 100
+            fixed: false
+            comment: 軸コード。NULLの場合は代表商品コード全て
+            column: axis_code
+        targetNeSyohinSyohinCode:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: 対象SKU。両軸ともサイズ軸であり、1SKUのみの更新を行う場合に利用する
+            column: target_ne_syohin_syohin_code
+        shippingGroupCode:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 送料グループ種別。tb_shippingdivisionのshipping_group_codeにマップし、出荷用配送方法IDが、どの送料設定マスタのグループに該当するかを設定する。これを元に送料設定を確定する場合、同じグループ内でサイズや重量の制限がある場合、制限内で最も価格の安いものを適用する。
+            column: shipping_group_code
+        createNeSyohinSyohinCode:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: 登録時指定SKU。デバッグ用
+            column: create_ne_syohin_syohin_code
+        reflectedFlg:
+            type: boolean
+            nullable: false
+            comment: "反映済フラグ\n0:未反映 1:反映済"
+            default: '0'
+            column: reflected_flg
+        createSymfonyUsersId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 登録ユーザID
+            default: '0'
+            column: create_symfony_users_id
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+            column: created
+
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

@@ -1,0 +1,85 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/css/app.goods-analyze-sales-transition.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.goods-analyze-sales-transition.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const PRODUCT_DATA = {{ productData | json_encode | raw }};
+  </script>
+  <div id="analyzeSalesTransition" class="container"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品売上推移</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+    <div class="panel panel-default" v-if="displayFlg" v-cloak>
+      <div class="panel-body">
+        <div>
+          <table class="table table-bordered">
+            <tr>
+              <th class="text-center noWrap px20">代表商品コード</th>
+              <th class="text-center">代表商品名</th>
+            </tr>
+            <tr>
+              <td
+                class="text-center vMiddle fz16 noWrap px20"
+                v-text="productData.code">
+              </td>
+              <td v-text="productData.name"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div>
+          <table class="table table-bordered odd-bg-smoke">
+            <tr>
+              <th class="text-center">受注年月</th>
+              <th class="text-center">伝票数</th>
+              <th class="text-center">数量</th>
+              <th class="text-center">総売上額</th>
+              <th class="text-center">明細金額</th>
+              <th class="text-center">粗利額</th>
+              <th class="text-center">粗利率</th>
+              <th class="text-center">伝票 ＋</th>
+              <th class="text-center">伝票 －</th>
+            </tr>
+            <tr v-for="record in productData.salesTransition">
+              <td class="text-center" v-text="record.orderYm"></td>
+              <td class="text-right" v-text="record.voucherQuantity"></td>
+              <td class="text-right" v-text="record.orderQuantity"></td>
+              <td class="text-right" v-text="record.detailAmountIncludingCost"></td>
+              <td class="text-right" v-text="record.detailAmount"></td>
+              <td class="text-right" v-text="record.detailGrossProfit"></td>
+              <td class="text-right" v-text="record.detailGrossProfitRate"></td>
+              <td class="text-right" v-text="record.additionalAmount"></td>
+              <td class="text-right" v-text="record.subtractionAmount"></td>
+            </tr>
+          </table>
+          <p v-if="!productData.salesTransition.length" class="text-center">
+            受注データはありません。
+          </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

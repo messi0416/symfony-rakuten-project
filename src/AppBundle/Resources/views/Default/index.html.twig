@@ -1,0 +1,391 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+
+  'bundles/app/vendor/datetimepicker/css/bootstrap-datetimepicker.min.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+
+  {# label-print コンポーネント#}
+  {% include 'AppBundle::parts/modal-label-print.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.main.js'
+    '@AppBundle/Resources/public/js/app.ai.js'
+    '@AppBundle/Resources/public/js/partial/modal-account-form.js'
+
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+
+    '@AppBundle/Resources/public/vendor/moment/moment-with-locales.min.js'
+    '@AppBundle/Resources/public/vendor/datetimepicker/js/bootstrap-datetimepicker.min.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+  <div  id="globalMessage">
+    <div class="clearfix">
+      <div class="pull-left">
+        <h2>Plusnao Web System</h2>
+      </div>
+
+      <div class="pull-left notifyIcon">
+      </div>
+
+      <div class="pull-right">
+        <h3>
+          <a class="btn btn-primary" href="{{ path('admin_index') }}" target="_blank">管理</a>
+
+          <a class="btn btn-success" href="{{ path('location_index') }}" target="_blank">ロケーション</a>
+
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              MENU <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ path('products_delete_exclusion') }}" target="_blank">
+                  <i class="fa fa-shield"></i> 削除対象外商品コード 一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('products_missing_amazon_image_list') }}" target="_blank">
+                  <i class="fa fa-amazon"></i> Amazon画像未登録一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('products_not_white_list') }}" target="_blank">
+                  <i class="fa fa-ban"></i> 未審査・グレー・ブラック商品一覧
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('products_size_check_list') }}" target="_blank">
+                  <i class="fa fa-arrows"></i> 商品計測一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('products_location_log_list') }}" target="_blank">
+                  <i class="fa  fa-archive"></i> ロケーション操作履歴一覧
+                </a>
+              </li>
+
+              <li>
+                <a class="pointer" data-toggle="modal" data-target="#modalSearchVendorAddress">
+                  <i class="fa fa-search"></i> 仕入先アドレス検索
+                </a>
+              </li>
+
+              <li>
+                <a class="pointer" data-toggle="modal" data-target="#modalRakutenNokiKanri">
+                  <i class="fa fa-th-list"></i> 楽天納期管理番号
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('malldesign') }}" target="_blank">
+                  <i class="fa fa-pencil-square"></i> モールデザイン管理
+                </a>
+              </li>
+
+              <li>
+                <a class="pointer" v-on:click.stop.prevent="showLabelModal">
+                  <i class="fa fa-tag"></i> ラベルCSV
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('logistics_purchase_list_light') }}" target="_blank">
+                  <i class="fa fa-truck fa-flip-horizontal"></i> 仕入・注残一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('delivery_shipping_stock_move_list') }}" target="_blank">
+                  <i class="fa fa-truck"></i> 出荷在庫移動一覧
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ path('delivery_statement_detail_product_num_list') }}" target="_blank">
+                  <i class="fa fa-gift"></i> 納品書印刷待ち 伝票一覧
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+          {% if is_granted('ROLE_SYSTEM_MANAGER') %}
+            <div class="btn-group">
+              <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                <i class="fa fa-gear"></i>
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                  <a href="{{ path('admin_account') }}" target="_blank">
+                    <i class="fa fa-users"></i> アカウント一覧
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ path('purchasing_agent_list') }}" target="_blank">
+                    <i class="fa fa-ship"></i> 発注依頼先一覧
+                  </a>
+                </li>
+
+                <li>
+                  <a class="pointer" v-on:click="unlockBatchLock">
+                    <i class="fa fa-unlock"></i>バッチ処理ロック解除
+                  </a>
+                </li>
+
+                <li>
+                  <a class="pointer" v-on:click="openWorkerRebootModal">
+                    <i class="fa fa-power-off"></i> ワーカー再起動
+                  </a>
+                </li>
+                {% endif %}
+
+                <li>
+                  <a class="pointer" v-on:click="openQueueChangePlacesModal">
+                    <i class="fa fa-exchange"></i> キューのジョブ順入れ替え
+                  </a>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+
+          <span class="btn btn-info" v-on:click="openAccountForm({{ account.getId() }})">{{ account.getUsername() }}</span>
+          <div class="btn-group">
+            <button class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+              スコア
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ path('boxed_score_index') }}" target="_blank">
+                  <i class="fa"></i>  My箱詰めスコア
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('picking_score_index') }}" target="_blank">
+                  <i class="fa"></i>  Myピッキングスコア
+                </a>
+              </li>
+              {% if is_granted('ROLE_SCORE_BROWSING')%}
+              <li>
+                <a href="{{ path('boxed_score_user_list') }}" target="_blank">
+                  <i class="fa"></i>  全体 箱詰めスコア
+                </a>
+              </li>
+              <li>
+                <a href="{{ path('picking_score_user_list') }}" target="_blank">
+                  <i class="fa"></i>  全体 ピッキングスコア
+                </a>
+              </li>
+              {% endif %}
+              {% if is_granted('ROLE_SALES_PRODUCT_ACCOUNT') %}
+                <li>
+                  <a href="{{ path('product_sales_index') }}" target="_blank">
+                    <i class="fa"></i>  担当者別売上一覧
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+          <a class="btn btn-danger" href="{{ path('logout') }}">ログアウト</a>
+        </h3>
+      </div>
+    </div>
+
+    <div>
+      <div v-bind:class="messageCssClass" v-text="message"></div>
+    </div>
+
+    {# ラベル印刷用モーダル #}
+    <div
+        is="parts-modal-label-print"
+        :state="labelPrintModalState"
+      ></div>
+
+  </div>
+
+  <ul class="nav nav-tabs" id="indexNavTab">
+    <li><a href="#tabNotifications" data-toggle="tab">通知</a></li>
+    {% if is_granted('ROLE_PRODUCT_EDITOR_FOR_ITEM_REGIST') == false %}
+    <li><a href="#tabFunctions" data-toggle="tab">機能</a></li>
+    {% endif %}
+    <li><a href="#tabQueues" data-toggle="tab">キュー</a></li>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <li><a href="#tabResque" data-toggle="tab">Resque</a></li>
+    {% endif %}
+  </ul>
+
+  <!-- / タブ-->
+  <div id="indexTabBlock" class="tab-content">
+    <div class="tab-pane" id="tabNotifications">
+      <div class="main">
+        {% include 'AppBundle:Default:parts/index_tab_block_notifications.html.twig' %}
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tabFunctions">
+      {% include 'AppBundle:Default:parts/index_tab_block_functions.html.twig' %}
+    </div>
+
+    <div class="tab-pane" id="tabQueues">
+      {% include 'AppBundle:Default:parts/index_tab_block_queues.html.twig' %}
+    </div>
+
+    <div class="tab-pane" id="tabResque">
+      <iframe src="{{ path('BCCResqueBundle_homepage') }}" style="zoom:0.60" width="99.6%" height="1200" frameborder="0"></iframe>
+    </div>
+
+  </div>
+</div>
+
+
+  {% include 'AppBundle::modal/account-form.html.twig' %}
+  {% include 'AppBundle::modal/unlock-batch-lock.html.twig' %}
+  {% include 'AppBundle::modal/change_places_modal.html.twig' %}
+  {% include 'AppBundle::modal/common-modal-1.0.html.twig' with {'modalId' : 'modalRebootJobWorkerConfirm', 'actionUrl': path('api_job_worker_reboot') } %}
+
+
+  {# modals #}
+  <div class="modal"
+       id="modalSearchVendorAddress"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url="{{ path('api_search_vendor_address') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            (% caption %)
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div>
+            <div v-if="message" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}" />
+          </div>
+
+          <div v-if="!(nowLoading)">
+            <div class="form-group">
+              <label>仕入先アドレス</label>
+              <input type="text" class="form-control" v-model="searchVendorAddress" v-on:keypress="keyPress" v-on:change="search" />
+            </div>
+
+            <ul class="list-group">
+              <li class="list-group-item" v-for="address in addresses">
+                <div class="clearfix">
+                  <p class="pull-left">(% address.daihyo_syohin_code %)</p>
+                  <p class="pull-right">
+                    <a v-bind:href="address.sire_adress" target="_blank">(% address.sire_adress %)</a>
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# modals #}
+  <div class="modal"
+       id="modalRakutenNokiKanri"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url="{{ path('api_get_rakuten_noki_kanri') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            楽天納期管理番号
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div>
+            <div v-if="message" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}" />
+          </div>
+
+          <div v-if="!(nowLoading)">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <span>最終更新日時</span>：
+                <span v-text="lastUpdated"></span>
+              </div>
+            </div>
+
+            <table class="table table-borderd">
+              <tr>
+                <th>納期管理番号</th>
+                <th>出荷日</th>
+                <th>見出し</th>
+                <th>出荷までの日数</th>
+              </tr>
+              <tr v-for="item in numbers">
+                <td v-text="item.number" class="text-center"></td>
+                <td v-text="item.shipping_date"></td>
+                <td><input type="text" class="form-control input-sm" id="subject" v-model="item.subject" v-on:click="selectAll($event)" readonly></td>
+                <td v-text="item.lead_time" class="text-center"></td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

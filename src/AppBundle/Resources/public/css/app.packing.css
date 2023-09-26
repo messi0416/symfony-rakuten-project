@@ -1,0 +1,36 @@
+/** 梱包機能画面 共通CSS */
+
+.lh100 {
+  line-height: 100%;
+}
+#voucherList .badge {
+  border-radius: 5px;
+  padding: 5px 10px;
+  vertical-align: top;
+  display: inline-block;
+  min-width: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+}
+.badge.badge-ok {
+  background-color: #5cb85c;
+}
+.badge.badge-shortage {
+  background-color: #d9534f;
+}
+.badge.badge-hold {
+  background-color: #f0ad4e;
+}
+.badge.badge-wait-shipping-stop {
+  background-color: #5bc0de;
+}
+.badge.badge-shipping-stop {
+  background-color: #428bca;
+}
+.badge.badge-change {
+  background-color: #e0174d;
+}

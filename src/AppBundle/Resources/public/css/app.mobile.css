@@ -1,0 +1,82 @@
+/**
+ * モバイル用 CSS
+ */
+.header{
+  border-top:3px solid #000;
+}
+.logo{
+  margin:0.5em auto;
+  display:block;
+}
+.headerNavBtn{
+  text-align:center;
+  height:2em;
+  line-height:2em;
+  color:#5F5F5F;
+  font-size:16px;
+
+  border: solid #ccc 1px
+}
+.headerNavBtn:hover{
+  background:#eee;
+}
+.headerNavBtn.small {
+  font-size: 12px;
+}
+
+div#globalMessage {
+  padding: 0;
+}
+
+body {
+  padding-bottom: 60px;
+}
+.footer {
+  position: fixed;
+  height: 44px;
+  bottom: 0;
+  left: 0;
+  padding: 5px 5px;
+  width: 100%;
+  background-color: rgba(128,128,128,0.5);
+}
+/*.page-header {*/
+  /*font-size: 14px;*/
+  /*height: 30px;*/
+  /*line-height: 30px;*/
+  /*font-weight: bold;*/
+  /*padding-bottom: 9px;*/
+  /*margin: 10px auto;*/
+
+  /*border: none;*/
+/*}*/
+
+.bold {
+  font-weight: bold !important;
+}
+.bigger {
+  font-size: 1.2em !important;
+}
+
+.pagination {
+  margin: 5px auto;
+}
+.paginationInfo {
+  margin: 0;
+}
+
+table.borderless td,
+table.borderless th {
+  border: none !important;
+}
+
+table.table tr.noBorder>th,
+table.table tr.noBorder>td {
+  border: none;
+}
+
+table.table.narrow th,
+table.table.narrow td
+{
+  padding: 10px 5px;
+}

@@ -1,0 +1,54 @@
+MiscBundle\Entity\TbRakutenGenreAttribute:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbRakutenGenreAttributeRepository
+  table: tb_rakuten_genre_attribute
+  uniqueConstraints:
+    rakuten_genre_attribete:
+      columns:
+        - rakuten_genre_id
+        - attribute_id
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: ID
+      id: true
+      generator:
+        strategy: IDENTITY
+  fields:
+    rakutenGenreId:
+      type: string
+      nullable: false
+      length: 6
+      fixed: false
+      comment: "楽天ジャンルID\n楽天で払い出されるジャンルID。APIのgenreId"
+      column: rakuten_genre_id
+    attributeId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "商品属性ID\n楽天で払い出される属性ID。APIのattributeId"
+      column: attribute_id
+    attributeName:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: "商品属性名\nCSV出力時、名前ベースで出力するため、楽天側名称と一致させる必要がある。APIのnameJa。"
+      column: attribute_name
+    attributeUnit:
+      type: string
+      nullable: false
+      length: 32
+      fixed: false
+      comment: "単位\nCSV出力時、単位が必要な属性の場合に利用する。不要なSKUでは空文字。APIのunit"
+      default: ""
+      column: attribute_unit
+    requiredFlg:
+      type: integer
+      nullable: false
+      comment: 必須フラグ
+      default: "0"
+      column: required_flg
+  lifecycleCallbacks: {}

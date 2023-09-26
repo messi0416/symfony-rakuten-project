@@ -1,0 +1,535 @@
+{
+    "version": {
+        "id": 23,
+        "fixedAt": "2022-11-14T15:20:00+09:00"
+    },
+    "genre": {
+        "genreId": 300426,
+        "genreIdPath": [
+            100804,
+            200166,
+            300408,
+            300426
+        ],
+        "nameJa": "カラーボックス",
+        "nameJaPath": [
+            "インテリア・寝具・収納",
+            "収納家具",
+            "本棚・ラック・カラーボックス",
+            "カラーボックス"
+        ],
+        "level": 4,
+        "lowest": true,
+        "properties": {
+            "itemRegisterFlg": true
+        },
+        "ancestors": null,
+        "siblings": null,
+        "children": null,
+        "attributes": [
+            {
+                "id": 1,
+                "nameJa": "ブランド名",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 5,
+                "nameJa": "メーカー型番",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 298,
+                "nameJa": "原産国／製造国",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 8,
+                "nameJa": "代表カラー",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 1058,
+                "nameJa": "インテリアのテイスト",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 3,
+                "nameJa": "シリーズ名",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 1057,
+                "nameJa": "金属の種類",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 1054,
+                "nameJa": "組立状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 22,
+                "nameJa": "本体奥行",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 20,
+                "nameJa": "本体横幅",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 21,
+                "nameJa": "本体高さ",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 1932,
+                "nameJa": "素材",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 4828,
+                "nameJa": "状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 4829,
+                "nameJa": "中古状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 4830,
+                "nameJa": "販売形態（並行輸入品）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 4831,
+                "nameJa": "販売形態（訳あり）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 36,
+                "nameJa": "カラー",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 5,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 2,
+                "nameJa": "ブランド名（カナ）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 1056,
+                "nameJa": "樹種",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 4879,
+                "nameJa": "重量",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "kg",
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 4576,
+                "nameJa": "耐荷重（各部位）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 4571,
+                "nameJa": "必要工具",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 4,
+                "nameJa": "シリーズ名（カナ）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 3844,
+                "nameJa": "配送サービス",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            },
+            {
+                "id": 5207,
+                "nameJa": "サイズ情報",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                }
+            },
+            {
+                "id": 981,
+                "nameJa": "素材（生地・毛糸）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                }
+            }
+        ]
+    }
+}

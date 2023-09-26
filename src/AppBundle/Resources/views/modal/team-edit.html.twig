@@ -1,0 +1,50 @@
+{# modals #}
+<div class="modal"
+     id="teamEditModal"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-save-url="{{ path('setting_team_save') }}"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          チーム編集
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div :class="messageClass" v-text="message"></div>
+        </div>
+
+        <div v-if="errorMessage">
+          <div class="alert alert-warning" v-text="errorMessage"></div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-10">
+            <div class="form-group">
+              <label for="teamName">チーム名</label>
+              <input type="text" id="teamName" v-model="team.teamName" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="comment">コメント</label>
+              <input type="text" id="comment" v-model="team.comment" class="form-control" />
+            </div>
+          </div>
+          <div class="col-sm-1"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" @click="save">保存</button>
+      </div>
+    </div>
+  </div>
+</div>

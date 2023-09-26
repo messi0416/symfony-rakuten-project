@@ -1,0 +1,3 @@
+MiscBundle\Entity\TbRakutenMottoInformation:
+  type: entity
+  table: tb_rakuten_motto_information

@@ -1,0 +1,62 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.team.js'
+    '@AppBundle/Resources/public/js/partial/modal-team-edit.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const TEAMS_DATA = {{ teamsJson|raw }};
+  </script>
+  <div class="container">
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>チーム一覧</h2>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div class="panel panel-default" id="teamListTable">
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="row row10 mb10">
+            <button type="button" class="btn btn-primary" @click="openModal">新規登録</button>
+          </div>
+
+          <div>
+            <table class="table table-bordered table-condensed">
+              <tr>
+                <th class="w50">ID</th>
+                <th>チーム名</th>
+                <th>コメント</th>
+                <th class="w50">&nbsp;</th>
+              </tr>
+              <tr v-for="team in teams">
+                <td class="vMiddle" v-text="team.id"></td>
+                <td class="vMiddle" v-text="team.teamName"></td>
+                <td class="vMiddle" v-text="team.comment"></td>
+                <td class="vMiddle">
+                  <button type="button" class="btn btn-success btn-sm" @click="openModal(team.id)">
+                    <i class="fa fa-fw fa-pencil"></i>
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'AppBundle::modal/team-edit.html.twig' %}
+{% endblock %}

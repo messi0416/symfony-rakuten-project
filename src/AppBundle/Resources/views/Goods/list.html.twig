@@ -1,0 +1,494 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/vendor/bootstrap-select/css/bootstrap-select.min.css' filter='cssrewrite'
+    'bundles/app/css/app.goods-list.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-select/js/bootstrap-select.min.js'
+    '@AppBundle/Resources/public/js/app.goods-list.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const DELIVERY_CODE_LIST = {{ deliverycodeList|raw }};
+  </script>
+
+  <div id="goodsList" class="container"
+    data-list-url="{{ path('goods_list') }}"
+    data-search-url="{{ path('goods_find') }}"
+    data-rakuten-attribute-url="{{ path('product_edit_rakuten_attribute') }}"
+    data-mall-product-url="{{ path('product_edit_mall_product', { daihyoSyohinCode: '__DUMMY__' }) }}"
+    data-weight-size-edit-url="{{ path('goods_weight_size_edit') }}"
+    data-goods-image-edit-url="{{ path('goods_image_edit', { daihyoSyohinCode: '__DUMMY__' }) }}"
+    data-axis-code-index-url="{{ path('goods_axis_code_index') }}"
+    data-inventory-constant-url="{{ path('product_sales_inventory_constant_index') }}"
+    data-season-setting-url="{{ path('product_edit_season_setting') }}"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_80_80'}) }}"
+    data-goods-info-index-url="{{ path('goods_info_index') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row row-eq-height">
+          <div class="form-group mb0 col-sm-4">
+            <div class="form-inline mb10">
+              <label for="daihyoSyohinCode" class="mr10">代表商品コード：</label>
+              <input
+                id="daihyoSyohinCode"
+                type="text"
+                class="form-control w200"
+                v-model="conditions.daihyoSyohinCode"
+                @keyup.enter="search(true)"
+              >
+            </div>
+            <div class="form-inline mb10">
+              <label for="daihyoSyohinName" class="mr10">商品名：</label>
+              <input
+                id="daihyoSyohinName"
+                type="text"
+                class="form-control w260"
+                v-model="conditions.daihyoSyohinName"
+                placeholder="スペース区切りでそれぞれAND条件の部分一致"
+                @keyup.enter="search(true)"
+              >
+            </div>
+            <div class="form-inline mb10">
+              <label for="category" class="mr10">カテゴリ：</label>
+              <input
+                id="category"
+                type="text"
+                class="form-control w200"
+                placeholder="部分一致"
+                v-model="conditions.category"
+                @keyup.enter="search(true)"
+              >
+            </div>
+            <div class="form-inline">
+              <label for="sireAdress" class="mr10">仕入先URL：</label>
+              <input
+                id="sireAdress"
+                type="text"
+                class="form-control w200"
+                v-model="conditions.sireAdress"
+                placeholder="部分一致"
+                @keyup.enter="search(true)"
+              >
+            </div>
+          </div>
+          <div class="form-group mb0 col-sm-8">
+            <div class="form-inline mb10">
+              <label for="salesStartDateFrom" class="mr10">販売開始日：</label>
+              <div class="input-group mr5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input
+                  id="salesStartDateFrom"
+                  type="text"
+                  class="form-control w170"
+                  placeholder="From"
+                  v-model="conditions.salesStartDateFrom"
+                >
+              </div>
+              ～
+              <div class="input-group ml5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input
+                  id="salesStartDateTo"
+                  type="text"
+                  class="form-control w170"
+                  placeholder="To"
+                  v-model="conditions.salesStartDateTo"
+                >
+              </div>
+            </div>
+            <div class="form-inline mb10">
+              <label for="registrationDateFrom" class="mr10">登録日：</label>
+              <div class="input-group mr5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input
+                  id="registrationDateFrom"
+                  type="text"
+                  class="form-control w170"
+                  placeholder="From"
+                  v-model="conditions.registrationDateFrom"
+                >
+              </div>
+              ～
+              <div class="input-group ml5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input
+                  id="registrationDateTo"
+                  type="text"
+                  class="form-control w170"
+                  placeholder="To"
+                  v-model="conditions.registrationDateTo"
+                >
+              </div>
+            </div>
+            <div class="row row-eq-height">
+              <div class="form-group mb0 col-sm-6">
+                <div class="form-inline mb10">
+                  <label for="deliverycodes" class="mr10">
+                    deliverycode:
+                  </label>
+                  <select
+                    id="deliverycodes"
+                    class="selectpicker"
+                    title="deliverycode"
+                    multiple
+                    data-actions-box="true"
+                    data-select-all-text="全選択"
+                    data-deselect-all-text="全解除"
+                    v-model="conditions.deliverycodes"
+                  >
+                    <option
+                      v-for="(item, key) in deliverycodeList"
+                      :key="key"
+                      :value="key"
+                      v-text="item"
+                    >
+                    </option>
+                  </select>
+                </div>
+                <div class="form-inline">
+                  <label for="sireAdress" class="mr10">仕入先アドレス：</label>
+                  <select class="form-control w180" v-model="conditions.sireAddressNecessity">
+                    <option value=""></option>
+                    <option
+                      v-for="(value, index) in sireAddressNecessityList"
+                      :key="index"
+                      :value="index"
+                      v-text="value"
+                    >
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group mb0 col-sm-6 row">
+                <div class="col-sm-5">
+                  <div class="form-inline">
+                    <div class="mb5">
+                      <input
+                        class="checkbox"
+                        id="configurable"
+                        type="checkbox"
+                        v-model="conditions.configurable"
+                      >
+                      <label class="checkbox-inline p0" for="configurable">在庫定数設定可</label>
+                    </div>
+                    <div class="mb5">
+                      <input
+                        class="checkbox"
+                        id="isMyProduct"
+                        type="checkbox"
+                        v-model="conditions.isMyProduct"
+                      >
+                      <label class="checkbox-inline p0" for="isMyProduct">自分が担当者</label>
+                    </div>
+                    <div>
+                      <input
+                        class="checkbox"
+                        id="orderable"
+                        type="checkbox"
+                        v-model="conditions.orderable"
+                      >
+                      <label class="checkbox-inline p0" for="orderable">受発注可能</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-5">
+                  <div class="form-inline">
+                    <div class="mb5">
+                      <input
+                        class="checkbox"
+                        id="zaikoTeisuZero"
+                        type="checkbox"
+                        v-model="conditions.zaikoTeisuZero"
+                      >
+                      <label class="checkbox-inline p0" for="zaikoTeisuZero">在庫定数ゼロ</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="bottomRight mr20">
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    @click="search(true)"
+                  >
+                    検索
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 結果 #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="d-flex flexEnd">
+          <p class="text-info flex1 small mb0">
+            ※ 2:00, 7:00, 17:00, 22:00にデータが更新されます
+          </p>
+          {# pagination (Vue component) #}
+          <parts-table-pagination
+            v-bind="paginationObj"
+            @change-page="changePage"
+            class="flex3"
+          >
+          </parts-table-pagination>
+        </div>
+        <div>
+          <table class="table table-bordered odd-bg-smoke">
+            <tr>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('daihyoSyohinCode')"
+                @click="sortBy('daihyoSyohinCode')"
+              >
+                代表商品コード
+              </th>
+              <th class="w100">画像</th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('deliverycode')"
+                @click="sortBy('deliverycode')"
+              >
+                deliverycode
+              </th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('orderableFlg')"
+                @click="sortBy('orderableFlg')"
+              >
+                受発注
+              </th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('baikaTanka')"
+                @click="sortBy('baikaTanka')"
+              >
+                楽天価格(込)
+              </th>
+              <th>分析</th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('saleDate')"
+                @click="sortBy('saleDate')"
+              >
+                販売日
+              </th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('registrationDate')"
+                @click="sortBy('registrationDate')"
+              >
+                登録日
+              </th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('zaikoTeisuResetDate')"
+                @click="sortBy('zaikoTeisuResetDate')"
+              >
+                在庫定数リセット日
+              </th>
+              <th
+                class="cursorPointer"
+                :class="addSortArrow('salesAccounts')"
+                @click="sortBy('salesAccounts')"
+              >
+                商品売上担当者
+              </th>
+              <th>編集</th>
+            </tr>
+            <tr v-for="(item, index) in list" :key="index" v-cloak>
+              <td class="vMiddle">
+                <p class="listCategory">
+                  <span v-text="item.bigCategory"></span>
+                  &gt;
+                  <span v-text="item.midCategory"></span>
+                </p>
+                <div class="d-flex">
+                  <a
+                    :href="item.mignonlindoUrl"
+                    class="flex2"
+                    v-text="item.daihyoSyohinCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                  </a>
+                  <span v-if="item.setFlg !== 0" class="flex1 badge badge-set">
+                    セット
+                  </span>
+                </div>
+                <p class="sire">
+                  <span v-text="item.sireName"></span>
+                  (<span v-text="item.sireCode"></span>)
+                </p>
+              </td>
+              <td class="vMiddle">
+                <img :src="item.thumbnail" class="img-responsive mh80 m-auto" alt="商品画像" />
+              </td>
+              <td class="vMiddle" v-text="deliverycodeList[item.deliverycode]"></td>
+              <td
+                class="vMiddle bold"
+                :class="item.orderableCss"
+                v-text="item.orderable"
+              >
+              </td>
+              <td class="vMiddle text-right">
+                <p v-text="item.baikaTankaStr"></p>
+              </td>
+              <td class="vMiddle">
+                <p>
+                  <a
+                    :href="item.salesTransitionUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    売上
+                  </a>
+                </p>
+              </td>
+              <td class="vMiddle">
+                <p><span v-text="item.startofavailability"></span> ～</p>
+                <p v-text="item.endofavailability"></p>
+              </td>
+              <td class="vMiddle">
+                <p v-text="item.registrationDate"></p>
+              </td>
+              <td class="vMiddle">
+                <p v-text="item.zaikoTeisuResetDate"></p>
+              </td>
+              <td class="vMiddle">
+                <template v-if="item.salesAccounts.length > 0">
+                  <template v-for="account in item.salesAccounts">
+                    <p v-text="account"></p>
+                  </template>
+                </template>
+                <template v-else>
+                  <p class="text-muted">（担当者なし）</p>
+                </template>
+              </td>
+              <td class="vMiddle">
+                <p class="mb5">
+                  <a
+                    :href="rakutenAttributeUrl + '?code=' + item.daihyoSyohinCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    楽天属性
+                  </a>
+                </p>
+                {% if is_granted('ROLE_PRODUCT_MANAGEMENT_BROWSING') %}
+                <p class="mb5">
+                  <a
+                    :href="item.mallProductUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    モール商品
+                  </a>
+                </p>
+                {% endif %}
+                <p class="mb5">
+                  <a
+                    :href="weightSizeEditUrl + '?code=' + item.daihyoSyohinCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    重量・サイズ
+                  </a>
+                </p>
+                <p class="mb5">
+                  <a
+                    :href="item.goodsImageEditUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    画像
+                  </a>
+                </p>
+                <p class="mb5">
+                  <a
+                    :href="axisCodeIndexUrl + '?code=' + item.daihyoSyohinCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    SKU縦横軸コード
+                  </a>
+                </p>
+                <p class="mb5">
+                  <a
+                    :href="goodsInfoIndexUrl + '?code=' + item.daihyoSyohinCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    商品情報・仕入備考
+                  </a>
+                </p>
+                {% if is_granted('ROLE_SALES_PRODUCT_ACCOUNT') %}
+                  <p class="mb5">
+                    <a
+                      :href="inventoryConstantUrl + '?code=' + item.daihyoSyohinCode"
+                      :class="item.inventoryConstantCss"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      在庫定数
+                    </a>
+                  </p>
+                  <p class="mb5">
+                    <a
+                      :href="seasonSettingUrl + '?code=' + item.daihyoSyohinCode"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      シーズン設定
+                    </a>
+                  </p>
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <button class="btn btn-info scrollTop" @click="scrollTop()">最上部へ</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

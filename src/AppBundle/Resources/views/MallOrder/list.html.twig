@@ -1,0 +1,326 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+
+  'bundles/app/css/app.mall-order.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+
+    '@AppBundle/Resources/public/js/app.mall-order.js'
+
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container container-large"
+     id="mallOrderList"
+     data-convert-url="{{ path('queue_convert_mall_order_csv') }}"
+     data-ne-upload-url-base="{{ path('mall_order_csv_ne_upload', { 'shopCode' : '___SHOP_CODE___', 'converted' : '___CONVERTED___' }) }}"
+     data-convert-ec-cube-url="{{ path('mall_order_convert_ec_cube_order') }}"
+  >
+
+  <div class="clearfix">
+    <div class="row">
+      <div class="pull-left">
+        <h2>モール受注CSV</h2>
+      </div>
+      <div class="pull-right">
+        <h3>
+          <button class="btn btn-default mb5" v-on:click="convertEcCubeOrder">
+            <i class="fa fa-fw fa-shopping-cart"></i>EC-CUBE取込
+          </button>
+
+          <button class="btn btn-default mb5" data-toggle="modal" data-target="#modalQ10DeliveryCsv">
+            <i class="fa fa-fw fa-upload"></i>Q10発送CSV出力
+          </button>
+
+          <button class="btn btn-default mb5" data-toggle="modal" data-target="#modalUploadCsv">
+            <i class="fa fa-fw fa-upload"></i>モール受注 CSVアップロード
+          </button>
+
+          <a href="{{ path('mall_order_list') }}" class="btn btn-default mb5"><i class="fa fa-repeat"></i> 再読込</a>
+        </h3>
+      </div>
+    </div>
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+  </div>
+
+  {# Flash メッセージ #}
+  {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+  <div class="row" id="functionBlock">
+  </div>
+
+  {#<div class="panel panel-default" id="mallOrderList">#}
+    {#<div class="panel-body">#}
+
+  {# 出力済みCSV一覧 #}
+  {#<div class="panel panel-default">#}
+    {#<div class="panel-body">#}
+      {#<div class="inputHeight text-right pull-right mb5">#}
+        {#<button class="btn btn-primary">出力待ちを出力</button>#}
+      {#</div>#}
+    {#</div>#}
+  {#</div>#}
+
+  {% if pagination.count() > 0 %}
+
+    <div class="navigation text-right">
+      <p class="paginationInfo">
+        {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+        /
+        {{ paginationInfo.totalCount | number_format }}
+      </p>
+      {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <table class="table table-border table-condensed">
+    <tr>
+      <th class="text-center">モール</th>
+      <th class="text-center">変換日時</th>
+      <th class="text-center">行数</th>
+      <th class="text-center">受注日時</th>
+      <th class="text-center">アカウント</th>
+      <th class="text-center">ダウンロード日時</th>
+      <th colspan="2">&nbsp;</th>
+    </tr>
+
+    {% for row in pagination.getItems() %}
+    <tr>
+      <td>{{ row.shop_name }}</td>
+      <td class="text-center">
+        {% if row.converted is empty %}
+          {% if row.no_sales_detail_num > 0 %}
+            <span class="textGray">明細なし:
+              <a class="text-danger cursorPointer" data-no-sales-detail-voucher-number="{{ row.no_sales_voucher_number }}"
+                 v-on:click="openOrderNumbersModal($event)"
+                >
+                {{ row.no_sales_detail_num }}
+              </a>
+            </span>
+          {% else %}
+            <span class="textGray">明細なし:{{ row.no_sales_detail_num }}</span>
+          {% endif %}
+          <span class="textGray">/</span>
+          <span class="textGray">処理待ち:{{ row.process_waiting_num }}</span>
+        {% else %}
+          {{ row.converted.format('m/d H:i') }}
+        {% endif %}
+      </td>
+      <td class="text-center">{{ row.num }}</td>
+      <td class="text-center">
+        {% if row.order_date_min is empty %}-{% else %}{{ row.order_date_min.format('m/d H:i') }}{% endif %}
+        ～
+        {% if row.order_date_max is empty %}-{% else %}{{ row.order_date_max.format('m/d H:i') }}{% endif %}
+      </td>
+      <td class="text-center">
+        {{ row.converted_by }}
+      </td>
+
+      <td class="text-center">
+        {% if row.downloaded is empty %}&nbsp;{% else %}{{ row.downloaded.format('m/d H:i') }}{% endif %}
+      </td>
+      {% if row.converted is empty or fileNames[row.shop_code][row.converted.format('Y-m-d H:i:s')] is empty %}
+        <td colspan="2" class="text-center">
+          <button class="btn btn-sm btn-primary" v-on:click="enqueueConvert('{{ row.shop_code }}')">変換を実行</button>
+        </td>
+      {% else %}
+        <td class="text-center">
+          <a href="{{ path('mall_order_csv_download', { 'shopCode' : row.shop_code, 'converted' : row.converted.format('YmdHis') }) }}" download="{{ fileNames[row.shop_code][row.converted.format('Y-m-d H:i:s')] }}"><i class="fa fa-download text-success"></i> ダウンロード</a>
+        </td>
+        <td class="text-center">
+          <a v-on:click.stop.prevent="neUpload('{{ row.shop_code }}', '{{ row.converted.format('YmdHis') }}')"><i class="fa fa-upload text-warning"></i> アップロード</a>
+        </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% else %}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        データがありません。
+      </div>
+    </div>
+  {% endif %}
+
+ </div>
+
+{# modals #}
+<div class="modal"
+     id="modalUploadCsv"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('mall_order_csv_upload') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          モール受注CSVアップロード
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        {# アップロード #}
+        <form action="{{ path('mall_order_csv_upload') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="mallOrderCsvUpload" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div v-show="result != null">
+          <h3>アップロード結果</h3>
+          <table class="table">
+            <tr>
+              <th>モール</th>
+              <th>処理前件数</th>
+              <th>処理後件数</th>
+              <th>取込件数</th>
+            </tr>
+            <tbody v-for="(item, key) in result">
+              <tr v-for="(data, file) in item.load_data">
+                <td v-text="key"></td>
+                <td v-text="data.before"></td>
+                <td v-text="data.after"></td>
+                <td v-text="data.num"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal"
+     id="modalQ10DeliveryCsv"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('mall_order_csv_q10_delivery_upload') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          Q10発送処理CSV作成 CSVアップロード
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        {# アップロード #}
+        <form action="{{ path('mall_order_csv_q10_delivery_upload') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="mallOrderCsvQ10DeliveryUpload" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div v-show="result != null">
+          <h3>出力結果</h3>
+          <table class="table">
+            <tr>
+              <th class="col-xs-6">Delivery</th>
+              <th class="col-xs-6">Tracking</th>
+            </tr>
+
+            <tr>
+              <td class="col-xs-6">
+                <a v-if="result && result.delivery" v-text="result.delivery.name" v-bind:download="result.delivery.name" v-bind:href="downloadHrefDelivery"></a>
+                <span v-else>-</span>
+              </td>
+              <td class="col-xs-6">
+                <a v-if="result && result.tracking" v-text="result.tracking.name" v-bind:download="result.tracking.name" v-bind:href="downloadHrefTracking"></a>
+                <span v-else>-</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 受注伝票番号モーダル #}
+<div class="modal"
+     id="modalOrderNumbers"
+     tabindex="-1"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          NextEngine 明細なし 店舗受注番号
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <textarea readonly class="form-control" v-model="numbers"></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        {#<button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>#}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+

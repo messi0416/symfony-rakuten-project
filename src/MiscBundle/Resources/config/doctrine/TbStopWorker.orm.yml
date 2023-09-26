@@ -1,0 +1,49 @@
+MiscBundle\Entity\TbStopWorker:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbStopWorkerRepository
+  table: tb_stop_worker
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      generator:
+        strategy: AUTO
+
+  fields:
+    username:
+      type: string
+      nullable: false
+      length: 24
+      options:
+        fixed: false
+    stop_worker:
+      type: string
+      nullable: false
+      length: 24
+      options:
+        fixed: false
+    stop_time:
+      type: integer
+      nullable: false
+      options:
+        default: 10
+        fixed: false
+    is_active:
+      type: integer
+      nullable: false
+      options:
+        default: -1
+    cancel_user:
+      type: string
+      nullable: false
+      length: 24
+      options:
+        fixed: false
+    created_at:
+      type: datetime
+      nullable: false
+      options:
+        default: '0000-00-00 00:00:00'

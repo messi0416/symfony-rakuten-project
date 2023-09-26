@@ -1,0 +1,470 @@
+{% extends 'PlusnaoYahooAgentBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/plusnaoyahooagent/bfh/css/bootstrap-formhelpers.min.css' filter='cssrewrite'
+  'bundles/plusnaoyahooagent/css/bootstrap-select.min.css' filter='cssrewrite'
+  'bundles/plusnaoyahooagent/css/bootstrap-tags.css' filter='cssrewrite'
+  'bundles/plusnaoyahooagent/css/datetimepicker.css' filter='cssrewrite'
+
+  'bundles/plusnaoyahooagent/css/admin-style.css' filter='cssrewrite'
+  'bundles/plusnaoyahooagent/css/product-list.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+  '@PlusnaoYahooAgentBundle/Resources/public/js/product-list.js'
+
+  '@PlusnaoYahooAgentBundle/Resources/public/bfh/js/bootstrap-formhelpers.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/bootstrap-select.min.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/bootstrap-tags.min.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/jquery.maskedinput.min.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/moment.min.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/jquery.bootstrap.wizard.min.js'
+  '@PlusnaoYahooAgentBundle/Resources/public/js/bootstrap-datetimepicker.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}
+  Yahoo商品一覧 | {{ account.getClientName }} 様
+{% endblock %}
+
+
+{% block body %}
+  <script type="text/javascript">
+    var isApiEnabled = {% if isApiEnabled %}true{% else %}false{% endif %};
+    {#var productListData = {{ data | raw }};#}
+    {#var remainStatusListData = {{ remainStatusList | raw }};#}
+  </script>
+
+  <div class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Logo -->
+          <div class="logo">
+            <h1><a href="#">Yahoo商品一覧</a></h1>
+          </div>
+        </div>
+        <div class="col-md-6 text-right">
+          <div class="name">
+            <span class="mr5">{{ account.getClientName }} 様</span>
+
+            {% if isApiEnabled %}
+              <span class="btn btn-success" style="margin-top: -10px">Yahoo API認証 <span class="badge">OK</span></span>
+            {% else %}
+              <span class="btn btn-warning" style="margin-top: -10px" data-toggle="modal" data-target="#modalYahooAuth">Yahoo API認証</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content" id="productList">
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'notice', 'success', 'warning', 'danger'] %}
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }} alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    {# 検索ブロック #}
+    <div class="row" id="searchForm">
+      <div class="col-md-12">
+
+        <div class="content-box-large mb5">
+
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="row row10">
+                <form class="form-inline" role="form" action="{{ path('yahoo_product_list', searchUrlParams) }}" method="get">
+                  <fieldset>
+                    {# 商品コード #}
+                    <div class="form-group mb5">
+                      <label class="sr-only" for="searchProductCode">商品コード</label>
+                      <input type="text" class="form-control" id="searchProductCode" name="sp" placeholder="商品コード" value="{{ conditions.product_code }}">
+                    </div>
+
+                    <div class="form-group mb5">
+                      <label class="sr-only" for="productCode">[同期]</label>
+                      <select name="su" class="form-control" id="searchUpdateFlg">
+                        <option value="" {% if conditions.update_flg | length == 0 %}selected{% endif %}>[同期]</option>
+                        <option value="-1" {% if conditions.update_flg == '-1' %}selected{% endif %}>同期ON</option>
+                        <option value="0" {% if conditions.update_flg == '0' %}selected{% endif %}>同期OFF</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group mb5 mr10">
+                      <label class="sr-only" for="productCode">[同期]</label>
+                      <select name="sr" class="form-control" id="searchRegistrationFlg">
+                        <option value="" {% if conditions.registration_flg | length == 0 %}selected{% endif %}>[出品]</option>
+                        <option value="-1" {% if conditions.registration_flg == '-1' %}selected{% endif %}>出品ON</option>
+                        <option value="0" {% if conditions.registration_flg == '0' %}selected{% endif %}>出品OFF</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-primary mr5 mb5">
+                        検索
+                      </button>
+                      <button type="button" class="btn btn-default mr5 mb5" v-on:click="clearSearchConditions">
+                        クリア
+                      </button>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+
+            {#<div class="col-xs-2">#}
+              {#<div class="dropdown pull-right">#}
+                {#<button class="btn btn-default dropdown-toggle" type="button" id="menuCsv" data-toggle="dropdown">#}
+                  {#CSV#}
+                  {#<span class="caret"></span>#}
+                {#</button>#}
+                {#<ul class="dropdown-menu" role="menu" aria-labelledby="menuCsv">#}
+                  {#<li role="presentation">#}
+                    {#<a href="#" class="bigger" v-on:click="openCsvDownloadModal($event)">#}
+                      {#<i class="fa fa-download text-success"></i> {{ 'vendor.csv.download'|trans }}#}
+                    {#</a>#}
+                  {#</li>#}
+                {#</ul>#}
+              {#</div>#}
+            {#</div>#}
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" id="productListTable"
+           data-check-action-url="{{ path('yahoo_product_list_checked_target_update', { 'shopCode' : account.getShopCode() }) }}"
+              >
+
+        <div class="content-box-header">
+          <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 pull-left">
+              {#<div class="pull-left">#}
+                <form class="form-inline">
+                チェックした商品の
+                <select class="form-control mb5" v-model="checkActionTarget">
+                  <option value="update_flg">同期設定</option>
+                  <option value="registration_flg">出品設定</option>
+                </select> を
+                <select class="form-control mb5" v-model="checkActionValue">
+                  <option value="-1">ON</option>
+                  <option value="0">OFF</option>
+                </select> に
+                <a class="btn btn-danger" v-on:click="doCheckAction">一括変更する</a>
+                </form>
+              {#</div>#}
+            </div>
+
+            <div class="col-xs-12 col-sm-4 col-md-6 pull-right">
+              {#<div class="pull-right">#}
+                <div class="navigation text-right">
+                  {% if paginationInfo.totalCount > 0 %}
+                    <p class="paginationInfo">
+                      {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+                      /
+                      {{ paginationInfo.totalCount | number_format }}
+                    </p>
+                    {{ knp_pagination_render(pagination) }}
+                  {% endif %}
+                </div>
+              {#</div>#}
+            </div>
+          </div>
+        </div>
+
+        <div class="content-box-large box-with-header">
+          <div class="panel-body">
+            {% if paginationInfo.totalCount > 0 %}
+            <table class="table table-responsive">
+              <thead>
+              <tr>
+                <th class="col-xs-1 text-center vMiddle">
+                  <input type="checkbox" class="checkbox checkboxLarge inlineBlock" v-on:change="toggleCheckBoxes($event)" />
+                </th>
+
+                <th class="col-xs-3">画像</th>
+
+                <th class="col-xs-4 sortable {{ sortable_css_class(pagination, 'product_code') }}">{{ knp_pagination_sortable(pagination, 'コード', 'product_code') }}</th>
+                <th class="col-xs-2 sortable {{ sortable_css_class(pagination, 'genka_tanka') }}">{{ knp_pagination_sortable(pagination, '原価', 'genka_tanka') }}</th>
+                {#<th class="col-xs-2 sortable {{ sortable_css_class(pagination, 'baika_tanka') }}">{{ knp_pagination_sortable(pagination, '売価', 'baika_tanka') }}</th>#}
+
+                <th class="col-xs-1 text-center">同期</th>
+                <th class="col-xs-1 text-center">出品</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for product in pagination.getItems() %}
+                <tr>
+                  <td class="text-center vMiddle">
+                    <input type="checkbox" class="checkbox checkboxLarge inlineBlock checkTarget" name="targets[]" value="{{ product.getProductCode() }}" />
+                  </td>
+                  <td class="text-center thumb">
+                    {% if product.getProduct() and product.getProduct().getImageUrl() %}
+                      <img src="{{ product.getProduct().getImageUrl(imageParentUrl) }}" class="img-responsive">
+                    {% endif %}
+                  </td>
+                  <td class="text-left">{{ product.getProductCode() }}</td>
+                  <td class="text-right">{{ product.getGenkaTanka() | number_format }}</td>
+                  {#<td class="text-right">{{ product.getBaikaTanka() | number_format }}</td>#}
+                  <td class="text-center">
+                    {% if product.isUpdateFlgOn() %}
+                      <span class="label label-success flagLabel">ON</span>
+                    {% else %}
+                      <span class="label label-default flagLabel">OFF</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if product.isRegistrationFlgOn() %}
+                      <span class="label label-success flagLabel">ON</span>
+                    {% else %}
+                      <span class="label label-default flagLabel">OFF</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+            {% else %}
+              <div class="alert alert-warning">該当するデータがありません。</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="copy text-center">
+        Copyright 2016 Forest Inc.
+      </div>
+    </div>
+  </footer>
+
+
+  <div class="modal"
+       id="modalYahooAuth"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+      >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            Yahoo API認証
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div>
+            <div class="alert alert-warning">
+              YahooのAPI認証が行われていないか、有効期限切れです。<br>
+              下記「Yahoo API認証」ボタンをクリックして、Yahooへログインし、認証を行ってください。
+            </div>
+
+            <div class="alert alert-info">
+              <ul>
+                <li>認証を行わなくてもYahoo代理店機能は利用できます。</li>
+                <li>ただし、商品削除用のCSVが出力されないため、商品の削除はYahooの管理画面での手作業となります。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-body text-center">
+              <a class="btn btn-bg btn-info" href="{{ path('yahoo_service_auth_yahoo', { 'shopCode': account.getShopCode() }) }}">Yahoo API認証</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {#<div class="modal"#}
+       {#id="modalCsvUpload"#}
+       {#tabindex="-1"#}
+       {#data-backdrop="static" data-keyboard="false"#}
+       {#data-url="{{ path('plusnao_api_get_product_reviews') }}"#}
+    {#>#}
+
+    {#<div class="modal-dialog">#}
+      {#<div class="modal-content">#}
+        {#<div class="modal-header">#}
+          {#<button type="button" class="close" data-dismiss="modal">#}
+            {#<span aria-hidden="true">&times;</span>#}
+          {#</button>#}
+          {#<h4 class="modal-title" id="modal-label">#}
+            {#{{ 'vendor.csv.upload' }}#}
+          {#</h4>#}
+        {#</div>#}
+
+        {#<div class="modal-body">#}
+
+          {#<div v-show="message">#}
+            {#<div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>#}
+          {#</div>#}
+
+          {#<div class="loading" v-if="nowLoading">#}
+            {#<img src="{{ asset('img/loading-large.gif') }}" />#}
+
+            {#&#123;&#35;<p class="notice">&#35;&#125;#}
+              {#&#123;&#35;現在アップロード及びデータの取込中です。完了するまで画面を閉じないでください。<br>&#35;&#125;#}
+              {#&#123;&#35;※データ件数により、最大10分程度かかる場合があります。&#35;&#125;#}
+            {#&#123;&#35;</p>&#35;&#125;#}
+          {#</div>#}
+
+          {#<form v-if="!nowLoading" action="{{ path('plusnao_chouchou_clair_upload_csv') }}" method="post" id="uploadCsvForm" enctype="multipart/form-data">#}
+
+            {#<div class="row">#}
+              {#<div class="col-sm-12 form-group text-center mb20">#}
+                {#{{ form_errors(uploadForm.uploaded) }}#}
+                {#{{ form_widget(uploadForm.uploaded) }}#}
+              {#</div>#}
+              {#<div class="col-sm-12 form-group text-center">#}
+                {#<button class="btn btn-primary" v-on:click="onSubmit">アップロード</button>#}
+              {#</div>#}
+            {#</div>#}
+
+            {#&#123;&#35;{{ form_widget(uploadForm.code, {'attr': {'v-model': 'searchConditions.code'}}) }}&#35;&#125;#}
+            {#&#123;&#35;{{ form_widget(uploadForm.keyword, {'attr': {'v-model': 'searchConditions.keyword'}}) }}&#35;&#125;#}
+            {#&#123;&#35;{{ form_widget(uploadForm.searchTarget, {'attr': {'v-model': 'searchConditions.target'}}) }}&#35;&#125;#}
+
+            {#{{ form_rest(uploadForm) }}#}
+
+          {#</form>#}
+        {#</div>#}
+
+        {#<div class="modal-footer">#}
+          {#<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>#}
+        {#</div>#}
+      {#</div>#}
+    {#</div>#}
+  {#</div>#}
+
+  {#<div class="modal"#}
+       {#id="modalCsvDownload"#}
+       {#tabindex="-1"#}
+       {#data-backdrop="static" data-keyboard="false"#}
+    {#>#}
+
+    {#<div class="modal-dialog">#}
+      {#<div class="modal-content">#}
+        {#<div class="modal-header">#}
+          {#<button type="button" class="close" data-dismiss="modal">#}
+            {#<span aria-hidden="true">&times;</span>#}
+          {#</button>#}
+          {#<h4 class="modal-title" id="modal-label">#}
+            {#{{ 'vendor.csv.download'|trans }}#}
+          {#</h4>#}
+        {#</div>#}
+
+        {#<div class="modal-body">#}
+
+          {#<div v-show="message">#}
+            {#<div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>#}
+          {#</div>#}
+
+          {#<div class="loading" v-if="nowLoading">#}
+            {#<img src="{{ asset('img/loading-large.gif') }}" />#}
+          {#</div>#}
+
+          {#<form role="form"#}
+                {#class="form-horizontal"#}
+                {#action="{{ path('plusnao_vendor_order_csv_download', { '_locale':locale, 'id':vendor.getRemainingOrderUrlString }) }}"#}
+                {#method="post"#}
+                {#id="downloadCsvForm">#}
+
+            {#<fieldset class="mb20">#}
+              {#&#123;&#35; 伝票番号 &#35;&#125;#}
+              {#<div class="form-group">#}
+                {#<div class="col-xs-12">#}
+                  {#{{ 'vendor.search.voucher_number'|trans }}#}
+                {#</div>#}
+              {#</div>#}
+              {#<div class="form-group">#}
+                {#<div class="col-xs-12">#}
+                  {#<input type="text" class="form-control" id="voucherNumber" name="csv[voucher_number]" placeholder="{{ 'vendor.search.voucher_number'|trans }}" value="">#}
+                {#</div>#}
+              {#</div>#}
+
+              {#&#123;&#35; 発注日 &#35;&#125;#}
+              {#<div class="form-group">#}
+                {#<div class="col-xs-12">#}
+                  {#{{ 'vendor.search.order_date'|trans }}#}
+                {#</div>#}
+              {#</div>#}
+
+              {#<div class="form-group">#}
+                {#<div class="col-xs-12">#}
+                  {#<div class="bfh-datepicker" id="csvDownloadDateFrom" data-name="csv[order_date_from]" data-format="y-m-d" data-date="" data-placeholder="{{ 'vendor.search.order_date'|trans }} FROM"></div>#}
+                {#</div>#}
+              {#</div>#}
+              {#<div class="form-group">#}
+                {#<div class="col-xs-12">#}
+                  {#<div class="bfh-datepicker" id="csvDownloadDateTo" data-name="csv[order_date_to]" data-format="y-m-d" data-date="" data-placeholder="{{ 'vendor.search.order_date'|trans }} TO"></div>#}
+                {#</div>#}
+              {#</div>#}
+
+            {#</fieldset>#}
+
+            {#<div class="row">#}
+              {#<div class="col-xs-6 text-right">#}
+                {#<label class="btn btn-default" v-on:click="clearForm">{{ 'vendor.search.clear'|trans }}</label>#}
+              {#</div>#}
+
+              {#<div class="col-xs-6 text-left">#}
+                {#<button class="btn btn-success" v-on:click="onSubmit"><i class="fa fa-download"></i> {{ 'vendor.csv.download'|trans }}</button>#}
+              {#</div>#}
+            {#</div>#}
+
+          {#</form>#}
+        {#</div>#}
+
+        {#<div class="modal-footer">#}
+          {#<button type="button" class="btn btn-default" data-dismiss="modal">#}
+            {#{{ 'vendor.cancel'|trans }}#}
+          {#</button>#}
+        {#</div>#}
+      {#</div>#}
+    {#</div>#}
+  {#</div>#}
+
+{% endblock %}
+
+
+

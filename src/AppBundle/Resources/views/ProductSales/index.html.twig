@@ -1,0 +1,472 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{#{% block meta %}#}
+{#  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">#}
+{#{% endblock %}#}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/vendor/datetimepicker/css/bootstrap-datetimepicker.min.css' filter='cssrewrite'
+    'bundles/app/vendor/bootstrap-select/css/bootstrap-select.min.css' filter='cssrewrite'
+    'bundles/app/css/app.product-sales-index.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-select/js/bootstrap-select.min.js'
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+    '@AppBundle/Resources/public/js/app.product-sales-index.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const TASKS_DATA = {{ tasks|raw }};
+    const SALES_ACCOUNTS_DATA = {{ salesAccounts|raw }};
+    const DEFAULT_DISPLAYS_DATA = {{ defaultDisplays|raw }};
+  </script>
+  <div id="productSales" class="container"
+    data-search-url="{{ path('product_sales_find') }}"
+    data-detail-url="{{ path('product_sales_user_detail') }}"
+    data-check-url="{{ path('queue_check_existence') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>担当者別売上一覧</h2>
+        </div>
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onClick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="form-group col-xs-6">
+            <label class="inputHeight pull-left mr5">売上日</label>
+            <div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                  <input
+                    v-model="searchItem.targetDateFrom"
+                    name="targetDateFrom"
+                    class="form-control datepicker"
+                    size="10"
+                    type="text"
+                    placeholder="売上日From"
+                  >
+              </div>
+              <div class="inputHeight text-center pull-left mr10 mb5">～</div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                  <input
+                    v-model="searchItem.targetDateTo"
+                    name="targetDateTo"
+                    class="form-control datepicker"
+                    size="10"
+                    type="text"
+                    placeholder="売上日To"
+                  >
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-xs-6">
+            <label class="inputHeight pull-left mr5">タスク種別</label>
+            <div class="form-group mr5 mb5">
+              <select
+                id="selectTask"
+                class="selectpicker"
+                title=""
+                multiple
+                data-actions-box="true"
+                data-select-all-text="全選択"
+                data-deselect-all-text="全解除"
+                v-model="searchItem.selectTask"
+              >
+                <option v-for="task in tasks" :value="task.id" v-text="task.taskName"></option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-xs-8">
+            <label class="inputHeight pull-left mr5">タスク適用開始日</label>
+            <div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                  <input
+                    v-model="searchItem.applyStartDateFrom"
+                    name="applyStartDateFrom"
+                    class="form-control datepicker"
+                    size="10"
+                    type="text"
+                    placeholder="タスク適用開始日From"
+                  >
+              </div>
+              <div class="inputHeight text-center pull-left mr10 mb5">～</div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                  <input
+                    v-model="searchItem.applyStartDateTo"
+                    name="applyStartDateTo"
+                    class="form-control datepicker"
+                    size="10"
+                    type="text"
+                    placeholder="タスク適用開始日To"
+                  >
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-4">
+            <div class="pull-right">
+              <button type="button" class="btn btn-success mb5 mr5" @click="search">検索</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="row row10 mb10">
+            <div class="btn-group mr10">
+              <button
+                v-for="type in typeList"
+                class="btn"
+                :id="type.id + 'Type'"
+                :class="(type.id === selectType) ? 'btn-info active' : 'btn-default'"
+                @click="changeTarget(type.id)"
+                v-text="type.name"
+              ></button>
+            </div>
+          </div>
+          <div>
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th class="vMiddle text-center" rowspan="4">
+                    <span v-text="dispTargetName"></span>
+                    <button
+                      v-if="dispList.length > 0 && selectType === 'account'"
+                      class="btn btn-xs btn-secondary"
+                      data-toggle="modal"
+                      data-target="#filterModal"
+                    >
+                      <i class="fas fa-filter"></i>
+                    </button>
+                  </th>
+                  <th class="text-center" colspan="4">
+                    <span v-text="dispTotal.stockDate"></span> 時点
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('productCount')"
+                    @click="sortBy('productCount')"
+                    rowspan="4"
+                  >
+                    期間内<br>関連<br>商品数<br>
+                  </th>
+                  <th class="vMiddle text-center" colspan="5" rowspan="2">期間内売上</th>
+                  <th class="vMiddle text-center" rowspan="4">レビュー</th>
+
+                </tr>
+                <tr>
+                  <th class="text-center" colspan="2">在庫</th>
+                  <th class="text-center" colspan="2">注残</th>
+                </tr>
+                <tr>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('stockQuantity')"
+                    @click="sortBy('stockQuantity')"
+                    rowspan="2"
+                  >
+                    数量<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('stockAmount')"
+                    @click="sortBy('stockAmount')"
+                    rowspan="2"
+                  >
+                    金額<br><span class="fz10">(数量*売価原価)</span><br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('remainQuantity')"
+                    @click="sortBy('remainQuantity')"
+                    rowspan="2"
+                  >
+                    数量<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('remainAmount')"
+                    @click="sortBy('remainAmount')"
+                    rowspan="2"
+                  >
+                    金額<br><span class="fz10">(数量*基準原価)</span><br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('salesAmount')"
+                    @click="sortBy('salesAmount')"
+                  >
+                    売上額<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('profitAmount')"
+                    @click="sortBy('profitAmount')"
+                  >
+                    利益額<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center fz12 cursorPointer"
+                    :class="addSortArrow('salesProfitRate')"
+                    @click="sortBy('salesProfitRate')"
+                  >
+                    売上<br>利益率(%)<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('profitPerItem')"
+                    @click="sortBy('profitPerItem')"
+                    rowspan="2"
+                  >
+                    商品<br>平均利益<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center cursorPointer"
+                    :class="addSortArrow('inventoryProfitRate')"
+                    @click="sortBy('inventoryProfitRate')"
+                    rowspan="2"
+                  >
+                    在庫<br>利益率(%)<br>
+                  </th>
+                </tr>
+                <tr>
+                  <th
+                    class="vMiddle text-center fz10 cursorPointer"
+                    :class="addSortArrow('shoplistSalesAmount')"
+                    @click="sortBy('shoplistSalesAmount')"
+                  >
+                    SHOPLIST<br>売上額<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center fz10 cursorPointer"
+                    :class="addSortArrow('shoplistProfitAmount')"
+                    @click="sortBy('shoplistProfitAmount')"
+                  >
+                    SHOPLIST<br>利益額<br>
+                  </th>
+                  <th
+                    class="vMiddle text-center fz8 cursorPointer"
+                    :class="addSortArrow('shoplistSalesProfitRate')"
+                    @click="sortBy('shoplistSalesProfitRate')"
+                  >
+                    SHOPLIST<br>売上利益率(%)<br>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="bg-warning">
+                  <td class="vMiddle" rowspan="2">全体</td>
+                  <td class="vMiddle text-right" v-text="dispTotal.stockQuantity" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.stockAmount" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.remainQuantity" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.remainAmount" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.productCount" title="全体"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.totalSales"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.totalGrossProfit"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.totalSalesProfitRate"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.totalProfitPerItem" title="全体"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.totalInventoryProfitRate" rowspan="2"></td>
+                  <td class="vMiddle text-right" rowspan="2">
+                    <span v-text="dispTotal.totalReviews?.reviewStar"></span>
+                    <span v-if="dispTotal.totalReviews?.reviewNum > 0">
+                      <br>
+                      <span v-text="dispTotal.totalReviews?.reviewAve"></span>
+                      (<span v-text="dispTotal.totalReviews?.reviewNumStr"></span>)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="bg-warning">
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.immediateProductCount" title="即納商品のみ"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.totalShoplistSales"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.totalShoplistProfit"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.totalShoplistSalesProfitRate"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.totalProfitPerItemOfImmediate" title="即納商品のみ"></td>
+                </tr>
+                <tr class="bg-warning">
+                  <td class="vMiddle">全体(期間内平均)</td>
+                  <td class="vMiddle text-right" v-text="dispTotal.stockQuantityAvg"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.stockAmountAvg"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.remainQuantityAvg"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.remainAmountAvg"></td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                  <td class="vMiddle text-right">-</td>
+                </tr>
+                <tr class="bg-info">
+                  <td class="vMiddle text-pre-wrap" v-text="noAccountTitle" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountStockQuantity" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountStockAmount" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountRemainQuantity" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountRemainAmount" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountProductCount" title="全体"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountSales"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountGrossProfit"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountSalesProfitRate"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountProfitPerItem" title="全体"></td>
+                  <td class="vMiddle text-right" v-text="dispTotal.noAccountInventoryProfitRate" rowspan="2"></td>
+                  <td class="vMiddle text-right" rowspan="2">
+                    <span v-text="dispTotal.noAccountReviews?.reviewStar"></span>
+                    <span v-if="dispTotal.noAccountReviews?.reviewNum > 0">
+                      <br>
+                      <span v-text="dispTotal.noAccountReviews?.reviewAve"></span>
+                      (<span v-text="dispTotal.noAccountReviews?.reviewNumStr"></span>)
+                    </span>
+                  </td>
+                </tr>
+                <tr class="bg-info">
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.noAccountImmediateProductCount" title="即納商品のみ"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.noAccountShoplistSales"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.noAccountShoplistProfit"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.noAccountShoplistSalesProfitRate"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="dispTotal.noAccountProfitPerItemOfImmediate" title="即納商品のみ"></td>
+                </tr>
+                <template v-for="item in sortList">
+                  <tr>
+                    <td class="vMiddle" v-if="selectType === 'account'" rowspan="2">
+                      <a :href="item.userDetailUrl" target="_blank" v-text="item.target"></a>
+                    </td>
+                    <td class="vMiddle" v-if="selectType === 'team'" v-text="item.target" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.stockQuantity" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.stockAmount" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.remainQuantity" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.remainAmount" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.productCount" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.salesAmount"></td>
+                    <td class="vMiddle text-right" v-text="item.profitAmount"></td>
+                    <td class="vMiddle text-right" v-text="item.salesProfitRate"></td>
+                    <td class="vMiddle text-right" v-text="item.profitPerItem" rowspan="2"></td>
+                    <td class="vMiddle text-right" v-text="item.inventoryProfitRate" rowspan="2"></td>
+                    <td class="vMiddle text-right" rowspan="2">
+                      <span v-text="item.reviewStar"></span>
+                      <span v-if="item.reviewNum > 0">
+                        <br>
+                        <span v-text="item.reviewAve"></span>
+                        (<span v-text="item.reviewNumStr"></span>)
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistSalesAmount"></td>
+                    <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistProfitAmount"></td>
+                    <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistSalesProfitRate"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="filterModalLabel">担当者フィルター</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="mb10">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="updateSelectedUsers('all')"
+              >
+                全選択
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="updateSelectedUsers('none')"
+              >
+                全解除
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="updateSelectedUsers('default')"
+              >
+                標準表示者のみ
+              </button>
+            </div>
+            <div class="form-check" v-for="(username, id) in salesAccounts">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :value="id"
+                :id="'account' + id"
+                v-model="selectedUsers"
+              >
+              <label
+                class="form-check-label vMiddle"
+                :for="'account' + id"
+                v-text="username"
+              >
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

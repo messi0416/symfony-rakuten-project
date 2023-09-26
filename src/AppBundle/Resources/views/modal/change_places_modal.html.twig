@@ -1,0 +1,210 @@
+{# modals #}
+<div class="modal"
+     id="modalQueueChangePlacesConfirm"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-queue-change-places-url="{{ path('queue_change_places') }}"
+     data-is-stop-worker-url="{{ path('is_stop_worker') }}"
+     data-save-queue-changed-places-url="{{ path('save_queue_changed_places') }}"
+  >
+
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label" v-text="caption">
+        </h4>
+      </div>
+
+      <div v-show="nowLoading" class="row">
+        <div class="col-sm-12 text-center">
+          <img src="{{ asset('img/loading.gif') }}" />
+        </div>
+      </div>
+
+      <div class="modal-body" v-show="!nowLoading">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        <div>
+          <div>
+            <button class="btn btn-default pull-right" v-on:click="loadData()">再読み込み</button>
+
+            <ul class="nav nav-tabs nav-tabs-justified">
+              <li id="main" class="active"><a data-toggle="tab" href="#stopMain">main</a></li>
+              <li id="nonExclusive"><a data-toggle="tab" href="#stopNonExclusive">nonExclusive</a></li>
+              <li id="neUpload"><a data-toggle="tab" href="#stopNeUpload">neUpload</a></li>
+              <li id="rakutenCsvUpload"><a data-toggle="tab" href="#stopRakutenCsvUpload">rakutenCsvUpload</a></li>
+              <li id="ppmCsvUpload"><a data-toggle="tab" href="#stopPpmCsvUpload">ppmCsvUpload</a></li>
+            </ul>
+
+            {# main #}
+            <div class="tab-content tab-content-bordered">
+              <div id="stopMain" class="tab-pane active">
+                <table v-if="jobs.main && jobs.main.length > 0" class="table">
+                  <thead>
+                  <tr>
+                    <th class="col-xs-1 text-center">#</th>
+                    <th class="col-xs-6">処理名</th>
+                    <th class="col-xs-3">キュー追加日時</th>
+                    <th class="col-xs-3"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(index, job) in jobs.main" v-bind:style="backgroundCss(index,'main')">
+                    <td class="col-xs-1 text-center">(% index + 1 %)</td>
+                    <td class="col-xs-6">(% job.name %)</td>
+                    <td class="col-xs-3 text-left">(% job.queueDatetime %)</td>
+                    <td class="col-xs-3">
+                      <p class="pull-right mb0">
+                        <button class="btn btn-default" v-on:click="moveUpJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▲</button>
+                        <button class="btn btn-default" v-on:click="moveDownJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▼</button>
+                        <button type="button" class="btn btn-danger" v-on:click="deleteJob(index)" style="width: 1.7em;height: 1.7em;padding:0;">×</button>
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div v-else class="panel panel-default mb0">
+                  <div class="panel-body">なし</div>
+                </div>
+              </div>
+
+              {# nonExclusive #}
+              <div id="stopNonExclusive" class="tab-pane">
+                <table v-if="jobs.nonExclusive && jobs.nonExclusive.length > 0" class="table">
+                  <thead>
+                  <tr>
+                    <th class="col-xs-1 text-center">#</th>
+                    <th class="col-xs-6">処理名</th>
+                    <th class="col-xs-3">キュー追加日時</th>
+                    <th class="col-xs-3"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(index, job) in jobs.nonExclusive" v-bind:style="backgroundCss(index,'nonExclusive')">
+                    <td class="col-xs-1 text-center">(% index + 1 %)</td>
+                    <td class="col-xs-6">(% job.name %)</td>
+                    <td class="col-xs-3 text-left">(% job.queueDatetime %)</td>
+                    <td class="col-xs-3">
+                      <p class="pull-right mb0">
+                        <button class="btn btn-default" v-on:click="moveUpJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▲</button>
+                        <button class="btn btn-default" v-on:click="moveDownJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▼</button>
+                        <button type="button" class="btn btn-danger" v-on:click="deleteJob(index)" style="width: 1.7em;height: 1.7em;padding:0;">×</button>
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div v-else class="panel panel-default mb0">
+                  <div class="panel-body">なし</div>
+                </div>
+              </div>
+
+              {# neUpload #}
+              <div id="stopNeUpload" class="tab-pane">
+                <table v-if="jobs.neUpload && jobs.neUpload.length > 0" class="table">
+                  <thead>
+                  <tr>
+                    <th class="col-xs-1 text-center">#</th>
+                    <th class="col-xs-6">処理名</th>
+                    <th class="col-xs-3">キュー追加日時</th>
+                    <th class="col-xs-3"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(index, job) in jobs.neUpload" v-bind:style="backgroundCss(index,'neUpload')">
+                    <td class="col-xs-1 text-center">(% index + 1 %)</td>
+                    <td class="col-xs-6">(% job.name %)</td>
+                    <td class="col-xs-3 text-left">(% job.queueDatetime %)</td>
+                    <td class="col-xs-3">
+                      <p class="pull-right mb0">
+                        <button class="btn btn-default" v-on:click="moveUpJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▲</button>
+                        <button class="btn btn-default" v-on:click="moveDownJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▼</button>
+                        <button type="button" class="btn btn-danger" v-on:click="deleteJob(index)" style="width: 1.7em;height: 1.7em;padding:0;">×</button>
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div v-else class="panel panel-default mb0">
+                  <div class="panel-body">なし</div>
+                </div>
+              </div>
+
+              {# rakutenCsvUpload #}
+              <div id="stopRakutenCsvUpload" class="tab-pane">
+                <table v-if="jobs.rakutenCsvUpload && jobs.rakutenCsvUpload.length > 0" class="table">
+                  <thead>
+                  <tr>
+                    <th class="col-xs-1 text-center">#</th>
+                    <th class="col-xs-6">処理名</th>
+                    <th class="col-xs-3">キュー追加日時</th>
+                    <th class="col-xs-3"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(index, job) in jobs.rakutenCsvUpload" v-bind:style="backgroundCss(index,'rakutenCsvUpload')">
+                    <td class="col-xs-1 text-center">(% index + 1 %)</td>
+                    <td class="col-xs-6">(% job.name %)</td>
+                    <td class="col-xs-3 text-left">(% job.queueDatetime %)</td>
+                    <td class="col-xs-3">
+                      <p class="pull-right mb0">
+                        <button class="btn btn-default" v-on:click="moveUpJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▲</button>
+                        <button class="btn btn-default" v-on:click="moveDownJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▼</button>
+                        <button type="button" class="btn btn-danger" v-on:click="deleteJob(index)" style="width: 1.7em;height: 1.7em;padding:0;">×</button>
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div v-else class="panel panel-default mb0">
+                  <div class="panel-body">なし</div>
+                </div>
+              </div>
+
+              {# ppmCsvUpload #}
+              <div id="stopPpmCsvUpload" class="tab-pane">
+                <table v-if="jobs.ppmCsvUpload && jobs.ppmCsvUpload.length > 0" class="table">
+                  <thead>
+                  <tr>
+                    <th class="col-xs-1 text-center">#</th>
+                    <th class="col-xs-6">処理名</th>
+                    <th class="col-xs-3">キュー追加日時</th>
+                    <th class="col-xs-3"></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(index, job) in jobs.ppmCsvUpload" v-bind:style="backgroundCss(index,'ppmCsvUpload')">
+                    <td class="col-xs-1 text-center">(% index + 1 %)</td>
+                    <td class="col-xs-6">(% job.name %)</td>
+                    <td class="col-xs-3 text-left">(% job.queueDatetime %)</td>
+                    <td class="col-xs-3">
+                      <p class="pull-right mb0">
+                        <button class="btn btn-default" v-on:click="moveUpJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▲</button>
+                        <button class="btn btn-default" v-on:click="moveDownJob(index)" style="width: 1.7em;height: 1.7em; padding:0">▼</button>
+                        <button type="button" class="btn btn-danger" v-on:click="deleteJob(index)" style="width: 1.7em;height: 1.7em;padding:0;">×</button>
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div v-else class="panel panel-default mb0">
+                  <div class="panel-body">なし</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-bind:disabled="workerStatus" v-on:click="onSubmit()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>

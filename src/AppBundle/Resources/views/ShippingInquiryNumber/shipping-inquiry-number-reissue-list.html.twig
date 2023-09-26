@@ -1,0 +1,139 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.shipping-inquiry-number.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %} #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.shipping-inquiry-number-reissue-list.js'
+    '@AppBundle/Resources/public/js/partial/modal-change-current-warehouse.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const WAREHOUSE_ID = {{ account.getWarehouseId() }};
+    const SAVED_CONDITIONS = {{ savedConditions|raw }};
+    const SAVED_MESSAGE = {{ savedMessage|raw }};
+  </script>
+
+  <div id="shippingInquiryNumberReissueList" class="container"
+      data-search-url="{{ path('shipping_inquiry_number_reissue_find') }}"
+      data-download-url="{{ path('shipping_inquiry_number_reissue_download') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>配送ラベル再発行伝票一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+
+      {# Flash メッセージ #}
+      {% include 'AppBundle::parts/flash-message.html.twig' %}
+    </div>
+
+    {# 検索フォーム #}
+    <div class="container">
+      <div class="pull-right mt20 mb10 mr5">
+        <a class="btn btn-success" data-toggle="modal" data-target="#modalChangeCurrentWarehouse">
+          <i class="fa fa-fw fa-home"></i>{{ account.getWarehouse().getName() }}
+        </a>
+      </div>
+      <div class="p10 form-check">
+        <input class="transform2 mr10 form-check-input" type="checkbox" id="onlyNotCsvDownload" v-model="conditions.onlyNotCsvDownload">
+        <label class="h4 form-check-label" for="onlyNotCsvDownload">未ダウンロードのもののみ</label>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm-4">
+          <select v-model="conditions.packingGroupName" class="form-control">
+            <option></option>
+            {% for name in pullDown['nameList'] %}
+              <option>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group col-sm-4">
+          <select v-model="conditions.packingGroupComment" class="form-control">
+            <option></option>
+            {% for comment in pullDown['commentList'] %}
+              <option>{{ comment }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-group pull-left form-inline clearfix mb20 mt5">
+        <div class="form-group pull-left mr20">
+          <span class="mr10">伝票番号</span>
+          <input type="text" class="form-control w100" v-model="conditions.voucherNumber"/>
+        </div>
+        <div class="form-group pull-left mr10">
+          <button type="button" class="btn btn-primary" @click="search">検索</button>
+        </div>
+      </div>
+    </div>
+
+    {# リスト（発送方法別） #}
+    <div v-cloak>
+      <ul class="nav nav-tabs" role="tablist">
+        <li v-for="method in deliveryMethodList" class="nav-item" :class="{'active': method.id == activeMethodId}">
+          <a v-text="method.name"
+              @click="selectTab(method.id)"
+              class="cursorPointer nav-link"
+              data-toggle="tab"
+            ></a>
+        </li>
+      </ul>
+
+      <div v-for="method in deliveryMethodList" class="tab-content">
+        <div v-if="method.id == activeMethodId">
+          <div v-text="method.name" class="h4"></div>
+          <div class="mb10">
+            <button class="btn btn-primary" @click="download(method.key)">CSVダウンロード</button>
+            <p class="text-danger">※DL後はステータスを更新するため、再検索してください</p>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="form-group ml5">
+                <textarea readonly class="form-control w100 h200" v-model="list[method.key].voucherNumberText"></textarea>
+                <button
+                    class="btn btn-info btn-sm"
+                    @click="writeToClipboard(list[method.key].voucherNumberText)"
+                  >コピー</button>
+              </div>
+            </div>
+            <table class="col-sm-7">
+              <tr class="row h4 inputHeight" v-for="item in list[method.key].data">
+                <td class="col-sm-4">
+                  <a v-text="item.voucherNumber" :href="item.detailUrl"></a>
+                </td>
+                <td class="col-sm-4" v-text="item.productQuantity"></td>
+                <td class="col-sm-4">[<span v-text="item.shippingVoucherName"></span>]</td>
+                <td class="col-sm-4">
+                  <div class="vMiddle" :class="item.css" v-text="item.statusName"></div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {# 倉庫切り替え用モーダル #}
+  {% include 'AppBundle::modal/change-current-warehouse.html.twig' %}
+
+{% endblock %}

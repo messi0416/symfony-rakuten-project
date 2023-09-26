@@ -1,0 +1,44 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block headerTitle %}ロケーション管理{% endblock %}
+
+{% block contents %}
+
+  {#<div class="panel panel-default">#}
+    {#<div class="panel-heading">#}
+      {#ロケーション#}
+    {#</div>#}
+
+    {#<div class="panel-body">#}
+      {#<div class="list-group mb0">#}
+        {#<a class="list-group-item" href="{{ path('location_warehouse_to') }}">倉庫へ</a>#}
+        {#<a class="list-group-item" href="{{ path('location_warehouse_from_location_list') }}">倉庫から</a>#}
+      {#</div>#}
+    {#</div>#}
+
+  {#</div>#}
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      ピッキング
+    </div>
+    <div class="panel-body">
+      <div class="list-group mb0">
+        <a class="list-group-item" href="{{ path('picking_list') }}">ピッキングリスト</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      商品管理
+    </div>
+
+    <div class="panel-body">
+      <div class="list-group">
+        <a class="list-group-item" href="{{ path('location_missing_weight_product_list') }}">重量・寸法未設定商品</a>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

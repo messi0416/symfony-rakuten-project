@@ -1,0 +1,54 @@
+
+{# 出荷量表示 #}
+<div class="modal"
+     id="modalDisplayCalculateShipment"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+
+     data-calculate-shipment-list-url="{{ path('delivery_get_calculate_shipment_list') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          出荷量
+        </h4>
+      </div>
+
+
+      <div class="modal-body">
+        {# 処理結果メッセージ #}
+        <div class="mb10" v-bind:class="messageClass" v-show="message">
+          <span class="multiLineWrap" v-text="message"></span>
+        </div>
+        <table class="table table-condensed mb0">
+          <tbody>
+            <tr>
+              <th class="text-right">倉庫名</th>
+              <th class="text-right">出荷量</th>
+              <th class="text-right">倉庫在庫ピッキング</th>
+              <th class="text-right">合計</th>
+            </tr>
+            <tr v-for="item in calculateShipment">
+              <td class="col-xs-3 text-right" v-text="item.name"></td>
+              <td class="col-xs-3 text-right" v-text="item.order_amount"></td>
+              <td class="col-xs-3 text-right" v-text="item.stock_move_amount"></td>
+              <td class="col-xs-3 text-right" v-text="item.total"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row row10">
+          <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

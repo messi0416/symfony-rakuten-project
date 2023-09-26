@@ -1,0 +1,32 @@
+MiscBundle\Entity\TbConciergeOperationLogTarget:
+    type: entity
+    table: tb_concierge_operation_log_target
+    repositoryClass: MiscBundle\Entity\Repository\TbConciergeOperationLogTargetRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        conciergeOperationLogId:
+            type: integer
+            nullable: false
+            comment: コンシェルジュ業務ログID
+            column: concierge_operation_log_id
+        targetType:
+            type: boolean
+            nullable: false
+            comment: "種別\n1:伝票番号"
+            column: target_type
+        targetValue:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: "値\nvarcharのため、伝票番号を検索する際はキャストに注意"
+            column: target_value
+    lifecycleCallbacks: {  }

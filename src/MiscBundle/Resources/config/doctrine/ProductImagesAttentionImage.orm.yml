@@ -1,0 +1,76 @@
+MiscBundle\Entity\ProductImagesAttentionImage:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\ProductImagesAttentionImageRepository
+    table: product_images_attention_image
+    indexes:
+        index_attention_flg:
+            columns:
+                - attention_flg
+        index_use_product_num_onsale:
+            columns:
+                - use_product_num_onsale
+    id:
+        md5hash:
+            type: string
+            nullable: false
+            length: 32
+            fixed: false
+            comment: MD5ハッシュ
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: "代表商品コード\n代表1件"
+            default: ''
+            column: daihyo_syohin_code
+        imagePath:
+            type: string
+            nullable: false
+            length: 32
+            fixed: false
+            comment: "代表商品画像パス\n代表1件"
+            default: ''
+            column: image_path
+        useProductNumOnsale:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "使用販売中商品数\n集計日時点での商品数。バッチ実行時のみ更新のため、厳密なものではなく参考値。"
+            default: '0'
+            column: use_product_num_onsale
+        useProductNumAll:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "使用全商品数\n集計日時点での商品数。バッチ実行時のみ更新のため、厳密なものではなく参考値。"
+            default: '0'
+            column: use_product_num_all
+        attentionFlg:
+            type: boolean
+            nullable: false
+            comment: "アテンション画像フラグ\n0:アテンション画像ではない 1:アテンション画像である"
+            default: '0'
+            column: attention_flg
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\nバッチ登録は0"
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

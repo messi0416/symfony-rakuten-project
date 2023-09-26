@@ -1,0 +1,39 @@
+MiscBundle\Entity\TbRakutenSearchKeywordRanking:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbRakutenSearchKeywordRankingRepository
+    table: tb_rakuten_search_keyword_ranking
+    indexes:
+        index_ranking:
+            columns:
+                - ranking_date
+                - rank
+        index_keyword_id:
+            columns:
+                - keyword_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        rankingDate:
+            type: date
+            nullable: false
+            comment: 日付
+            column: ranking_date
+        rank:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 順位
+        keywordId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "キーワードID\ntb_rakuten_search_keywordテーブルのid"
+            column: keyword_id
+    lifecycleCallbacks: {  }

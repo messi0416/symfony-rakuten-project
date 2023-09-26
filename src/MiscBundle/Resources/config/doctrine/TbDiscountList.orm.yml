@@ -1,0 +1,120 @@
+MiscBundle\Entity\TbDiscountList:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbDiscountListRepository
+    table: tb_discount_list
+    # indexes:
+    id:
+        daihyo_syohin_code:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+    fields:
+        stock_amount:
+            type: integer
+            nullable: false
+            default: 0
+        default_warehouse_stock_amount:
+            type: integer
+            nullable: false
+            default: 0
+        last_orderdate:
+            type: datetime
+            nullable: true
+        sales_start_date:
+            type: datetime
+            nullable: true
+        discount_base_date:
+            type: datetime
+            nullable: true
+        discount_terminal_date:
+            type: datetime
+            nullable: true
+        sales_amount:
+            type: integer
+            nullable: false
+            default: 0
+        expected_daily_sales_amount:
+            type: decimal
+            nullable: false
+            default: 0
+        estimated_sales_days:
+            type: decimal
+            nullable: false
+            default: 0
+        sales_amount:
+            type: integer
+            nullable: false
+            default: 0
+        sell_out_days:
+            type: integer
+            nullable: false
+            default: 0
+        sell_out_date:
+            type: datetime
+            nullable: true
+        sell_out_over_days:
+            type: integer
+            nullable: false
+            default: 0
+        genka_tnk:
+            type: integer
+            nullable: false
+            default: 0
+        genka_tnk_ave:
+            type: integer
+            nullable: false
+            default: 0
+        cost_total:
+            type: integer
+            nullable: false
+            default: 0
+        base_price:
+            type: integer
+            nullable: false
+            default: 0
+        current_price:
+            type: integer
+            nullable: false
+            default: 0
+        discount_price:
+            type: integer
+            nullable: false
+            default: 0
+        discount_destination_price:
+            type: integer
+            nullable: false
+            default: 0
+        discount_rate:
+            type: decimal
+            nullable: false
+            default: 0
+        pricedown_flg:
+            type: integer
+            nullable: false
+            default: 0
+        season_flg:
+            type: integer
+            nullable: false
+            default: -1
+        pic_directory:
+            type: string
+            length: 30
+            nullable: false
+            default: 0
+        pic_filename:
+            type: string
+            length: 100
+            nullable: false
+            default: 0
+        created:
+            type: datetime
+            nullable: false
+        updated:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

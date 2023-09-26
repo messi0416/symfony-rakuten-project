@@ -1,0 +1,355 @@
+{% extends 'PlusnaoMainBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/select2.min.css' filter='cssrewrite'
+    'bundles/app/css/select2-bootstrap.min.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/datetimepicker.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}
+  {# Vue.js 2.x 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/select2.min.js'
+    '@AppBundle/Resources/public/js/select-custom-directive.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-datetimepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@PlusnaoMainBundle/Resources/public/js/sales_ranking.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const ViewVarBigCategories = {{ bigCategories | raw }};
+    const ViewVarCategories = {{ categories | raw }};
+    const ViewVarProductSalesAccounts = {{ productSalesAccounts | raw }};
+  </script>
+
+  <div
+    id="salesRanking" class="container"
+    data-search-url="{{ path('plusnao_sales_ranking_search') }}"
+  >
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>売れ筋ランキング</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    {# selectタグのrequired属性は、CSSの:invalid疑似クラスを有効にするために必要(選択無可) #}
+    {# select2はselectタグにCSS付与しても初期灰色にならないのでJSで別途設定しました。 #}
+    <div id="searchForm">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="row">
+            <div class="form-group col-xs-12 mb5">
+              {# キーワード #}
+              <div class="col-xs-6">
+                <input type="text" id="keyword" v-model="keyword" class="form-control"
+                  @keyup.enter="search" placeholder="キーワード"
+                >
+              </div>
+              {# 商品売上担当者名 #}
+              <div class="col-xs-6">
+                <select class="form-control" id="productSalesAccount" v-model="userId" v-select required
+                  @change.once="selectUserFirst"
+                >
+                  <option value="" disabled>商品売上担当者</option>
+                  <option value="">&nbsp;</option>
+                  <option v-for="(name, id) in productSalesAccounts" :key="name" :value="id" v-text="name">
+                  </option>
+                </select>
+                <span data-toggle="tooltip" title="商品売上担当者で絞り込んだ場合、
+  取得期間・比較期間のどちらかに担当者だった商品の売り上げが
+  案分せず表示されます">
+                  <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+            {# カテゴリ選択 #}
+            <div class="form-group col-xs-12">
+              <div class="col-xs-6">
+                <select class="form-control mb5" v-model="bigCategory" @change="updateMidCategories" required>
+                  <option value="" disabled>大カテゴリ</option>
+                  <option v-for="category in bigCategories" :value="category" v-text="category">
+                  </option>
+                </select>
+              </div>
+              <div class="col-xs-6">
+                <select class="form-control mb5" v-model="midCategory" required>
+                  <option value="" disabled>中カテゴリ</option>
+                  <option v-for="category in midCategories" :value="category" v-text="category">
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {# ランキング基準 #}
+          <div class="row">
+            <div class="col-sm-12 mb5" id="rankingTarget">
+              <input type="radio" id="rankingTarget_0" required="required" value="sales_amount"
+                v-model="rankingTarget"
+              >
+              <label for="rankingTarget_0" class="required">販売金額</label>
+              <input type="radio" id="rankingTarget_1" required="required" value="item_num"
+                v-model="rankingTarget"
+              >
+              <label for="rankingTarget_1" class="required">販売個数</label>
+              <input type="radio" id="rankingTarget_2" required="required" value="voucher_num"
+                v-model="rankingTarget"
+              >
+              <label for="rankingTarget_2" class="required">伝票数</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          {# 取得期間 #}
+          <div class="row">
+            <div class="col-sm-2 formLabel"><small>取得期間</small></div>
+            <div class="col-sm-10">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <input type="date" id="dateBStart" required="required" class="form-control"
+                    v-model="dateBStart"
+                  >
+                </div>
+                <div class="col-sm-6 form-group">
+                  <input type="date" id="dateBEnd" required="required" class="form-control"
+                    v-model="dateBEnd"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# 比較期間 #}
+          <div class="row">
+            <div class="col-sm-2 formLabel"><small>比較期間</small></div>
+            <div class="col-sm-10">
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <input type="date" id="dateAStart" required="required" class="form-control"
+                    v-model="dateAStart"
+                  >
+                </div>
+                <div class="col-sm-6 form-group">
+                  <input type="date" id="dateAEnd" required="required" class="form-control"
+                    v-model="dateAEnd"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row text-center">
+            <div class="col-sm-12">
+              <div class="form-group pull-right">
+
+                <div class="btn-group mb5 mr10">
+                  <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    同月比較 <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li v-for="n in 12" @click="selectCompareSameMonth(n)">
+                      <a class="pointer"><span v-text="n"></span>月</a>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="btn-group mb5 mr10">
+                  <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    直近比較 <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="pointer" @click="selectOneWeek">週</a></li>
+                    <li><a class="pointer" @click="selectOneMonth">月</a></li>
+                    <li><a class="pointer" @click="selectOneYear">年</a></li>
+                  </ul>
+                </div>
+
+                <label class="btn btn-default inlineBlock mb5 mr5" @click="moveDayRange('backward')">
+                  <i class="fa fa-angle-left"></i>
+                </label>
+                <input type="text" id="moveDays" name="moveDays" required="required"
+                  class="form-control inlineBlock midSmallInt mb5" v-model="moveDays"> 日
+                <label class="btn btn-default inlineBlock mb5 mr5" @click="moveDayRange('forward')">
+                  <i class="fa fa-angle-right"></i>
+                </label>
+
+                <button @click="search" class="btn btn-success">集計する</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 検索結果表示 #}
+    <div v-if="salesRankingList.length > 0" class="main" id="salesRankingTable">
+      <table class="table table-condensed table-bordered">
+        <thead>
+        <tr>
+          <th rowspan="3" :class="sortMarks.rank.cssClass" @click="switchSort('rank')">順位</th>
+          <th rowspan="3" :class="sortMarks.daihyoSyohinCode.cssClass" @click="switchSort('daihyoSyohinCode')">商品コード</th>
+          <th rowspan="3">画像</th>
+          <th rowspan="3" :class="sortMarks.genkaTanka.cssClass" @click="switchSort('genkaTanka')">仕入価格</th>
+          <th rowspan="3" :class="sortMarks.baikaTanka.cssClass" @click="switchSort('baikaTanka')">販売価格</th>
+          <th colspan="3">取得期間</th>
+          <th colspan="3">比較期間</th>
+          <th colspan="2">レビュー</th>
+        </tr>
+        <tr>
+          <th :class="sortMarks.itemNum.cssClass" @click="switchSort('itemNum')">個数</th>
+          <th :class="sortMarks.voucherNum.cssClass" @click="switchSort('voucherNum')">伝票数</th>
+          <th :class="sortMarks.salesAmount.cssClass" @click="switchSort('salesAmount')">金額</th>
+          <th :class="sortMarks.itemNumA.cssClass" @click="switchSort('itemNumA')">個数</th>
+          <th :class="sortMarks.voucherNumA.cssClass" @click="switchSort('voucherNumA')">伝票数</th>
+          <th :class="sortMarks.salesAmountA.cssClass" @click="switchSort('salesAmountA')">金額</th>
+          <th rowspan="2" :class="sortMarks.reviewPointAverage.cssClass" @click="switchSort('reviewPointAverage')">評価</th>
+          <th rowspan="2" :class="sortMarks.reviewNum.cssClass" @click="switchSort('reviewNum')">件数</th>
+        </tr>
+        <tr>
+          <td class="text-right" v-text="displayTotalItemNum"></td>
+          <td class="text-right" v-text="displayTotalVoucherNum"></td>
+          <td class="text-right" v-text="displayTotalSalesAmount"></td>
+          <td class="text-right" v-text="displayTotalItemNumA"></td>
+          <td class="text-right" v-text="displayTotalVoucherNumA"></td>
+          <td class="text-right" v-text="displayTotalSalesAmountA"></td>
+        </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in displaySalesRankingList" is="sales-ranking-table" :item="item"
+            @select-big-category="searchAtBigCategory"
+            @select-mid-category="searchAtMidCategory"
+          >
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script id="salesRankingTable" type="text/x-template">
+    <tr>
+      <td v-text="item.rank" class="text-center"></td>
+      <td class="text-left">
+        <p class="listCategory">
+          <a v-text="item.bigCategory" @click="changeSelectBigCategory(item.bigCategory, true)"></a>
+          &gt;
+          <a v-text="item.midCategory" @click="changeSelectMidCategory(item.bigCategory, item.midCategory)"></a>
+        </p>
+        <a :href="item.analyzeUrl" v-text="item.daihyoSyohinCode" target="_blank"></a>
+        <p class="sire">
+          <span class="name" v-text="item.sireName"></span>
+          (<span class="code" v-text="item.sireCode"></span>)
+        </p>
+      </td>
+      <td class="text-center">
+        <a :href="item.detailUrl" target="_blank">
+          <img :src="item.thumbnail" class="salesRankingThumbnail" />
+        </a>
+      </td>
+      <td class="text-right" v-text="displayGenkaTanka"></td>
+      <td class="text-right" v-text="displayBaikaTanka"></td>
+      <td class="text-right" v-text="displayItemNum"></td>
+      <td class="text-right" v-text="displayVoucherNum"></td>
+      <td class="text-right" v-text="displaySalesAmount"></td>
+      <td class="text-right" v-text="displayItemNumA"></td>
+      <td class="text-right" v-text="displayVoucherNumA"></td>
+      <td class="text-right" v-text="displaySalesAmountA"></td>
+      <td class="text-center" v-text="displayReviewPointAverage"></td>
+      <td class="text-center vMiddle">
+        <a class="btn btn-success reviewButton" v-show="item.reviewNum != 0"
+          @click="openProductReviewListModal"
+        >
+          <span v-text="displayReviewNum"></span> 件
+        </a>
+        <span v-show="item.reviewNum == 0">
+          <span v-text="displayReviewNum"></span> 件
+        </span>
+      </td>
+    </tr>
+  </script>
+
+  {# modals #}
+  <div class="modal" id="modalProductReviewList" tabindex="-1" data-backdrop="true"
+    data-keyboard="true" data-url="{{ path('plusnao_api_get_product_reviews') }}"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div :class="messageClass">
+              <div v-text="message"></div>
+            </div>
+          </div>
+          <div class="nowLoading" v-show="nowLoading">
+            <span>
+              <img src="{{ asset('img/loading.gif') }}" />
+            </span>
+          </div>
+          <div class="productReviewList">
+            <table is="review-item" v-for="item in list" :item="item"></table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script id="review-item" type="text/x-template">
+    <table class="reviewList table table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th colspan="1">タイトル</th>
+          <td colspan="5" v-text="item.title"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="6" clasds="reviewBody" v-text="item.review"></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>評価</th>
+          <td class="text-center" v-text="item.point"></td>
+          <th class="text-center">購入日時</th>
+          <td class="text-center" style="width: 135px;">
+            <small v-text="item.orderDatetime"></small>
+          </td>
+          <th class="text-center">投稿日時</th>
+          <td class="text-center" style="width: 135px;">
+            <small v-text="item.postDatetime"></small>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </script>
+{% endblock %}

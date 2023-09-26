@@ -1,0 +1,41 @@
+MiscBundle\Entity\TbSetProductCreateDetail:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\BaseRepository
+  table: tb_set_product_create_detail
+
+  id:
+    list_id:
+      type: integer
+      nullable: false
+
+    detail_sku:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+
+  fields:
+    detail_free_stock:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    detail_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    create_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    picking_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+  lifecycleCallbacks: {}

@@ -1,0 +1,17 @@
+MiscBundle\Entity\TbUpdaterecord:
+    type: entity
+    table: tb_updaterecord
+    id:
+        updaterecordno:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        datetime:
+            type: datetime
+            nullable: true
+    lifecycleCallbacks: {  }

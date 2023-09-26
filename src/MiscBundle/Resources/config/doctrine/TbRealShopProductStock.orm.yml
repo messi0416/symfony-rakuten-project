@@ -1,0 +1,50 @@
+MiscBundle\Entity\TbRealShopProductStock:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbRealShopProductStockRepository
+    table: tb_real_shop_product_stock
+    id:
+        ne_syohin_syohin_code:
+            type: string
+            nullable: false
+            length: 50
+            id: true
+            column: ne_syohin_syohin_code
+            generator:
+                strategy: IDENTITY
+
+    fields:
+        daihyo_syohin_code:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                default: ''
+
+        stock:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+
+        order_num:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+
+        last_ordered:
+            type: datetime
+            nullable: true
+
+        created:
+            type: datetime
+            nullable: false
+
+        updated:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

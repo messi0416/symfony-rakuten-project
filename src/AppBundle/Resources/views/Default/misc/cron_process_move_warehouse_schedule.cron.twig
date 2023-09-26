@@ -1,0 +1,11 @@
+# -----------------------------
+# webシステム 倉庫間箱移動設定 から作成されたcrontab ファイルです。
+# data/cron/auto 以下に配置され、設定更新時にcrontab へ追記されます。
+
+{% for schedule in schedules %}
+{% if schedule.active == -1 %}
+# auto generated setting: {{ schedule.name }}
+{{ schedule.minutes }} {{ schedule.hours }} * * * /home/workuser/ne_api/app/console --env={{ env }} {{ schedule.command }} >> /dev/null
+
+{% endif %}
+{% endfor %}

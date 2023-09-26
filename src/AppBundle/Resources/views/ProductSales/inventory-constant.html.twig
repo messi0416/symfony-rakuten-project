@@ -1,0 +1,216 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/css/app.product-sales-set-inventory-constant.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.product-sales-inventory-constant.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+  </script>
+
+  <div id="setInventoryConstant" class="container"
+    data-account-url="{{ path('product_sales_account') }}"
+    data-search-url="{{ path('product_sales_inventory_constant_list') }}"
+    data-update-reset-date-url="{{ path('product_sales_inventory_constant_reset_date_save') }}"
+    data-update-inventory-constant-url="{{ path('product_sales_inventory_constant_save') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品売上担当者向け 在庫定数設定</h2>
+        </div>
+      </div>
+    </div>
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+    <div class="form-inline clearfix mb10 mt10">
+      <div class="form-group pull-left mr10">
+        <span class="mr10">代表商品コード：</span>
+        <input
+          type="text"
+          class="form-control w300"
+          v-model="daihyoSyohinCode"
+          @keyup.enter="search()"
+        />
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-success" @click="search()">
+          検索
+        </button>
+      </div>
+    </div>
+
+    <div class="pull-right  clearfix">
+      <a :href="accountUrl + accountUrlSearch">
+        商品売上担当者設定画面へ
+      </a>
+    </div>
+
+    <div v-if="Object.keys(product).length" v-cloak>
+      <div class="mt20 mb20">
+        <div class="row">
+          <div class="col-md-2">
+            <img :src="product.imageUrl" class="img-responsive mh120">
+          </div>
+          <div class="col-md-10">
+            <div class="mb10 inputHeightSm d-flex">
+              <div class="mr20">
+                <span
+                  class="vMiddle h4 bold"
+                  v-text="product.daihyoSyohinCode"
+                >
+                </span>
+              </div>
+              <div class="mr30">
+                <span
+                  class="vMiddle h5 bold bg-primary px30 py4"
+                  v-text="product.deliverycodeName"
+                >
+                </span>
+              </div>
+              <div class="mr30">
+                <span class="vMiddle h5 bold mr5">登録日時:</span>
+                <span
+                  class="vMiddle h5 py4"
+                  :class="registrationDateCss"
+                  v-text="product.registrationDate"
+                >
+                </span>
+              </div>
+              <div v-if="isUpdatable" class="form-inline mr5" @mouseenter.once="createDatePicker()">
+                <label for="resetDate" class="mr5">在庫定数リセット日：</label>
+                <div class="input-group">
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                  <input
+                    id="resetDate"
+                    type="text"
+                    class="form-control w120"
+                    v-model="product.resetDate"
+                  >
+                </div>
+              </div>
+              <div v-else>
+                <span class="vMiddle h5 bold mr5">在庫定数リセット日:</span>
+                <span
+                  class="vMiddle h5 py4"
+                  v-text="product.resetDate"
+                >
+                </span>
+              </div>
+              <div v-if="isUpdatable" class="form-group">
+                <button
+                  type="button"
+                  class="btn btn-info"
+                  @click="updateResetDate"
+                  :disabled="!resetDateModifyFlg"
+                >
+                  更新
+                </button>
+              </div>
+            </div>
+            <div class="mb10" v-text="product.daihyoSyohinName"></div>
+            <div class="d-flex a-center">
+              <p class="mr30 mb0">
+                基準原価（抜）
+                <span v-text="product.genkaTnk + '円'"></span>
+              </p>
+              <p class="mr30 mb0">
+                基準売価（抜）
+                <span v-text="product.baikaTnk + '円'"></span>
+              </p>
+              <p class="mr10 mb0">
+                仕入先アドレス
+              </p>
+              <p v-if="product.sireAddresses.length > 0" class="mb0">
+                <a
+                  v-for="(address, index) in product.sireAddresses"
+                  :href="address"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-default mr5"
+                >
+                  <span v-text="index + 1"></span>
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pull-right">
+        <button
+          v-if="isUpdatable"
+          type="button"
+          class="btn btn-primary mb10"
+          @click="updateInventoryConstant"
+          :disabled="!modifyFlg"
+        >
+          在庫定数を反映
+        </button>
+      </div>
+
+      <table class="mt40 table table-bordered odd-bg-smoke">
+        <tr>
+          <th class="vMiddle">受発注</th>
+          <th class="vMiddle">NE商品コード</th>
+          <th class="vMiddle">縦軸項目名</th>
+          <th class="vMiddle">横軸項目名</th>
+          <th class="vMiddle w80">在庫定数</th>
+          <th class="vMiddle w70">発注点</th>
+          <th class="vMiddle w70">季在定</th>
+          <th class="vMiddle w70">現在</th>
+          <th class="vMiddle w70">フ在</th>
+          <th class="vMiddle w70">エ注残</th>
+          <th class="vMiddle w70">コ注残</th>
+        </tr>
+        <tr v-for="(item, index) in list" :key="item.neSyohinCode">
+          <td
+            class="vMiddle bold"
+            v-text="item.orderingAvailability"
+            :class="item.orderingAvailabilityCss"
+          >
+          </td>
+          <td class="vMiddle" v-text="item.neSyohinCode"></td>
+          <td class="vMiddle" v-text="item.rowname"></td>
+          <td class="vMiddle" v-text="item.colname"></td>
+          <td v-if="isUpdatable" class="vMiddle">
+            <input
+              type="text"
+              class="form-control text-right"
+              :class="item.addClass"
+              :value="item.inventoryConstant"
+              @input="modify(index, $event.target.value)"
+            >
+          </td>
+          <td v-else class="vMiddle text-right" v-text="item.inventoryConstant"></td>
+          <td class="vMiddle text-right" v-text="item.orderScore"></td>
+          <td class="vMiddle text-right" v-text="item.seasonInventoryConstant"></td>
+          <td class="vMiddle text-right" v-text="item.stockQuantity"></td>
+          <td class="vMiddle text-right" v-text="item.freeInventoryQuantity"></td>
+          <td class="vMiddle text-right" v-text="item.airOrderRemaining"></td>
+          <td class="vMiddle text-right" v-text="item.containerOrderRemaining"></td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+{% endblock %}

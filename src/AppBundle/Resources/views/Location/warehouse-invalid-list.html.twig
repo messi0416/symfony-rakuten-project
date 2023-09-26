@@ -1,0 +1,43 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block headerTitle %}前にPロケーションがある商品{% endblock %}
+
+{% block contents %}
+
+  {% if products|length > 0 %}
+    <div>
+
+      <div class="text-right mb5 mr5">全 {{ products|length }} 件</div>
+      <table class="table" id="warehouseList">
+        {% for product in products %}
+          <tr>
+            <td class="col-xs-6">
+              <a href="{{ path('location_product_detail', { 'syohinCode' : product.getNeSyohinSyohinCode() }) }}">
+                {{ product.getNeSyohinSyohinCode() }}
+              </a>
+            </td>
+            <td class="col-xs-6">
+              <table class="table table-condensed borderless mb0">
+                {% for location in product.getActiveLocations() %}
+                  <tr>
+                    <th class="col-xs-10 text-right">
+                      <a href="{{ path('location_location_detail', { 'locationId' : location.getLocation().getId() }) }}">
+                        {{ location.getLocation().getLocationCode() }}
+                      </a>
+                    </th>
+                    <td class="col-xs-2 text-right">{{ location.getStock() }}</td>
+                  </tr>
+                {%  endfor %}
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+    </div>
+  {% else %}
+    <div id="warehouseList" class="alert alert-warning">該当商品はありません。</div>
+  {% endif %}
+
+{% endblock %}

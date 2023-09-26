@@ -1,0 +1,68 @@
+MiscBundle\Entity\TbSdInformationSku:
+    type: entity
+    table: tb_sd_information_sku
+    fields:
+        daihyoSyohinCode:
+            type: string
+            length: '30'
+            column: daihyo_syohin_code
+        colname:
+            type: string
+            length: '255'
+            column: colname
+        rowname:
+            type: string
+            length: '255'
+            column: rowname
+        sdBango:
+            id: true
+            type: integer
+            column: sd_bango
+        setBango:
+            id: true
+            type: integer
+            column: set_bango
+        kisyaHinban:
+            type: string
+            length: '50'
+            column: kisya_hinban
+        janCode:
+            type: string
+            length: '100'
+            column: jan_code
+        setHyojiJun:
+            type: integer
+            column: set_hyoji_jun
+        uchiwake:
+            type: string
+            length: '500'
+        sankoKakakuSyubetsu:
+            type: integer
+            column: sanko_kakaku_syubetsu
+        sankoKakaku:
+            type: integer
+            column: sanko_kakaku
+        hanbaiTanka:
+            type: integer
+            column: hanbai_tanka
+        setGotoSuryo:
+            type: integer
+            column: set_goto_suryo
+        zaikoSu:
+            type: integer
+            column: zaiko_su
+        syuppinJokyo:
+            type: integer
+            column: syuppin_jokyo
+        zaikoRendo:
+            type: integer
+            column: zaiko_rendo
+        syuppinDate:
+            type: string
+            length: '10'
+            column: syuppin_date
+        lastUpdate:
+            type: string
+            length: '10'
+            column: last_update
+    lifecycleCallbacks: {  }

@@ -1,0 +1,116 @@
+{% extends 'AppBundle:Picking:base.html.twig' %}
+
+{% block headerTitle %}セット商品作成詳細{% endblock %}
+
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+
+  {# label-print コンポーネント#}
+  {% include 'AppBundle::parts/modal-label-print.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.picking-set-product-create-detail.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerButtons %}
+  <a href="{{ path('picking_set_product_create_list') }}" class="btn btn-default">作成リスト一覧</a>
+{% endblock %}
+
+{% block contents %}
+
+  <script type="text/javascript">
+    const LABEL_LIST = {{ labelListJson|raw }};
+  </script>
+
+<div id="setProductCreateDetail"
+     data-create-list-submit-url="{{ path('set_product_create_list_submit', { date: date, number: number }) }}"
+  >
+
+  <div class="clearfix mb10">
+    <div class="pull-left">
+      <a class="btn btn-success mb5" href="#" v-on:click.stop.prevent="showLabelModal">ラベルCSV</a>
+      {% if indexInfo is not defined or indexInfo.status != '完了' %}
+      <button type="button" class="btn btn-primary mb5" v-on:click.stop.prevent="createListSubmit">一括確定</button>
+      {% endif %}
+    </div>
+    <div class="pull-right">
+      <a href="{{ path('picking_set_product_picking_list', { date: date, number: number }) }}" class="btn btn-default">ピッキング</a>
+    </div>
+  </div>
+
+  <div id="setProductListPickingListTable">
+
+    {% for product in products %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="clearfix">
+            <div class="pull-left">
+              {{ product.set_sku }}
+            </div>
+
+            {% if product.status != 0 %}
+            <div class="pull-right">
+              <span class="label {{ repo.getListStatusDisplayCss(product.status) }}">{{ repo.getListStatusDisplay(product.status) }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="panel-body">
+          <table class="table table-condensed">
+            <tr>
+              <th>横軸</th>
+              <th>縦軸</th>
+              <th class="text-right">設定</th>
+              <th class="text-right">在庫</th>
+              <th class="text-right">作成</th>
+            </tr>
+            <tr>
+              <td class="text-left">{{ product.colname }}</td>
+              <td class="text-left">{{ product.rowname }}</td>
+              <td class="text-right">{{ product.required_num }}</td>
+              <td class="text-right">{{ product.free_stock }}</td>
+              <td class="text-right">{{ product.create_num }}</td>
+            </tr>
+          </table>
+        </div>
+
+
+        <table class="table">
+          <tr>
+            <th>商品コード</th>
+            <th class="text-right">個/1セット</th>
+            <th class="text-right">作成</th>
+            <th class="text-right">ピッキング</th>
+          </tr>
+          {% for index, detail in product.details %}
+            <tr>
+              <td>{{ detail.getDetailSku() }}</td>
+              <td class="text-right">{{ detail.getDetailNum() }}</td>
+              {% if index == 0 %}
+              <td class="text-right bold vMiddle" style="border: solid 1px #ddd; border-bottom: none; font-size: 2.5em" rowspan="{{ product.details|length }}">{{ detail.getCreateNum() }}</td>
+              {% endif %}
+              <td class="text-right">{{ detail.getPickingNum() }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+    {% endfor %}
+
+  </div>
+
+
+  {# ラベル印刷モーダル #}
+  <div
+    is="parts-modal-label-print"
+    :state="labelPrintModalState"
+    ></div>
+
+</div>
+
+{% endblock %}

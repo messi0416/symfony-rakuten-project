@@ -1,0 +1,34 @@
+MiscBundle\Entity\TbPpmInformation:
+  type: entity
+  table: tb_ppm_information
+  fields:
+    title:
+      type: string
+      nullable: true
+      length: 255
+      fixed: false
+      column: ppm_title
+    productDescription1:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_商品説明1
+    productDescription2:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_商品説明2
+    productDescriptionSP:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_商品説明スマートフォン用
+    productDescriptionText:
+      type: text
+      nullable: false
+      length: 65535
+      fixed: false
+      column: input_商品説明テキストのみ

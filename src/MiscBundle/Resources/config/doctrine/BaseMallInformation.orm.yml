@@ -1,0 +1,34 @@
+MiscBundle\Entity\BaseMallInformation:
+  type: mappedSuperclass
+  id:
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      id: true
+      column: daihyo_syohin_code
+      generator:
+        strategy: IDENTITY
+  fields:
+    registrationFlg:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: 登録フラグ
+      default: "-1"
+      column: registration_flg
+    originalPriceFlg:
+      type: boolean
+      nullable: false
+      comment: モール別価格非連動
+      default: "0"
+      column: original_price
+    baikaTanka:
+      type: integer
+      nullable: false
+      unsigned: true
+      comment: 売価単価
+      default: "0"
+      column: baika_tanka
+  lifecycleCallbacks: {}

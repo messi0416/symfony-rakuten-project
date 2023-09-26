@@ -1,0 +1,31 @@
+MiscBundle\Entity\TbPaymentMethod:
+    type: entity
+    table: tb_payment_method
+    id:
+        paymentId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+            column: payment_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        paymentName:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+            column: payment_name
+        paymentCostRatio:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            options:
+                default: '0'
+            column: payment_cost_ratio
+    lifecycleCallbacks: {  }

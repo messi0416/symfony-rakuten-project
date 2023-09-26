@@ -1,0 +1,18 @@
+MiscBundle\Entity\TbCalendar:
+    type: entity
+    table: tb_calendar
+    id:
+        calendarDate:
+            type: date
+            nullable: false
+            id: true
+            column: calendar_date
+            generator:
+                strategy: IDENTITY
+    fields:
+        workingday:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    lifecycleCallbacks: {  }

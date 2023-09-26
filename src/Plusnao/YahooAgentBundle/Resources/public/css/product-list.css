@@ -1,0 +1,90 @@
+/* 商品一覧 */
+
+#productList {
+}
+
+/* 印刷用 */
+@media print {
+}
+
+
+.header div.name {
+  color: #fff;
+  /* width: 100%; */
+  text-align: right;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 10px;
+}
+
+.header div.name span.btn {
+  margin-top: -10px; /* padding相殺 */
+}
+
+#productListTable .pagination {
+  margin: 0;
+  vertical-align: middle;
+}
+
+#productListTable {
+  font-size: 14px;
+}
+
+#productListTable .flagLabel {
+  font-size: 16px;
+}
+
+
+/*#productList #productListTable td.button {*/
+  /*text-align: center;*/
+  /*width: 100px;*/
+/*}*/
+/*#productList #productListTable td.shippingVoucherNumber {*/
+  /*text-align: center;*/
+  /*width: 160px;*/
+/*}*/
+
+/*#productListTable td.thumb {*/
+  /*text-align: center;*/
+  /*width: 100px;*/
+/*}*/
+/*#productListTable td.thumb img {*/
+  /*width: 80px;*/
+/*}*/
+
+/*#productListTable td.category {*/
+  /*font-size: 0.8em;*/
+  /*white-space: pre;*/
+/*}*/
+
+/*#productListTable td.orderNum {*/
+  /*font-weight: bold;*/
+  /*font-size: 1.5rem;*/
+  /*text-align: right;*/
+/*}*/
+
+/*#productList #productListTable td.noBorder {*/
+  /*border: none;*/
+/*}*/
+
+/* テーブル ソートヘッダ */
+#productList th {
+  padding-left: 14px;
+}
+.sortable > a { color: #000000; }
+.sortable > a:link {color: #000000;}
+.sortable > a:visited {color: #000000;}
+.sortable > a:active {color: #000000;}
+
+th.sortFree {
+  background-image: none;
+}
+th.sortAsc {
+  background: url("../img/sort_asc.png") no-repeat left 2px bottom 14px;
+}
+th.sortDesc {
+  background: url("../img/sort_desc.png") no-repeat left 2px bottom 11px;
+}
+th.sortable {
+  cursor: pointer;
+}

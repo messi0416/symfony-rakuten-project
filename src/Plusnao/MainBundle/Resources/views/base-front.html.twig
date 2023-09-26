@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="robots" content="noindex,nofollow" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="layout" content="main"/>
+
+      <title>{% block title %}株式会社フォレスト{% endblock %}</title>
+      {% block stylesheets %}
+        {% stylesheets
+          'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+          'bundles/app/css/app.css' filter='cssrewrite'
+          'bundles/plusnaomain/css/front.css' filter='cssrewrite'
+          'bundles/app/css/custom-buttons.css' filter='cssrewrite'
+          'bundles/app/css/font-awesome.min.css' filter='cssrewrite'
+
+          'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+        %}
+        <link href="{{ asset_url }}" rel="stylesheet" />
+        {% endstylesheets %}
+      {% endblock %}
+      <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+      {% block body %}{% endblock %}
+
+      {% block javascripts %}
+          {% javascripts
+          '@AppBundle/Resources/public/js/jquery-2.1.4.min.js'
+          '@AppBundle/Resources/public/js/bootstrap.min.js'
+          '@AppBundle/Resources/public/js/vue.2.1.10.js'
+          '@AppBundle/Resources/public/js/app.common.js'
+
+          '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+          '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+          %}
+          <script src="{{ asset_url }}"></script>
+          {% endjavascripts %}
+      {% endblock %}
+
+    </body>
+</html>

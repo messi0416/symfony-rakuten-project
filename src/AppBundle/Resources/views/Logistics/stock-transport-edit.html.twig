@@ -1,0 +1,619 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/element-ui/lib/theme-chalk/index.css' filter='cssrewrite'
+
+  'bundles/app/css/app.logistics-transport-edit.css' filter='cssrewrite'
+
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/element-ui/lib/index.js'
+  '@AppBundle/Resources/public/vendor/element-ui/lib/umd/locale/ja.js'
+  '@AppBundle/Resources/public/vendor/papaparse/papaparse.min.js'
+
+  '@AppBundle/Resources/public/js/app.logistics-stock-transport-edit.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+{% endblock %}
+
+{% block body %}
+
+  <script type="text/javascript">
+    var TRANSPORT = {{ transportJson | raw }};
+    var DETAILS = {{ details | raw }};
+    var STATUS_LIST = {{ statusList | raw }};
+    var TRANSPORT_CODE_LIST = {{ transportCodeList | raw }};
+    var WAREHOUSE_LIST = {{ warehouseList | raw }};
+  </script>
+
+  <div id="logisticsStockTransportEdit" class="container"
+       data-update-url="{{ path('logistics_stock_transport_update', { id: transport.getId() ? transport.getId() : 'new' }) }}"
+       data-complete-transport-url="{{ path('logistics_stock_transport_complete', { id: transport.getId() ? transport.getId() : 'new' }) }}"
+       data-find-sku-url="{{ path('api_find_product_sku_one') }}"
+       data-create-picking-list-url="{{ path('logistics_stock_transport_create_picking_list') }}"
+       data-delete-url="{{ path('logistics_stock_transport_delete') }}"
+       data-list-url="{{ path('logistics_stock_transport_list') }}"
+       data-download-shoplist-label-csv-url="{{ path('download_shoplist_speedbin_delivery_csv') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>移動伝票 編集</h2>
+        </div>
+
+        <div class="pull-right mt20 mb10">
+          <a href="{{ path('logistics_stock_transport_list') }}"  class="btn btn-default mr10">
+            一覧に戻る
+          </a>
+
+          <a href="{{ path('logistics_stock_transport_edit', { id: transport.getId() ? transport.getId() : 'new' }) }}"  class="btn btn-default mr10">
+            <i class="fa fa-fw fa-repeat"></i>
+            再読込
+          </a>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="logisticsStockTransportEditForm"
+         class="container mb20"
+      >
+
+      <div class="clearfix">
+        <div class="pull-right">
+          登録: <span v-text="displayTransportCreated"></span>
+          /
+          更新: <span v-text="displayTransportUpdated"></span>
+        </div>
+      </div>
+
+      <form method="post" class="form-horizontal">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="clearfix">
+              <div class="pull-left panelTitle">
+                基本情報
+                ({{ transport.getId() ? 'ID: ' ~ transport.getId() : '新規' }})
+
+                {% if transport.getStatus() == constant('MiscBundle\\Entity\\Repository\\TbStockTransportRepository::STATUS_NONE') %}
+                  <button type="button" class="btn btn-danger mr5 mb5" v-on:click="deleteItem('{{ transport.getId() }}')">削除</button>
+                {% endif %}
+              </div>
+
+              <div class="pull-right">
+                <button type="button" class="btn btn-warning mr10" v-on:click="completeModalVisible = true" v-show="!(isFinished)">完了処理</button>
+
+                <button type="button" class="btn btn-primary mr10 w150" v-on:click="update">保存</button>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="panel-body">
+
+            <div class="row">
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputDate">起票日</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <el-date-picker
+                      v-model="transport.date"
+                      type="date"
+                      placeholder="起票日"
+                      size="small"
+                      :clearable="true"
+                      ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputStatus">状態</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <select class="form-control" id="inputStatus" v-model="transport.status">
+                      <option v-for="status in statusList" v-bind:value="status.status" v-text="status.name"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputDepartureWarehouseId">出発倉庫</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <select class="form-control" id="inputDepartureWarehouseId" v-model="transport.departureWarehouseId">
+                      <option value="0"></option>
+                      <option v-for="item in warehouseList" v-bind:value="item.id" v-text="item.name"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputDestinationWarehouseId">目的倉庫</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <select class="form-control" id="inputDestinationWarehouseId" v-model="transport.destinationWarehouseId">
+                      <option value="0"></option>
+                      <option v-for="item in warehouseList" v-bind:value="item.id" v-text="item.name"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputDepartureDate">出発日</label>
+                  <div  class="col-sm-8 col-xs-8" id="inputDepartureDate">
+                    <el-date-picker
+                      v-model="transport.departureDate"
+                      type="date"
+                      placeholder="出発日"
+                      size="small"
+                      :clearable="true"
+                      ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+
+              {# 必要になるまでスキップ
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputEstimatedDate">到着予定日</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <input type="text" class="form-control" id="inputEstimatedDate">
+                  </div>
+                </div>
+              </div>
+              #}
+
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputArrivalDate">到着日</label>
+                  <div  class="col-sm-8 col-xs-8" id="inputArrivalDate">
+                    <el-date-picker
+                      v-model="transport.arrivalDate"
+                      type="date"
+                      placeholder="到着日"
+                      size="small"
+                      :clearable="true"
+                      ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputTransportCode">移動種別</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <select class="form-control" id="inputTransportCode" v-model="transport.transportCode">
+                      <option v-for="code in transportCodeList" v-bind:value="code.code" v-text="code.name"></option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-2 col-xs-4 text-right" for="inputTransportCode">移動コード</label>
+                  <div  class="col-sm-10 col-xs-8">
+                    <input type="text" class="form-control" id="inputTransportCode" v-model="transport.transportNumber">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-3 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-4 col-xs-4 text-right" for="inputShippingMethod">発送方法</label>
+                  <div  class="col-sm-8 col-xs-8">
+                    <input type="text" class="form-control" id="inputShippingMethod" v-model="transport.shippingMethod">
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-xs-12">
+                <div class="form-group narrowSpace">
+                  <label class="col-sm-2 col-xs-4 text-right" for="inputShippingNumber">発送番号</label>
+                  <div  class="col-sm-10 col-xs-8">
+                    <input type="text" class="form-control" id="inputShippingNumber" v-model="transport.shippingNumber">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+
+            {#<div class="row">#}
+            {#<div class="col-xs-12">#}
+            {#<div class="form-group">#}
+            {#{{ form_label(form.daihyo_syohin_name) }}#}
+            {#{{ form_widget(form.daihyo_syohin_name, { 'attr': {'class' : 'form-control allowSubmit'} }) }}#}
+            {#{{ form_errors(form.daihyo_syohin_name, { 'attr': {'class' : 'alert alert-danger'} }) }}#}
+            {#</div>#}
+            {#</div>#}
+            {#</div>#}
+
+          </div>
+
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="clearfix">
+              <div class="pull-left panelTitle mr20">
+                SKU
+              </div>
+              <button type="button" class="pull-left btn btn-default mr10" v-on:click="showLoadCsvModal">CSV読込</button>
+              <button type="button" class="pull-left btn btn-default mr10" v-on:click="downloadCsvTemplate">CSV雛形</button>
+              <button type="button" class="pull-left btn btn-default mr10" v-on:click="downloadCsv">CSV出力</button>
+              
+              {# SHOPLISTの時はSHOPLIST用ラベルCSV。それ以外はラベル出力 #}
+              {% if transport.destinationWarehouseId == constant('MiscBundle\\Entity\\Repository\\TbWarehouseRepository::SHOPLIST_WAREHOUSE_ID') %}
+                <a v-bind:href="getShoplistLabelCsvDownloadUrl(transport.id)" class="pull-left btn btn-default mr10">
+                  <i class="fa fa-download text-success"></i>
+                    ShoplistラベルCSV
+                </a>
+              {% else %}
+                <button type="button" class="pull-left btn btn-default mr10" v-on:click="showLabelModal">ラベル出力</button>
+              {% endif %}
+
+              <div class="pull-right">
+                <span class="inputHeight mr5 mb5">ピッキングリスト</span>
+                {% if transport.getPickingListDate() and transport.getPickingListNumber() %}
+                  <a class="btn btn-default mr10" href="{{ path('picking_warehouse_stock_move_picking_list', { date: transport.getPickingListDate().format('Y-m-d'), number: transport.getPickingListNumber() }) }}" target="_blank">
+                    {{ transport.getPickingListDate().format('m/d') }}
+                    [<strong>{{ transport.getPickingListNumber() }}</strong>]
+                  </a>
+                {% else %}
+                  <span class="inputHeight inlineBlock mr10 mb5">なし</span>
+                  <button type="button" class="btn btn-info mr5 mb5" v-on:click="createPickingList('{{ transport.getId() }}')">
+                    作成
+                  </button>
+                {% endif %}
+
+              </div>
+
+              <div class="pull-right">
+                {% if transport.getId() and transport.getTransportCode is constant('MiscBundle\\Entity\\Repository\\TbStockTransportRepository::TRANSPORT_CODE_FBA_SEND') %}
+                <a href="{{ path('logistics_stock_transport_download_fba_plan', { id: transport.getId() }) }}" class="btn btn-default mr20" download="FBA納品プラン_{{ transport.getId() }}.txt">
+                  <i class="fa fa-fw fa-download"></i>
+                  納品プラン
+                </a>
+                {#<a href="{{ path('logistics_stock_transport_download_fba_label', { id: transport.getId() }) }}" class="btn btn-default" download="FBAラベルCSV_{{ transport.getId() }}.csv">#}
+                  {#<i class="fa fa-fw fa-download"></i>#}
+                  {#ラベルCSV#}
+                {#</a>#}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="cleafix">
+              <div class="pull-left mr5 mb10">
+                <input type="text" class="form-control" placeholder="商品コード" v-model="addDetailInputSyohinCode" v-on:keypress.enter="addDetailByInput">
+              </div>
+              <div class="pull-left mr10 mb10">
+                <button type="button" class="btn btn-info" v-on:click="addDetailByInput">追加</button>
+              </div>
+
+              <div class="pull-left mr10 mb10">
+                <button type="button" class="btn btn-default" v-on:click="showChoiceProductModal">
+                  <i class="fa fa-fw fa-search"></i>
+                </button>
+              </div>
+
+              <div class="pull-left mr10 mb10">
+                <button type="button" class="btn btn-default" v-on:click="showProductWarehouseStockListModal">
+                  <i class="fa fa-fw fa-table"></i>倉庫在庫一括
+                </button>
+              </div>
+
+              <div class="pull-left mr10 mb10">
+                <div is="parts-global-message" :state="addDetailMessageState"></div>
+              </div>
+
+            </div>
+            <div is="detailsTable"
+                 :transport="transport"
+                 :details="details"
+                 v-on:remove-detail="removeDetail"
+              >
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    {# 商品一覧モーダル #}
+    <div
+      is="parts-modal-product-list"
+      :state="choiceProductModalState"
+      v-on:submit-sku="addDetail"
+      ></div>
+
+    {# 倉庫在庫一括モーダル #}
+    <div
+      is="modal-product-warehouse-stock-list"
+      :state="modalProductWarehouseStockListModalState"
+      :transport="transport"
+      :warehouse-list="warehouseList"
+      v-on:submit-list="addDetailsList"
+    ></div>
+
+    {# CSV読込モーダル #}
+    <div
+      is="modal-load-csv"
+      :state="loadCsvModalState"
+      :transport="transport"
+      v-on:submit-list="addDetailsList"
+    ></div>
+
+    {# ラベル印刷モーダル #}
+    <div
+      is="parts-modal-label-print"
+      :state="labelPrintModalState"
+    ></div>
+
+
+    <!-- 完了処理ダイアログ -->
+    <el-dialog
+      :visible.sync="completeModalVisible" title="完了処理"
+    >
+      <div v-if="isAllAssigned">
+        <div class="alert alert-danger">
+          <p>割り当て済みの在庫がありませんが、よろしいですか？</p>
+        </div>
+      </div>
+      <div v-else-if="transport.transportCode == 'FBA納品'">
+        <div class="alert alert-info">
+          この伝票をFBA納品完了として処理します。よろしいですか？
+        </div>
+      </div>
+      <div v-else>
+        <div class="alert alert-info">
+          <p>移動伝票から作成するロケーションのロケーションコードを入力してください。</p>
+          <p>※空白の場合、自動生成コード NE_T_xxxxxxxx</p>
+        </div>
+
+        <el-form :model="completeModalForm" label-width="120px">
+          <el-form-item label="ロケーションコード">
+            <el-input v-model="completeModalForm.locationCode"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button v-on:click="completeModalVisible = false">閉じる</el-button>
+        <el-button type="primary" v-on:click="completeTransport">実行</el-button>
+      </span>
+    </el-dialog>
+
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateLogisticsStockTransportListTableRow">
+    <tr>
+      <td v-text="item.neSyohinSyohinCode"></td>
+      <td class="text-center">
+        <span v-text="item.amount" v-if="isFinished"></span>
+        <input class="form-control input-sm text-right" v-model="item.amount" number v-else>
+      </td>
+      <td class="text-center">
+        <span v-bind:class="displayShortageCss" v-text="displayShortage"></span>
+      </td>
+      <td class="text-center">
+        <span v-text="item.picked" v-if="isFinished"></span>
+        <input class="form-control input-sm text-right" v-model="item.picked" number v-else>
+      </td>
+
+      <td class="text-center">
+        <button type="button" class="btn btn-danger" v-on:click="remove">
+          <i class="fa fa-times"></i>
+        </button>
+      </td>
+    </tr>
+  </script>
+
+  {# テーブルテンプレート #}
+  <script type="text/x-template" id="deliveryStockTransportDetailList">
+    <div>
+      <div class="clearfix mb20">
+        <table class="table table-condensed">
+          <tbody>
+          <tr>
+            <th class="col-sm-7 col-xs-5 text-left">商品コード</th>
+            <th class="col-sm-1 col-xs-3 text-left">数量</th>
+            <th class="col-sm-1 col-xs-2 text-left">不足数</th>
+            <th class="col-sm-1 col-xs-3 text-left">割当済</th>
+            <th class="col-sm-2 col-xs-2"></th>
+          </tr>
+          <tr v-for="item in details"
+              is="listItem"
+              :item="item"
+              :transport="transport"
+              v-on:remove-item="removeDetail"
+            ></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </script>
+
+  {# 倉庫在庫一覧モーダル #}
+  <script type="text/x-template" id="templateModalProductWarehouseStockList">
+    <div class="modal"
+         id="modalProductWarehouseStockList"
+         tabindex="-1"
+         data-find-product-warehouse-stock-list-url="{{ path('api_find_product_warehouse_stock_list') }}"
+    >
+
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+
+            <div v-if="warehouseName.length > 0">
+
+              <div class="row row10 mb10">
+                <div class="col-xs-5 col-sm-7">
+                  <input type="text" class="form-control" placeholder="代表商品コード" v-model="daihyoSyohinCode" v-on:keypress.enter="search">
+                </div>
+                <div class="col-xs-2 col-sm-2">
+                  <input type="text" class="form-control" placeholder="残数" v-model="remainNum" v-on:keypress.enter="search" number>
+                </div>
+                <div class="col-xs-2 col-sm-1">
+                  <button type="button" class="btn btn-default fullWidth" v-on:click="reset">
+                    <i class="fa fa-times"></i>
+                  </button>
+                </div>
+                <div class="col-xs-3 col-sm-2">
+                  <button type="button" class="btn btn-default fullWidth" v-on:click="search">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="row row10 mb10" v-if="stockList.length > 0">
+                <div class="pull-right">
+                  <button type="button" class="btn btn-primary" v-on:click="submitList">一括で追加する</button>
+                </div>
+              </div>
+
+              <table class="table table-condensed mb0">
+                <tbody>
+                <tr>
+                  <th>商品コード</th>
+                  <th>在庫数</th>
+                  <th>残数</th>
+                  <th>移動数</th>
+                </tr>
+                <tr v-for="item in stockList">
+                  <td class="col-xs-6" v-text="item.neSyohinSyohinCode"></td>
+                  <td class="col-xs-2 text-right" v-text="item.stock"></td>
+                  <td class="col-xs-2 text-right" v-text="item.stock - item.moveNum"></td>
+                  <td class="col-xs-3">
+                    <input type="text" class="form-control text-right" v-model="item.moveNum">
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+
+
+            </div>
+            <div v-else>
+              <div class="alert alert-danger">出発倉庫が指定されていません。</div>
+            </div>
+
+            {#<div v-show="state.message.length > 0">#}
+              {#<div class="alert" v-bind:class="state.messageCssClass" v-text="state.message">#}
+              {#</div>#}
+            {#</div>#}
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-primary mr10" v-on:click="submitList" v-if="stockList.length > 0">一括で追加する</button>
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  {# CSV読込モーダル #}
+  <script type="text/x-template" id="templateModalLoadCsv">
+    <div class="modal"
+         id="modalLogisticsStockTransportEditLoadCsv"
+         tabindex="-1"
+    >
+
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" v-on:click="hideModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb10">
+              <input type="file" id="loadCsvInput" v-on:change="loadCsv" class="mb10">
+              <div class="alert" v-bind:class="messageCss" v-show="message.length > 0" v-text="message"></div>
+            </div>
+
+            <div class="row row10 mb10" v-if="stockList.length > 0">
+              <div class="pull-right">
+                <button type="button" class="btn btn-primary" v-on:click="submitList">一括で追加する</button>
+              </div>
+            </div>
+
+            <table class="table table-condensed mb0">
+              <tbody>
+              <tr>
+                <th>商品コード</th>
+                <th>移動数</th>
+              </tr>
+              <tr v-for="item in stockList">
+                <td class="col-xs-6" v-text="item.neSyohinSyohinCode"></td>
+                <td class="col-xs-3">
+                  <input type="text" class="form-control text-right" v-model="item.moveNum">
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-lg btn-primary mr10" v-on:click="submitList" v-if="stockList.length > 0">一括で追加する</button>
+            <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+
+{% endblock %}

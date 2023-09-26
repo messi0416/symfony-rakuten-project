@@ -1,0 +1,38 @@
+MiscBundle\Entity\TbProductSalesAccountAggregateReservation:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductSalesAccountAggregateReservationRepository
+  table: tb_product_sales_account_aggregate_reservation
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: id
+      id: true
+      generator:
+        strategy: IDENTITY
+  fields:
+    ordrerDateFrom:
+      type: date
+      nullable: false
+      comment: 受注日From
+      column: ordrer_date_from
+    ordrerDateTo:
+      type: date
+      nullable: false
+      comment: 受注日To
+      column: ordrer_date_to
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: 代表商品コード
+      column: daihyo_syohin_code
+    aggregatedFlg:
+      type: integer
+      nullable: false
+      comment: "集計済フラグ\n0:未集計、1:集計済"
+      default: "0"
+      column: aggregated_flg
+  lifecycleCallbacks: {}

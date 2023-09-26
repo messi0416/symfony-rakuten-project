@@ -1,0 +1,53 @@
+MiscBundle\Entity\TbSetProductDetail:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\BaseRepository
+  table: tb_set_product_detail
+
+  id:
+    set_ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+#      id: true
+      column: set_ne_syohin_syohin_code
+
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+#      id: true
+      column: ne_syohin_syohin_code
+
+  fields:
+    num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+      column: num
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps
+
+  manyToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: setSkuDetails
+      joinColumn:
+        name: set_ne_syohin_syohin_code
+        referencedColumnName: ne_syohin_syohin_code
+        nullable: true
+      fetch: LAZY

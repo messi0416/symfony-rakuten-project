@@ -1,0 +1,61 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.products.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+
+{% block body %}
+  <div class="container container-large">
+
+    {# ヘッダブロック #}
+    <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+      <div class="pull-left">
+        <h2>Plusnao Web System (商品管理)</h2>
+      </div>
+
+      <div class="pull-left">
+        <div class="(% messageCssClass %)" v-text="message"></div>
+      </div>
+
+      <div class="pull-right">
+        {% if backUrl is defined %}
+          <a class="btn btn-lg btn-info" href="{{ backUrl }}">戻る</a>
+        {% else %}
+          <button class="btn btn-lg btn-danger" v-on="click: closeWindow()">閉じる</button>
+        {% endif %}
+      </div>
+    </div>
+
+    <h2 class="page-header">{% block headerTitle %}{% endblock %}</h2>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['success', 'info', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {# メインブロック #}
+    {% block contents %}{% endblock %}
+
+
+    {#
+    <script type="text/javascript">
+      var costRateTableData = {{ data | raw }};
+    </script>
+    #}
+
+  </div>
+
+
+{% endblock %}
+

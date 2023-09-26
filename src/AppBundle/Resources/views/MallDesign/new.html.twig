@@ -1,0 +1,71 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+  'bundles/app/css/app.malldesign.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.malldesign.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body -%}
+<div class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>モールデザイン管理</h2>
+        </div>
+
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onClick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+    </div>
+
+  <div class="col-sm-offset-2 col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        新規モールデザイン追加
+      </div>
+      <div class="panel-body">
+        {{ form_start(form) }}
+        <div class="form-group">
+          {{ form_widget(form) }}
+        </div>
+          <input class="btn btn-success modal-open" type="button" value="プレビュー" /> <input class="btn btn-primary" type="submit" value="新規作成"/>
+        {{ form_end(form) }}
+      </div>
+  
+    </div>
+  
+    <a class="btn btn-default" href="{{ path('malldesign') }}">一覧に戻る</a>
+  </div>
+
+</div>
+
+<div id="modal-content">
+    <p id="preview"></p>
+    <p>※各モールのCSS等により、実際のデザインとは異なる場合があります。</p>
+  <p class="text-center"><a id="modal-close" class="btn  btn-default">閉じる</a></p>
+</div>
+
+{% endblock %}

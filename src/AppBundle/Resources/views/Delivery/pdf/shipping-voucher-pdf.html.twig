@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style type="text/css">
+    * { margin: 0; padding: 0 }
+    *, *:before, *:after {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -o-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    body{
+      font-family: "IPAMincho", "IPAexMincho", serif; /*"IPA 明朝",*/
+      font-size: 8pt;
+      width:  190mm;
+    }
+
+    /* テーブル改ページずれ防止 */
+    tr {
+      page-break-inside: avoid;
+    }
+
+    .clearfix:after {
+      content: "";
+      clear: both;
+      display: block;
+    }
+    .br::after {
+      content: "\A" ;
+      white-space: pre ;
+    }
+
+    .page {
+      page-break-after: always;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+    th {
+      font-weight: normal;
+      text-align: left;
+    }
+    td {
+      text-align: left;
+    }
+
+    .header {
+      /* border: solid 1px #000000; */
+      border: solid 1px #000000;
+      height: 10mm;
+      position: relative;
+      margin-bottom: 5mm;
+    }
+    .header .title {
+      font-size: 22pt;
+      font-weight: normal;
+      height: 10mm;
+      width: 190mm;
+
+      text-align: center;
+      line-height: 10mm;
+    }
+    .header .header-notice {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+
+      width: 40mm;
+      text-align: left;
+
+      font-size: 8pt;
+      line-height: 10pt;
+    }
+
+    table.voucher {
+      width: 190mm;
+      margin-bottom: 5mm;
+    }
+    table.voucher td {
+      padding: 0;
+      border: solid 1px #000000;
+      vertical-align: top;
+    }
+    table.voucher-main {
+      width: 119.6mm;
+      border: none;
+    }
+    table.voucher-sub {
+      width: 69.6mm;
+      border: none;
+    }
+
+    table.voucher-main>tbody>tr:first-child>th,table.voucher-main>tbody>tr:first-child>td,
+    table.voucher-sub>tbody>tr:first-child>th,table.voucher-sub>tbody>tr:first-child>td {
+      border-top: none;
+    }
+
+    table.voucher-main th, table.voucher-main td,
+    table.voucher-sub th, table.voucher-sub td
+    {
+      border: none;
+      border-top: solid 1px #000000;
+      padding: 1mm;
+      text-align: left;
+    }
+    table.voucher-main th,
+    table.voucher-sub th
+    {
+      border-right: solid 1px #000000;
+      width: 25mm;
+    }
+
+    /* パーツ */
+    .shoulder-tag-parent {
+      padding: 0 !important;
+    }
+
+    .shoulder-tag-line {
+      position: relative;
+      width: 100%;
+      min-height: 5.5mm;
+    }
+    .shoulder-tag-line:after {
+      content: "";
+      clear: both;
+      display: block;
+    }
+
+    .shoulder-tag {
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      width: 20mm;
+      font-size: 8pt;
+
+      border-right: solid 1px #000000;
+      border-bottom: solid 1px #000000;
+      padding: 1mm 2mm 1mm 2mm;
+    }
+    .shoulder-tag-after {
+      display: inline-block;
+      margin-top: 1mm;
+      margin-left: 22.5mm;
+    }
+
+    table.details {
+      width: 190mm;
+    }
+    table.details th,
+    table.details td {
+      border: solid 1px #000000;
+      padding: 1mm;
+    }
+    table.details th {
+      vertical-align: middle;
+      text-align: center;
+      font-weight: normal
+    }
+    table.details td {
+      vertical-align: top;
+    }
+
+    .details-header {
+      width: 190mm;
+      text-align: right;
+      font-size: 8pt;
+      margin-bottom: 1mm;
+    }
+
+    /* detail */
+    .voucherName {
+      display: inline-block;
+      font-size: 16pt;
+    }
+    .voucherName:after {
+      content: "\A" ;
+      white-space: pre ;
+    }
+
+    .voucherAddressBlock {
+      padding-left: 2mm;
+      min-height: 8mm;
+    }
+
+    .voucherZipcode {
+      font-size: 9pt;
+      line-height: 11pt;
+      min-height: 11pt;
+    }
+    .voucherAddress {
+      font-size: 9pt;
+      line-height: 11pt;
+      min-height: 11pt;
+    }
+    .voucherVoucherNumber {
+      font-size: 14pt;
+    }
+
+    table.voucher-sub td.voucherOrderDate,
+    table.voucher-sub td.voucherShopName,
+    table.voucher-sub td.voucherOrderNumber,
+    table.voucher-sub td.voucherPaymentMethod,
+    table.voucher-sub td.voucherDeliveryMethod {
+      font-size: 8pt;
+    }
+
+    table.voucher-sub td.voucherSubTotal,
+    table.voucher-sub td.voucherTax,
+    table.voucher-sub td.voucherDeliveryFee,
+    table.voucher-sub td.voucherCharge,
+    table.voucher-sub td.voucherOtherCost,
+    table.voucher-sub td.voucherUsePoint,
+    table.voucher-sub td.voucherTotal {
+      text-align: right;
+      padding-right: 5mm;
+      font-size: 9pt;
+    }
+
+    table.details td.detailNumber {
+      width: 10mm;
+      font-size: 8pt;
+    }
+    table.details td.detailProductName {
+      width: 80mm;
+      font-size: 8pt;
+    }
+    table.details td.detailProductCode {
+      width: 54mm;
+      font-size: 12pt;
+      font-family: "Source Code Pro", "IPA Gothic", monospace;
+      padding: 1mm 2mm;
+
+    }
+    table.details td.detailNum {
+      width: 12mm;
+      font-size: 12pt;
+      font-family: "Source Code Pro", "IPA Gothic", monospace;
+      padding: 1mm 2mm;
+      text-align: right;
+    }
+    table.details td.detailNum.bigger span {
+      font-size: 14pt;
+      font-weight: bold;
+      padding: 0.5pt 4pt;
+      border: solid 1px #333333;
+      border-radius: 0.5em;
+    }
+
+    table.details td.detailUnitPrice {
+      width: 14mm;
+      font-size: 8pt;
+      text-align: right;
+    }
+    table.details td.detailSubTotal {
+      width: 20mm;
+      font-size: 8pt;
+      text-align: right;
+    }
+
+    table.details td.detailTotalTitle {
+      font-size: 8pt;
+      text-align: right;
+    }
+    table.details td.detailTotalNum {
+      font-size: 12pt;
+      font-family: "Source Code Pro", "IPA Gothic", monospace;
+      padding: 1mm 2mm;
+      text-align: right;
+    }
+    table.details td.detailTotalNum.bigger span {
+      font-size: 14pt;
+      font-weight: bold;
+      padding: 0.5pt 4pt;
+      border: solid 1px #333333;
+      border-radius: 0.5em;
+    }
+
+
+    .mallText {
+      padding: 2mm;
+      font-size: 8pt;
+      white-space: pre-line;
+      line-height: 10pt;
+      margin-bottom: 2mm;
+    }
+
+    table.mallSubTextTable {
+      border: none;
+    }
+
+    table.mallSubTextTable th,
+    table.mallSubTextTable td
+    {
+      border: none;
+      padding: 1mm;
+      font-size: 8pt;
+      white-space: pre-line;
+      vertical-align: top;
+    }
+
+    .shopInfo {
+      padding: 2mm;
+      font-size: 8pt;
+      line-height: 11pt;
+      white-space: pre-line;
+      word-break: break-all;
+    }
+
+    .voucherDeliveryDate,
+    .voucherDeliveryTime
+    {
+      font-size: 9pt;
+    }
+    .voucherDeliveryDate:after,
+    .voucherDeliveryTime:after
+    {
+      content: "　" ;
+      white-space: pre ;
+    }
+
+    .voucherAttention {
+      font-size: 16pt;
+      line-height: 18.5pt;
+      min-height: 15mm;
+      padding: 3mm 5mm;
+      white-space: pre-line;
+
+      font-family: "IPAGothic", "IPAexGothic", sans-serif; /*"IPA ゴシック",*/
+    }
+
+    .voucherAttentionWord {
+      font-size: 24pt;
+      line-height: 28pt;
+      margin-left: 2mm;
+      margin-right: 2mm;
+      margin-bottom: 1mm;
+      display: inline-block;
+      border: dashed 1px #999;
+      padding: 2mm;
+
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+{% if voucher|length == 0 %}
+  納品書データが取得できませんでした。
+{% else  %}
+
+  <div class="page">
+
+    <div class="header clearfix">
+      <div class="title">{{ mall.getShippingVoucherTitle() }}</div>
+      <div class="header-notice">
+        {#{{ voucher['発送方法'] }}<br>#}
+        {{ voucher['支払方法'] }}
+      </div>
+    </div>
+
+    <table class="voucher">
+      <tr>
+        <td>
+          <table class="voucher-main">
+            <tr>
+              <td class="shoulder-tag-parent">
+                <div class="shoulder-tag-line">
+                  <div class="shoulder-tag">
+                    購入者
+                  </div>
+                  <div class="shoulder-tag-after">
+                    <p class="voucherName">{{ voucher['購入者名'] }}　様</p>
+                  </div>
+                </div>
+
+                <div class="voucherAddressBlock">
+                  {% if mall.getShippingVoucherShowBuyerAddress() %}
+                  <p class="voucherZipcode">{{ voucher['購入者郵便番号'] }}</p>
+                  <p class="voucherAddress">{{ voucher['購入者住所1'] }}</p>
+                  <p class="voucherAddress">{{ voucher['購入者住所2'] }}</p>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="shoulder-tag-parent">
+                <div class="shoulder-tag-line">
+                <div class="shoulder-tag">
+                  発送先
+                </div>
+                  <div class="shoulder-tag-after">
+                    <p class="voucherName">{{ voucher['発送先名'] }}　様</p>
+                  </div>
+                </div>
+
+                <div class="voucherAddressBlock">
+                  {% if mall.getShippingVoucherShowShippingAddress() %}
+                  <p class="voucherZipcode">{{ voucher['発送先郵便番号'] }}</p>
+                  <p class="voucherAddress">{{ voucher['発送先住所1'] }}</p>
+                  <p class="voucherAddress">{{ voucher['発送先住所2'] }}</p>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="clearfix">
+                <div class="mallText">この度はご注文いただき誠にありがとうございました。<br>返品、交換については裏面をご覧ください。</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <table class="voucher-sub">
+            <tr>
+              <th>伝票番号</th>
+              <td>
+                No. <span class="voucherVoucherNumber">{{ voucher['伝票番号'] }}</span>
+              </td>
+            </tr>
+            <tr>
+              <th>受注日</th>
+              <td class="voucherOrderDate">{{ voucher['受注日'] }}</td>
+            </tr>
+            <tr>
+              <th>店舗名</th>
+              <td class="voucherShopName">{{ voucher['店舗名'] }}</td>
+            </tr>
+            <tr>
+              <th>受注番号</th>
+              <td class="voucherOrderNumber">{{ voucher['受注番号'] }}</td>
+            </tr>
+            <tr>
+              <th>決済方法</th>
+              <td class="voucherPaymentMethod">{{ voucher['支払方法'] }}</td>
+            </tr>
+            {#
+            <tr>
+              <th>発送方法</th>
+              <td class="voucherDeliveryMethod">{{ voucher['発送方法'] }}</td>
+            </tr>
+            #}
+
+            <tr>
+              <th>小計</th>
+              <td class="voucherSubTotal">{{ voucher['小計合計']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>消費税</th>
+              <td class="voucherTax">{{ voucher['税金']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>送料</th>
+              <td class="voucherDeliveryFee">{{ voucher['送料']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>手数料</th>
+              <td class="voucherCharge">{{ voucher['手数料']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>その他費用</th>
+              <td class="voucherOtherCost">{{ voucher['その他']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>ポイント</th>
+              <td class="voucherUsePoint">{{ voucher['ポイント']|number_format }}円</td>
+            </tr>
+            <tr>
+              <th>請求金額</th>
+              <td class="voucherTotal">{{ voucher['合計金額']|number_format }}円</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="shoulder-tag-parent">
+                <div class="shoulder-tag-line">
+                  <div class="shoulder-tag">請求元情報</div>
+                </div>
+
+                <div class="shopInfo">株式会社フォレスト<br>〒630-8424<br>奈良県奈良市古市町789</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="2" class="shoulder-tag-parent">
+          <div class="shoulder-tag-line">
+            <div class="shoulder-tag">
+              特記事項
+            </div>
+
+            <div class="shoulder-tag-after">
+              {% if voucher['配送日'] and voucher['配送日'] != '0000-00-00' %}<span class="voucherDeliveryDate">到着予定日：{{ voucher['配送日'] }}</span>{% endif %}
+              {% if voucher['配送時間帯'] %}<span class="voucherDeliveryTime">到着時間帯指定：{{ voucher['配送時間帯'] }}</span>{% endif %}
+            </div>
+          </div>
+
+          <div class="voucherAttention">{{ voucher['納品書備考']|raw }}</div>{# Controllerでの文字装飾のため、事前エスケープ済み。 #}
+        </td>
+      </tr>
+
+    </table>
+
+    <div class="details-header">（単位：円）</div>
+    <table class="details">
+      <tr>
+        <th>No.</th>
+        <th>商品名</th>
+        <th>商品コード</th>
+        <th>数量</th>
+        <th>単価</th>
+        <th>小計</th>
+      </tr>
+      {% for index,detail in details %}
+
+      <tr>
+        <td class="detailNumber">{{ index + 1 }}</td>
+        <td class="detailProductName">{{ detail['商品名'] }} [{{ detail['colname'] }}] [{{ detail['rowname'] }}]</td>
+        <td class="detailProductCode">{{ detail['商品コード'] }}</td>
+        <td class="detailNum{% if detail['受注数'] > 1 %} bigger{% endif %}"><span>{{ detail['受注数']|number_format }}</span></td>
+        <td class="detailUnitPrice">{{ detail['商品単価']|number_format }}</td>
+        <td class="detailSubTotal">{{ detail['小計']|number_format }}</td>
+      </tr>
+      {% endfor %}
+
+      <tr>
+        <td></td>
+        <td></td>
+        <td class="detailTotalTitle">受注合計数量</td>
+        <td class="detailTotalNum bigger"><span>{{ voucher['受注合計数量']|number_format }}</span></td>
+        <td></td>
+        <td></td>
+      </tr>
+
+    </table>
+
+  </div>
+
+{% endif %}
+
+</body>
+</html>

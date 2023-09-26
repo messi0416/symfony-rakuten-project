@@ -1,0 +1,85 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    '@AppBundle/Resources/public/vendor/bootstrap-select/css/bootstrap-select.min.css' filter='cssrewrite'
+    '@AppBundle/Resources/public/css/app.mainproducts-info.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/bootstrap-select/js/bootstrap-select.min.js'
+    '@AppBundle/Resources/public/js/app.mainproducts-info.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const MAIN_PRODUCTS_INFO = {{ dataJson|raw }};
+  </script>
+  <div id="mainProductsInfo" class="container"
+    data-info-url="{{ path("main_products_info") }}"
+    data-search-url="{{ path("main_products_search") }}"
+    data-count="{{ count }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+            <h2>MainProducts</h2>
+        </div>
+      </div>
+
+      {# 検索フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row row-eq-height">
+            <div class="form-group mb0 col-sm-6">
+              <div class="form-inline mb10">
+                <label for="daihyoSyohinCode" class="mr10">代表商品コード：</label>
+                <input id="daihyoSyohinCode" type="text" class="form-control w200" v-model="conditions.daihyoSyohinCode" @keyup.enter="search(true)">
+                <button type="button" class="btn btn-success" @click="search(true)">
+                  検索
+                </button>
+              </div>
+            </div>
+            <div class="d-flex align-items-end col-sm-6">
+              <parts-table-pagination v-bind="paginationInfo" @change-page="changePage" class="flex5">
+              </parts-table-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-body info-body">
+        <div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th v-for="(thead, index) in columns" v-text="thead" :key="index"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(tr, index) in list" :key="index">
+                <td v-for="(td, index) in tr" :key="index" class="vMiddle">
+                  <p v-text="td">
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-primary scroll-top" @click="scrollTop()">最上へ</button>
+      </div>
+  </div>
+  </div>
+{% endblock %}

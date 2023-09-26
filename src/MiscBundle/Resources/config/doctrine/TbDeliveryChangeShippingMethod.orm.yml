@@ -1,0 +1,88 @@
+MiscBundle\Entity\TbDeliveryChangeShippingMethod:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbDeliveryChangeShippingMethodRepository
+  table: tb_delivery_change_shipping_method
+  id:
+    id:
+      type: integer
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    date:
+      type: date
+      nullable: true
+    voucher_number:
+      type: string
+      length: 20
+      nullable: false
+      default: ''
+    purchaser:
+      type: string
+      length: 50
+      nullable: false
+      default: ''
+    addressee:
+      type: string
+      length: 50
+      nullable: false
+      default: ''
+    shop_name:
+      type: string
+      length: 100
+      nullable: false
+      default: ''
+
+    shipping_method:
+      type: string
+      length: 50
+      nullable: false
+      default: ''
+    receive_order_delivery_id: # 「発送方法コード」 （NextEngine API項目名）
+      type: string
+      length: 10
+      nullable: false
+      default: ''
+
+    new_shipping_method:
+      type: string
+      length: 50
+      nullable: false
+      default: ''
+    new_receive_order_delivery_id: # 「発送方法コード」 （NextEngine API項目名）
+      type: string
+      length: 10
+      nullable: false
+      default: ''
+
+    current_shipping_method:
+      type: string
+      length: 50
+      nullable: false
+      default: ''
+    current_receive_order_delivery_id: # 「発送方法コード」 （NextEngine API項目名）
+      type: string
+      length: 10
+      nullable: false
+      default: ''
+
+    shipping_method_changed:
+      type: datetime
+      nullable: true
+
+    status:
+      type: integer
+      nullable: false
+      default: 0
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps

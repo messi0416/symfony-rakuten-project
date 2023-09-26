@@ -1,0 +1,29 @@
+MiscBundle\Entity\TbSalesDetailSummaryYmd:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbSalesDetailSummaryYmdRepository
+    table: tb_sales_detail_summary_ymd
+    id:
+        orderDate:
+            type: date
+            nullable: false
+            comment: 受注日
+            id: true
+            column: order_date
+            generator:
+                strategy: IDENTITY
+    fields:
+        totalSales:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: "総売上\nポイントを含む総合計"
+            default: '0'
+            column: total_sales
+        totalGrossProfit:
+            type: integer
+            nullable: false
+            unsigned: true
+            comment: "総粗利額\nポイントを含む総合計から、仕入原価、仕入費用、販売費用、配送料などを除いて取得した粗利額の合計。消費税を含む\n= tb_sales_detail_voucherの粗利額の合計"
+            default: '0'
+            column: total_gross_profit
+    lifecycleCallbacks: {  }

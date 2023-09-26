@@ -1,0 +1,423 @@
+MiscBundle\Entity\TbMainproductsCal:
+  type: entity
+  table: tb_mainproducts_cal
+  indexes:
+    search_code:
+      columns:
+        - search_code
+    dena_pic_check_datetime:
+      columns:
+        - dena_pic_check_datetime
+    endofavailability:
+      columns:
+        - endofavailability
+  id:
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      options:
+        fixed: false
+      id: true
+      column: daihyo_syohin_code
+      generator:
+        strategy: IDENTITY
+  fields:
+    endofavailability:
+      type: datetime
+      nullable: true
+    deliverycode:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '4'
+    genkaTnkAve:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+      column: genka_tnk_ave
+    baikaTnk:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: baika_tnk
+    sunfactoryset:
+      type: date
+      nullable: true
+    listSomeInstantDelivery:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+      column: list_some_instant_delivery
+    priority:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '0'
+    earliestOrderDate:
+      type: date
+      nullable: true
+      column: earliest_order_date
+    delayDays:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+      column: delay_days
+    visibleFlg:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '1'
+      column: visible_flg
+    salesVolume:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: sales_volume
+    makeshopRegistrationFlug:
+      type: boolean
+      nullable: true
+      options:
+        default: '0'
+      column: makeshop_Registration_flug
+    rakutenRegistrationFlug:
+      type: boolean
+      nullable: true
+      options:
+        default: '0'
+      column: rakuten_Registration_flug
+    croozmallRegistrationFlug:
+      type: boolean
+      nullable: true
+      options:
+        default: '0'
+      column: croozmall_Registration_flug
+    amazonRegistrationFlug:
+      type: boolean
+      nullable: true
+      options:
+        default: '0'
+      column: amazon_registration_flug
+    annualSales:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '0'
+      column: annual_sales
+    rakutenRegistrationFlugDate:
+      type: date
+      nullable: true
+      column: rakuten_Registration_flug_date
+    setnum:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+    rakutencategoryTep:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+      column: rakutencategory_tep
+    beingNum:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: being_num
+    mallPriceFlg:
+      type: boolean
+      nullable: false
+      options:
+        default: '0'
+      column: mall_price_flg
+    daihyoSyohinLabel:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        comment: ラベル印刷用タイトル
+      column: daihyo_syohin_label
+    maxbuynum:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        comment: 最大購入可能数
+        default: '0'
+    outlet:
+      type: boolean
+      nullable: false
+      options:
+        comment: アウトレットか？
+        default: '0'
+    adultCheckStatus:
+      type: string
+      nullable: false
+      options:
+        comment: 未審査:ホワイト:グレー:ブラック
+        default: '未審査'
+      column: adult_check_status
+    imagePhotoNeedFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: 画像撮影必要フラグ
+        default: '0'
+      column: image_photo_need_flg
+    bigSize:
+      type: boolean
+      nullable: false
+      options:
+        comment: '大きいサイズあり フラグ'
+        default: '0'
+      column: big_size
+    viewrank:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        comment: 閲覧ランキング
+        default: '0'
+    reviewrequest:
+      type: boolean
+      nullable: false
+      options:
+        comment: レビュー要求
+        default: '0'
+#    lastReviewDate:
+#      type: datetime
+#      nullable: false
+#      options:
+#        comment: 最終レビュー日時
+#      column: last_review_date
+    reviewPointAve:
+      type: string
+      nullable: false
+      length: 3
+      options:
+        fixed: false
+        comment: 平均レビュー得点
+        default: '0.0'
+      column: review_point_ave
+    reviewNum:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        comment: レビュー数
+        default: '0'
+      column: review_num
+    searchCode:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        comment: 検索用コード（代表商品コード+商品ラベル+Q10コード+DENAコード
+      column: search_code
+    fixedCost:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        comment: 商品固有固定費
+        default: '0'
+      column: fixed_cost
+    costRate:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        comment: 商品別原価率
+        default: 0
+      column: cost_rate
+#    denaPicCheckKbn:
+#      type: boolean
+#      nullable: false
+#      column: DENA画像チェック区分
+#    denaPicCheckDatetime:
+#      type: datetime
+#      nullable: true
+#      column: dena_pic_check_datetime
+#    denaPicCheckDatetimeSort:
+#      type: datetime
+#      nullable: false
+#      column: dena_pic_check_datetime_sort
+    notfoundImageNoRakuten:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        default: '0'
+      column: notfound_image_no_rakuten
+    notfoundImageNoDena:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        default: '0'
+      column: notfound_image_no_dena
+    startupFlg:
+      type: boolean
+      nullable: false
+      options:
+        comment: 登録直後かどうか
+        default: '-1'
+      column: startup_flg
+    pricedownFlg:
+      type: boolean
+      nullable: false
+      options:
+        comment: デフォルトで値下げ許可するか否か
+        default: '-1'
+      column: pricedown_flg
+    redFlg:
+      type: boolean
+      nullable: false
+      options:
+        comment: 赤字販売フラグ
+        default: '0'
+      column: red_flg
+    lastOrderdate:
+      type: date
+      nullable: false
+      options:
+        comment: 最終発注日
+      column: last_orderdate
+      readOnly: true
+    wangStatus:
+      type: boolean
+      nullable: false
+      options:
+        comment: 広州(王)さん問い合わせ状況
+        default: '0'
+      column: wang_status
+    orderingAvoidFlg:
+      type: integer
+      nullable: false
+      options:
+        default: '0'
+      column: 受発注可能フラグ退避F
+    soldoutCheckFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: 売切目視確認チェックフラグ
+        default: '0'
+      column: soldout_check_flg
+    labelRemarkFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: ラベル注目フラグ
+        default: '0'
+      column: label_remark_flg
+    sizeCheckNeedFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: 'サイズチェック必要 フラグ'
+        default: '0'
+      column: size_check_need_flg
+    weightCheckNeedFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: '重量チェック必要 フラグ'
+        default: '0'
+      column: weight_check_need_flg
+    compressFlg:
+      type: integer
+      nullable: false
+      options:
+        comment: '圧縮商品 フラグ'
+        default: '0'
+      column: compress_flg
+    deliverycodePre:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        comment: 共通処理開始時点のdeliverycode
+        default: '4'
+      column: deliverycode_pre
+    highSalesRateFlg:
+      type: boolean
+      nullable: false
+      options:
+        comment: 高成約率フラグ
+        default: '0'
+      column: high_sales_rate_flg
+    mailSendNums:
+      type: decimal
+      nullable: true
+      precision: 10
+      scale: 2
+      options:
+        unsigned: false
+        comment: メール便可能数
+      column: mail_send_nums
+    bundleNumAverage:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        default: 0
+        comment: 平均同梱数
+      column: bundle_num_average
+    memo:
+      type: string
+      nullable: true
+      length: 2000
+      options:
+        fixed: false
+    timestamp:
+      type: datetime
+      nullable: false
+      options:
+        default: CURRENT_TIMESTAMP
+      readOnly: true
+    rakutencategories3:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        fixed: false
+      column: rakutencategories_3
+
+    qualityLevel:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        default: 0
+      column: quality_level
+
+    qualityLevelUpdated:
+      type: datetime
+      nullable: true
+      column: quality_level_updated
+
+  lifecycleCallbacks: {  }
+
+  oneToOne:
+    product:
+      targetEntity: TbMainproducts
+      inversedBy: cal
+      joinColumn:
+        name: daihyo_syohin_code
+        referencedColumnName: daihyo_syohin_code
+      fetch: EAGER

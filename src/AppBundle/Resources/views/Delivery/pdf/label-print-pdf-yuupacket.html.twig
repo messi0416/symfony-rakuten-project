@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style type="text/css">
+    body{
+      font-family: "ＭＳ ゴシック";
+      margin: 0;
+      padding: 0;
+    }
+    .page {
+      page-break-after: always;
+      display: table !important;
+    }
+    .table-row {
+    }
+    .table-cell {
+      display: table-cell !important;
+      width: 105mm;
+      height: 53mm;
+      position: relative;
+    }
+    .postpaid {
+      position: absolute;
+      top: 0mm;
+      left: 5mm;
+    }
+    .postpaid img {
+      width: 20mm;
+      height: 10mm;
+    }
+    .zip {
+      position: absolute;
+      top: 0mm;
+      left: 50mm;
+      font-size: 28px;
+    }
+    .siwake-code {
+      position: absolute;
+      top: 9mm;
+      left: 5mm;
+      font-size: 20px;
+    }
+    .address {
+      position: absolute;
+      top: 9mm;
+      left: 31mm;
+      font-size: 10px;
+    }
+    .barcode1 {
+      position: absolute;
+      top: 21mm;
+      left: 6.2mm;
+    }
+    .name {
+      position: absolute;
+      top: 20mm;
+      left: 31mm;
+      font-size: 10px;
+    }
+    .voucher-no {
+      position: absolute;
+      top: 23mm;
+      left: 31mm;
+      font-size: 10px;
+    }
+    .product-name {
+      position: absolute;
+      top: 28mm;
+      left: 31mm;
+      font-size: 10px;
+    }
+    .barcode2 {
+      position: absolute;
+      top: 34.5mm;
+      left: 6.5mm;
+    }
+    .toiawase {
+      position: absolute;
+      top: 43.3mm;
+      left: 13mm;
+      font-size: 10px;
+    }
+    .company-address {
+      position: absolute;
+      top: 35mm;
+      left: 50mm;
+      font-size: 9px;
+      line-height: 14px;
+    }
+    .company-name {
+      position: absolute;
+      top: 44mm;
+      left: 50mm;
+      font-size: 9px;
+    }
+    .barcode {
+    }
+  </style>
+</head>
+<body>
+  {% for page in data %}
+  <div class="page">
+    {% for pos, row in page %}
+    {% if pos % 2 == 0 %}
+      {% if pos == 0 %}
+      <div style="padding-top: 3mm;">
+        <!-- 1段目データの上部マージン -->
+      </div>
+      {% elseif pos == 2 %}
+      <div style="padding-top: 5.5mm;">
+        <!-- 2段目データの上部マージン -->
+      </div>
+      {% elseif pos == 4 %}
+      <div style="padding-top: 5.5mm;">
+        <!-- 3段目データの上部マージン -->
+      </div>
+      {% elseif pos == 6 %}
+      <div style="padding-top: 6mm;">
+        <!-- 4段目データの上部マージン -->
+      </div>
+      {% elseif pos == 8 %}
+      <div style="padding-top: 5.5mm;">
+        <!-- 5段目データの上部マージン -->
+      </div>
+      {% endif %}
+    <div class="table-row">
+    {% endif %}
+      {% if row['伝票no'] != "" %}
+      <div class="table-cell">
+        <div class="postpaid">
+          <img src="data:image/png;base64, {{ postpaidMailSymbolBase64 }}" alt="料金後納郵便">
+        </div>
+        <div class="zip">
+          〒 {{ row['発送先郵便番号'] }}
+        </div>
+        <div class="siwake-code">
+          {{ row['siwake_code'] }}
+        </div>
+        <div class="address">
+          {{ row['発送先住所1'] }}<br>
+          {{ row['発送先住所2'] }}
+        </div>
+        <div class="barcode1">
+          {{ row['barcode_siwake'] | raw }}
+        </div>
+        <div class="name">
+           {{ row['発送先名'] }}様
+        </div>
+        <div class="voucher-no">
+           {{ row['伝票no'] }}
+        </div>
+        <div class="product-name">
+           【品名】衣類
+        </div>
+        <div class="barcode2">
+          {{ row['barcode_toiawase'] | raw }}
+        </div>
+        <div class="toiawase">
+          <!-- Milon Barcode の getBarcodeSVGメソッドに備わっているCodeテキスト表示機能が動作しないためやむなくプレーンテキストで出力 -->
+          <!-- 最終的には日本郵便から発行された問い合わせ番号を出力予定 -->
+          {{ row['toiawase'] }}
+        </div>
+        <div class="company-address">
+          【差出人・返還先】〒630-8424<br> 
+           奈良県奈良市古市町789番地
+        </div>
+        <div class="company-name">
+          株式会社フォレスト
+        </div>
+      </div>
+      {% else %}
+      <div class="table-cell">
+      </div>
+      {% endif %}
+    {% if pos % 2 == 1 %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</body>
+</html>

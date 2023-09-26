@@ -1,0 +1,395 @@
+{% include 'AppBundle::modal/cancel-modal.html.twig' with {'modalId' : 'modalCancelJobWorkerConfirm', 'actionUrl': path('api_job_worker_cancel') } %}
+{% include 'AppBundle::modal/stop-modal.html.twig' with {'modalId' : 'modalStopJobWorkerConfirm', 'actionUrl': path('api_job_worker_stop') } %}
+<div class="main"
+     id="queueListMain"
+     data-url="{{ path('queue_job_list') }}"
+     data-remove-lock-url="{{ path('queue_remove_process_lock') }}"
+     data-check-worker-status-url="{{ path('worker_check_status') }}"
+  >
+
+  <div class="row mb10" v-show="!(nowLoading)">
+    <div class="col-xs-12">
+      <button class="btn btn-default pull-right" v-on:click="loadData()">
+        <i class="fa fa-repeat"></i>
+        再読み込み
+      </button>
+    </div>
+  </div>
+
+  <div class="loading" v-show="nowLoading">
+    <img src="{{ asset('img/loading-large.gif') }}" />
+  </div>
+
+  <div class="alert alert-danger" v-show="message && !(nowLoading)" v-text="message"></div>
+
+  <div v-show="!(nowLoading)" class="mb50">
+
+    <div class="panel" v-bind:class="runningProcessesCss">
+      <div class="panel-heading">実行中処理</div>
+      <div class="panel-body">
+        <ul v-if="runningProcesses.length > 0" class="list-group mb0 pl5 pr5">
+          <li
+            v-for="process in runningProcesses"
+            class="list-group-item text-left row"
+            style="display: flex; flex-wrap: wrap; align-items: center;"
+          >
+            <span class="col-xs-12 col-sm-3" v-text="process.startDatetime"></span>
+            <span class="col-xs-12 col-sm-3" v-text="process.proc"></span>
+            <span class="col-xs-12 col-sm-2" v-text="process.queueName"></span>
+            <span class="col-xs-6 col-sm-2" v-text="process.runningTime"></span>
+            <div class="col-xs-6 col-sm-2 text-right p0">
+              {% if is_granted('ROLE_SYSTEM_USER') %}
+              <button class="btn btn-danger" v-on:click="removeLock(process.id)">
+                <i class="fa fa-times"></i>
+                ロック解除
+              </button>
+              {% endif %}
+            </div>
+          </li>
+        </ul>
+        <p v-else>
+          なし
+        </p>
+      </div>
+    </div>
+
+    <h3>キュー状況</h3>
+    {% if is_granted('ROLE_SYSTEM_USER') %}
+    <button class="btn btn-warning pull-right" v-on:click="openWorkerCancelModal" v-if="isStop" v-text="boxContent"></button>
+    <button class="btn btn-warning pull-right" v-on:click="openWorkerStopModal" v-else v-text="boxContent"></button>
+    {% endif %}
+    <ul class="nav nav-tabs nav-tabs-justified">
+      <li id="main" class="active"><a data-toggle="tab" href="#queueMain">main</a></li>
+      <li id="nonExclusive"><a data-toggle="tab" href="#queueNonExclusive">nonExclusive</a></li>
+      <li id="neUpload"><a data-toggle="tab" href="#queueNeUpload">neUpload</a></li>
+      <li id="rakutenCsvUpload"><a data-toggle="tab" href="#queueRakutenCsvUpload">rakutenCsvUpload</a></li>
+      <li id="ppmCsvUpload"><a data-toggle="tab" href="#queuePpmCsvUpload">ppmCsvUpload</a></li>
+      <li id="productImage"><a data-toggle="tab" href="#queueProductImage">productImage</a></li>
+      <li id="productSales"><a data-toggle="tab" href="#queueProductSales">productSales</a></li>
+      {#<li><a data-toggle="tab" href="#queueAlibabaApi">alibabaApi</a></li>#}
+    </ul>
+    <div class="tab-content tab-content-bordered">
+
+      <div id="queueMain" class="tab-pane active">
+        <table v-if="jobs.main && jobs.main.length > 0" class="table">
+          <thead>
+            <tr>
+              <th class="col-xs-1 text-center">#</th>
+              <th class="col-xs-7">処理名</th>
+              <th class="col-xs-2">キュー追加日時</th>
+              <th class="col-xs-2">アカウント</th>
+              {#<th class="col-xs-3 text-center">処理</th>#}
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(index, job) in jobs.main">
+              <td class="col-xs-1 text-center">(% index + 1 %)</td>
+              <td class="col-xs-7">(% job.name %)</td>
+              <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+              <td class="col-xs-2">(% job.account %)</td>
+              {#<td class="col-xs-3 text-center">#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+                {#&nbsp;#}
+                {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+              {#</td>#}
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+      <div id="queueNonExclusive" class="tab-pane">
+        <table v-if="jobs.nonExclusive && jobs.nonExclusive.length > 0" class="table">
+          <thead>
+          <tr>
+            <th class="col-xs-1 text-center">#</th>
+            <th class="col-xs-7">処理名</th>
+            <th class="col-xs-2">キュー追加日時</th>
+            <th class="col-xs-2">アカウント</th>
+            {#<th class="col-xs-3 text-center">処理</th>#}
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(index, job) in jobs.nonExclusive">
+            <td class="col-xs-1 text-center">(% index + 1 %)</td>
+            <td class="col-xs-7">(% job.name %)</td>
+            <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+            <td class="col-xs-2">(% job.account %)</td>
+            {#<td class="col-xs-3 text-center">#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+              {#&nbsp;#}
+              {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+            {#</td>#}
+          </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+      <div id="queueNeUpload" class="tab-pane ">
+        <table v-if="jobs.neUpload && jobs.neUpload.length > 0" class="table">
+          <thead>
+          <tr>
+            <th class="col-xs-1 text-center">#</th>
+            <th class="col-xs-7">処理名</th>
+            <th class="col-xs-2">キュー追加日時</th>
+            <th class="col-xs-2">アカウント</th>
+            {#<th class="col-xs-3 text-center">処理</th>#}
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(index, job) in jobs.neUpload">
+            <td class="col-xs-1 text-center">(% index + 1 %)</td>
+            <td class="col-xs-7">(% job.name %)</td>
+            <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+            <td class="col-xs-2">(% job.account %)</td>
+            {#<td class="col-xs-3 text-center">#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+              {#&nbsp;#}
+              {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+            {#</td>#}
+          </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+      <div id="queueRakutenCsvUpload" class="tab-pane ">
+        <table v-if="jobs.rakutenCsvUpload && jobs.rakutenCsvUpload.length > 0" class="table">
+          <thead>
+          <tr>
+            <th class="col-xs-1 text-center">#</th>
+            <th class="col-xs-7">処理名</th>
+            <th class="col-xs-2">キュー追加日時</th>
+            <th class="col-xs-2">アカウント</th>
+            {#<th class="col-xs-3 text-center">処理</th>#}
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(index, job) in jobs.rakutenCsvUpload">
+            <td class="col-xs-1 text-center">(% index + 1 %)</td>
+            <td class="col-xs-7">(% job.name %)</td>
+            <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+            <td class="col-xs-2">(% job.account %)</td>
+            {#<td class="col-xs-3 text-center">#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+              {#&nbsp;#}
+              {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+            {#</td>#}
+          </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+      <div id="queuePpmCsvUpload" class="tab-pane ">
+        <table v-if="jobs.ppmCsvUpload && jobs.ppmCsvUpload.length > 0" class="table">
+          <thead>
+          <tr>
+            <th class="col-xs-1 text-center">#</th>
+            <th class="col-xs-7">処理名</th>
+            <th class="col-xs-2">キュー追加日時</th>
+            <th class="col-xs-2">アカウント</th>
+            {#<th class="col-xs-3 text-center">処理</th>#}
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(index, job) in jobs.ppmCsvUpload">
+            <td class="col-xs-1 text-center">(% index + 1 %)</td>
+            <td class="col-xs-7">(% job.name %)</td>
+            <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+            <td class="col-xs-2">(% job.account %)</td>
+            {#<td class="col-xs-3 text-center">#}
+            {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+            {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+            {#&nbsp;#}
+            {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+            {#</td>#}
+          </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+      <div id="queueWowmaCsvUpload" class="tab-pane ">
+        <table v-if="jobs.wowmaCsvUpload && jobs.wowmaCsvUpload.length > 0" class="table">
+          <thead>
+          <tr>
+            <th class="col-xs-1 text-center">#</th>
+            <th class="col-xs-7">処理名</th>
+            <th class="col-xs-2">キュー追加日時</th>
+            <th class="col-xs-2">アカウント</th>
+              {#<th class="col-xs-3 text-center">処理</th>#}
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(index, job) in jobs.wowmaCsvUpload">
+            <td class="col-xs-1 text-center">(% index + 1 %)</td>
+            <td class="col-xs-7">(% job.name %)</td>
+            <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+            <td class="col-xs-2">(% job.account %)</td>
+              {#<td class="col-xs-3 text-center">#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+              {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+              {#&nbsp;#}
+              {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+              {#</td>#}
+          </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+
+      <div id="queueProductImage" class="tab-pane">
+        <table v-if="jobs.productImage && jobs.productImage.length > 0" class="table">
+          <thead>
+            <tr>
+              <th class="col-xs-1 text-center">#</th>
+              <th class="col-xs-7">処理名</th>
+              <th class="col-xs-2">キュー追加日時</th>
+              <th class="col-xs-2">アカウント</th>
+              {#<th class="col-xs-3 text-center">処理</th>#}
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(index, job) in jobs.productImage">
+              <td class="col-xs-1 text-center">(% index + 1 %)</td>
+              <td class="col-xs-7">(% job.name %)</td>
+              <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+              <td class="col-xs-2">(% job.account %)</td>
+              {#<td class="col-xs-3 text-center">#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+                {#&nbsp;#}
+                {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+              {#</td>#}
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+
+      <div id="queueProductSales" class="tab-pane">
+        <table v-if="jobs.productSales && jobs.productSales.length > 0" class="table">
+          <thead>
+            <tr>
+              <th class="col-xs-1 text-center">#</th>
+              <th class="col-xs-7">処理名</th>
+              <th class="col-xs-2">キュー追加日時</th>
+              <th class="col-xs-2">アカウント</th>
+              {#<th class="col-xs-3 text-center">処理</th>#}
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(index, job) in jobs.productSales">
+              <td class="col-xs-1 text-center">(% index + 1 %)</td>
+              <td class="col-xs-7">(% job.name %)</td>
+              <td class="col-xs-2 text-left">(% job.queueDatetime %)</td>
+              <td class="col-xs-2">(% job.account %)</td>
+              {#<td class="col-xs-3 text-center">#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>#}
+                {#<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>#}
+                {#&nbsp;#}
+                {#<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>#}
+              {#</td>#}
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="panel panel-default mb0">
+          <div class="panel-body">なし</div>
+        </div>
+      </div>
+
+
+      {#<div id="queueAlibabaApi" class="tab-pane">#}
+        {#<table v-if="jobs.alibabaApi && jobs.alibabaApi.length > 0" class="table">#}
+          {#<thead>#}
+          {#<tr>#}
+            {#<th class="col-xs-1 text-center">#</th>#}
+            {#<th class="col-xs-7">処理名</th>#}
+            {#<th class="col-xs-2">キュー追加日時</th>#}
+            {#<th class="col-xs-2">アカウント</th>#}
+            {#&#123;&#35;<th class="col-xs-3 text-center">処理</th>&#35;&#125;#}
+          {#</tr>#}
+          {#</thead>#}
+          {#<tbody>#}
+          {#<tr v-for="(index, job) in jobs.alibabaApi">#}
+            {#<td class="col-xs-1 text-center">(% index + 1 %)</td>#}
+            {#<td class="col-xs-7">(% job.name %)</td>#}
+            {#<td class="col-xs-2 text-left">(% job.queueDatetime %)</td>#}
+            {#<td class="col-xs-2">(% job.account %)</td>#}
+            {#&#123;&#35;<td class="col-xs-3 text-center">&#35;&#125;#}
+            {#&#123;&#35;<button class="btn btn-default"><i class="fa fa-arrow-up disabled"></i></button>&#35;&#125;#}
+            {#&#123;&#35;<button class="btn btn-default"><i class="fa fa-arrow-down disabled"></i></button>&#35;&#125;#}
+            {#&#123;&#35;&nbsp;&#35;&#125;#}
+            {#&#123;&#35;<button class="btn btn-danger"><i class="fa fa-remove disabled"></i></button>&#35;&#125;#}
+            {#&#123;&#35;</td>&#35;&#125;#}
+          {#</tr>#}
+          {#</tbody>#}
+        {#</table>#}
+        {#<div v-else class="panel panel-default mb0">#}
+          {#<div class="panel-body">なし</div>#}
+        {#</div>#}
+      {#</div>#}
+
+    </div>
+
+  </div>
+
+</div>
+
+{# modals #}
+<div class="modal"
+     id="modalSample"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="true"
+     data-url="{{ path('api_get_notification') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div class="(% messageClass %) notificationInformation">
+            <div>
+              <textarea readonly="readonly" v-model="message"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>

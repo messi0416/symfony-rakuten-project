@@ -1,0 +1,189 @@
+<div class="main"
+     id="notificationListTable"
+     data-url="{{ path('api_get_notification_list') }}"
+     data-more-url="{{ path('api_get_notification_list_more') }}"
+     data-notification-url="{{ notificationSocketUrl }}"
+     data-notification-path="{{ notificationSocketPath }}"
+     data-notification-search-url="{{ path('api_get_notification_search_list') }}"
+  >
+    <div class="clearfix" mb10>
+      <form class="form-inline" id="form-search" style="position: relative;">
+        <div>
+          <div class="form-group pull-left mr10 mb5">
+          <!--
+            <input type="datetime" v-model="searchItem.targetDateFrom" class="form-control" size="10"
+              title="yyyy/mm/dd hh:mm形式で入力してください "
+              placeholder="対象日時From"
+            />
+          -->
+          <!--
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            <input id="dt_filter_from" v-model="searchItem.targetDateFrom" class="form-control" size="10" type="text" placeholder="対象日時From">
+          -->
+
+            <div class="input-group date w200 pull-left mr10 mb5">
+              <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <input id="dt_filter_from" v-model="searchItem.targetDateFrom" class="form-control" size="10" type="text" placeholder="対象日時From">
+            </div>
+
+          </div>
+          <div class="inputHeight text-center pull-left mr5 mb5">
+            ～
+          </div>
+          <div class="form-group pull-left mr10 mb5">
+          <!--
+            <input type="datetime" v-model="searchItem.targetDateTo" class="form-control" size="10"
+              title="yyyy/mm/dd hh:mm形式で入力してください"
+              placeholder="対象日時To"
+            />
+          -->
+          <!--
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            <input id="dt_filter_to" v-model="searchItem.targetDateTo" class="form-control" size="1" type="text" placeholder="対象日時To">
+          -->
+            <div class="input-group date w200 pull-left mr10 mb5">
+              <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <input id="dt_filter_to" v-model="searchItem.targetDateTo" class="form-control" size="10" type="text" placeholder="対象日時To">
+            </div>
+          </div>
+        </div>
+        <div class="pull-left">
+          <div class="form-group pull-left mr10 mb5">
+            <input type="text" v-model="searchItem.pcName" class="form-control" size="20"
+              title="複数条件指定は半角スペース区切りで入力してください"
+              placeholder="PC名"
+            />
+          </div>
+          <div class="form-group pull-left mr10 mb5">
+            <input type="text" v-model="searchItem.execTitle" class="form-control" size="20"
+              title="複数条件指定は半角スペース区切りで入力してください"
+              placeholder="処理名"
+            />
+          </div>
+          <div class="form-group pull-left mr10 mb5">
+            <input type="text" v-model="searchItem.logTitle" class="form-control" size="20"
+              title="複数条件指定は半角スペース区切りで入力してください"
+              placeholder="ログ名"
+            />
+          </div>
+          <div class="form-group pull-left mr10 mb5">
+            <input type="text" v-model="searchItem.subMessage" class="form-control" size="20"
+              title="複数条件指定は半角スペース区切りで入力してください"
+              placeholder="サブ"
+            />
+          </div>
+        
+        </div>
+      </form>
+    </div>
+    <div class="clearfix mb10">
+      <form class="form-inline">
+        <button type="button" class="pull-left mr10 mb10 input-group btn btn-warning" v-on:click="chageFilterFlg()" data-toggle="button">エラーログ抽出</button>
+        <button type="button" class="pull-left mr10 mb10 input-group btn btn-warning" v-on:click="chageErrorInfoFilterFlg()" data-toggle="button">エラー＋INFO抽出</button>
+        <div class="pull-right">
+        <!--
+          <button type="button" class="pull-left mr10 mb5 input-group btn btn-info" id="searchClearButton" v-on:click="searchClear()">絞込クリア</button>
+          <button type="button" class="pull-left mr10 mb5 input-group btn btn-info" id="submitSearchButton" v-on:click="getLogSearchList()">絞込(リアルタイムOFF)</button>
+        -->
+          <button type="button" class="pull-left mr10 mb5 input-group btn btn-info" id="toggleSearchButton" v-on:click="toggleSearch()" data-toggle="button">絞込</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="btn-group pull-right mr10">
+      <button id="resumeLog" class="btn btn-sm btn-default" v-on:click="resumeGetNewLog">自動取得</button>
+      <button id="stopLog" class="btn btn-sm btn-info active" v-on:click="stopGetNewLog">取得停止</button>
+    </div>
+
+  <div class="alert alert-info" v-if="searchFlg && notification_count<1000">絞込結果は(% notification_count %)件です。</div>
+    <div class="alert alert-warning" v-if="searchFlg && notification_count==1000">絞込結果が1000件を超えた可能性があります。絞込条件を追加して対象を絞り込んでください。</div>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>日時</th>
+        <th>PC</th>
+        <th>処理名</th>
+        <th>ログ名</th>
+        <th class="noticeSubTitle">サブ1</th>
+        <th class="noticeSubTitle">サブ2</th>
+        <th class="noticeSubTitle">サブ3</th>
+        <th>単体(秒)</th>
+        <th>累積(秒)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="row in notificationsList">
+        <td class="text-center">
+          <p class="mb5">(% row.ID %)</p>
+          <div v-show="row.HAS_INFORMATION" class="text-center">
+            <img v-if="row.ERROR_FLAG == 0" v-on:click="openInformationModal(row.ID)" class="notificationListIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATeSURBVHjatFZraBxVFD4zO/uc3ewm2W1NyqoBwT8iIqK1pVJQBPujaMmP9p8WgrZghKoNRYgiFfFV0aL5UdCfKiw+oolt1FpbW9vaagm12mhNIaR57PuRnd2Zuzuec3d2s2mTcEfdWb6duXO+88255577kEzTBNHr5NlfHHjbiuhF3I64yzJdQFxGxBDDG++9uyKqKYkGcOL0uSdcTuWDjvYOCAYD4HK5EE5u03UDoUM2m4dUOgW6wXZuWn/Ph/9LAMdOnvEqiuO1UDD4dHRdN7jxw6xaBcYqwCpVzlEcMiAHFFmGMgYyNX0NMtnsQeQMbN54n/avA/j2+KkeFN53azTatzYSBmIWS+VVA/Z53CDhfS6egKtTU4cwiFcfemDD5Ep8ZTWxCmPP39ZzS99NayNQKhtWj6VVAyiWdJ4R8gEw+y7/eYXhw+6V+PJKhpGxo/sx7bvWRCJctIJpl/DbIiAu+ZAvaaDWoK0h+Hx0zCVLUnnD/evB7XSCwYSLesnlxLoolcvw05mzUDVN96NbHtaFMsAMtj3c2QkuRQGtrAv3/HqQLxUtaZGm8BAYhvHkuu4uKKKAQeNuKUoIGSvd4SBg1VtwcMjcJjVFQL6kQVqkKVyESL6jLRCAgqZT6rDNwINzvia+zDha/2QGUwIa1hKuDTRVK/iOtFDzTuEAdMNoczoVMLUyF+XzHnujKDjPtVKD5/X5+F0rFhvv3B4P5zKraHktoBZq+u1kIGswFqT0chKmllUqkEwkIRzp5KmWZQm0hdqHPT4vVKsmogpzs3EItoe4DzismkJf1CyIB6Abs1pRCzrdHp5OyepK1axlAqwVMJXJ8nuHY1GGOHU+rQf0XMRAUXNauAgxXefjiQRWsAIO6i0VH8KHKU+nUo22VC9MC2QjTr1NvqRBWqRpZxaM/D15lc9jqjAJ001Q/WqtwK12o+Cb2pxjtcmXNEiLNMUzoBux336fgEwmh2uBE0nSIqTF50g4wrGcjUC+OdwhSYs0hQN4cd8evVQqPXvs+I/gcsq8N7IFVfXjlptstOugd2Srt8mHfI/+cAJQay9p2toL9g8OHLgwfnHo1OmfG2sA/VTVx3snSUshWzbJspEP+ZIGar1hezOyauHAyOEx+Oa777GisUdYUCavdPOGAOgd2YhDXPIhX9L4TweS/ude6MDb4JpI+JmBPf1QxlUxn88hCtDV1cU5MzMzEAj4EW24eSnw+tsHYW4+/g6aXn73zVdSq36AAhDBU/173//iqyMmHrfM/ELJnPhrkt+bn8lGHOKK6sqiWytj7KUvR4/wMW5eG5rnPNmIQ1xRXeEADr331jyrsKHh0cO4tjtuqAF6RzbiEFdUV7FzwHhw86ZummK7+x5f1r5l2w7OsaMpfCynXn4c+8xMzE5DEXc/t9sNXq+Xg5ZfD+6C0WgULk1cge29jwnr2srAQrF2wg6FQvyD9GGCqqo8kGZOS4agUCjwHTaTyfAM4AoHmqZx1DNAnJYFkMO53666Vs0Acexcsh1yPlcYyuZrKU6n05DC7TeZTEICt1u6xi/+wTkty0C+UPikWjF20Qmn5+buJRn4dfwSzMeTnNOyWUDXI1t7t/lU/w6/P9C7tD7yseJC4aOvh2Of1lfYlgSAVwBBB8zr5/s1ioMSZSeAfwQYAPgtqxAwHjR2AAAAAElFTkSuQmCC" />
+            <img v-else v-on:click="openInformationModal(row.ID)" class="notificationListIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAPLSURBVHjaxFdRSFNRGP7vNmfLUTGcs42Wm9OtrCZFhaH21EOsfBUEX3oQgkiY+CCLsFgog0IREoLozbce60XopSQKwZ40y9CcqU2ZMy11eu/t/3ev2912t907KA983P+e85/v/3fO959zx/A8DwfZNHDA7cAT0L19eavYuXpEAKFFPETEi0qAK14DQZt9qpuMH/OnKImeohLguaIScCE6Ha4J4HkGFuY8fnx/jphRrQGO56AIDDjd43qtdg90ul0gm/qK4dJxrOoV8JVXLPrsJ6cANrlEB9nRFYtvNWL14esrdRrgOLXCG7DZvwCQdlixF23qiyxXDuDbqBpBaljUgAr4T1RNu8zmRYB1TIByJ6BNfTSGPrfVcGpoBRTChOiuckwD7GBw2jkp4jzY7TPkd1/0VcSrYVkOFCJY7Zo0GQxbAH8AtrYYGHwhgGz4DVBm3ATyIV+lvChCRRqoR3S43SQ8Yem7HvEwPCIMTn8DePqASYyRz+fJ2g7sfob4pEADmElhDHnrJ7QMwyeX/837FMnomLgNOEY+5EtzlHAr2YI2my3c6HB8B4hyyT2PrqcSiMYkWkAf8rVaFxpxbmsh/kIJ6BGhauccwJ5E9QjT0VQCZhOkjQGeLTRH1II+bwKkgTzw19bM2szmNYBYuvIv1KUSSNjSiljjoaIiCjjXRRz5YuTTgA0R8LhnUfXpv57ga2JSRyPZGeM0h+YSh8iVSwN4IMgj5D331Vh2eFtQfkbd+5oBDKUCyM46F3AOzSUO4soVR8fKl2FjpSXW5j2Lvz4mCi+jHS0DaL+ZsuV8aC5xhMOmtuWfx4ax552Su4Du9iFP7YKwlDu5a/hOq7gNuY6SHWGMuBaXjoTw7Ur2OZCtzPaa6qV6lzMCEKGlZ3JifgkSyOdDHMTlrFpuoJLOroL0s9mICJ724GWzK3PeSzDymocbdwWQnc+XSrgOOZE7JMbIeRcEvGfCNkv5BsBqtvKlYNnUMibsPL6wwsNxyy8gboqRfhekPsnoM8t/8Tzu/QYvLypJa7/OCOLD1tLMFPQnTuIen7Cmfb5Jt+BxU8OcvrSElS07ObRg/ROU+BIncVMMjNWX3AJaga7+MXpe9dSsCtlWav4NsFEMjHVNjAlURwRtsPNSr16vDfyH/yJsPM723xv82Et2MgHEIYQRYRC//XRivxSM5LkPyFhsVvKUYk/8VtyiDUFsJxLo81+GnicfNCJxiYj9gJoMMDLBQSYJXqYW9hPZFcFibE5KIkeeaYOMnZlEps3L2Mk+RsXeMSr3WtEfjr8CDAChdXkEwepAHwAAAABJRU5ErkJggg==" />
+          </div>
+        </td>
+        <td>(% row.LOG_TIMESTAMP %)</td>
+        <td>(% row.PC %)</td>
+        <td>(% row.EXEC_TITLE %)</td>
+        <td>(% row.LOG_TITLE %)</td>
+        <td class="noticeSubTitle">(% row.LOG_SUBTITLE1 %)</td>
+        <td class="noticeSubTitle">(% row.LOG_SUBTITLE2 %)</td>
+        <td class="noticeSubTitle">(% row.LOG_SUBTITLE3 %)</td>
+        <td class="text-right">(% row.LOG_INTERVAL %)</td>
+        <td class="text-right">(% row.LOG_ELAPSE %)</td>
+      </tr>
+
+      </tbody>
+    </table>
+
+    <div class="row mb20">
+      <div class="col-sm-12 text-center">
+        <label class="btn btn-lg btn-default fullWidth" v-show="searchFlg==0" v-on:click="loadLogMore()">もっと取得する</label>
+      </div>
+    </div>
+
+</div>
+
+
+{# modals #}
+<div class="modal"
+     id="modalNotificationInformation"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="true"
+     data-url="{{ path('api_get_notification') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div class="(% messageClass %) notificationInformation">
+            <div>
+              <textarea readonly="readonly" v-model="message"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>

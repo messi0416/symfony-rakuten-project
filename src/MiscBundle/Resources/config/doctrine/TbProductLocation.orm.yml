@@ -1,0 +1,57 @@
+MiscBundle\Entity\TbProductLocation:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductLocationRepository
+  table: tb_product_location
+  uniqueConstraints:
+    location:
+      columns:
+        - ne_syohin_syohin_code
+        - position
+  id:
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+      column: ne_syohin_syohin_code
+
+    location_id:
+      type: integer
+      nullable: false
+  fields:
+
+    stock:
+      type: integer
+      nullable: false
+
+    position:
+      type: integer
+      nullable: false
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps
+
+  manyToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: locations
+      joinColumn:
+        name: ne_syohin_syohin_code
+        referencedColumnName: ne_syohin_syohin_code
+
+    location:
+      targetEntity: TbLocation
+      inversedBy: productLocations
+      joinColumn:
+        name: location_id
+        referencedColumnName: id

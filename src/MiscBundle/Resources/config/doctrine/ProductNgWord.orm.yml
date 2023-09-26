@@ -1,0 +1,23 @@
+MiscBundle\Entity\ProductNgWord:
+    type: entity
+    table: tb_product_ng_word
+    repositoryClass: MiscBundle\Entity\Repository\ProductNgWordRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        content:
+            type: string
+            nullable: false
+            length: 30
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日時
+            default: CURRENT_TIMESTAMP
+
+
+    lifecycleCallbacks: {  }

@@ -1,0 +1,91 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+  'bundles/app/css/app.goods.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.goods-image-delete-folders.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="imageFoldersList" class="container"
+         data-url="{{ path('goods_image_folders_find') }}"
+         >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品画像削除(※α版)</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div id="imageDeleteFoldersListTable">
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="vMiddle text-center">フォルダID</th>
+          <th class="vMiddle text-center">フォルダ名</th>
+          <th class="vMiddle text-center">フォルダパス</th>
+          <th class="vMiddle text-center">格納画像数</th>
+          <th class="vMiddle text-center">フォルダ更新日時</th>
+          <th class="vMiddle text-center">削除画像一覧</th>
+        </tr>
+        <tr v-for="item in list">
+          <td class="vMiddle text-center" v-text="item.FolderId"></td>
+          <td class="vMiddle text-center" v-text="item.FolderName"></td>
+          <td class="vMiddle text-center" v-text="item.FolderPath"></td>
+          <td class="vMiddle text-center" v-text="item.FileCount"></td>
+          <td class="vMiddle text-center" v-text="item.TimeStamp"></td>
+          <td class="vMiddle text-center">
+            <a v-bind:href="item.url" class="btn btn-success">確認</a>
+          </td>
+        </tr>
+      </table>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+    </div>
+  </div>
+
+{% endblock %}

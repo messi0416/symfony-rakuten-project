@@ -1,0 +1,141 @@
+MiscBundle\Entity\TbLocationWarehouseToList:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbLocationWarehouseToListRepository
+  table: tb_location_warehouse_to_list
+
+  id:
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+      id: true
+
+  fields:
+    daihyo_syohin_code:
+      type: string
+      nullable: true
+      length: 30
+      options:
+        fixed: false
+        default: ''
+    colcode:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+        default: ''
+    rowcode:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+        default: ''
+    colname:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    rowname:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    sort_order:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    stock:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    allocation_num:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    free_stock:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    order_num:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    reserve_num:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    warehouse_total:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    warehouse_stock:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    move_num:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    pricedown_flg:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+    sales_season:
+      type: integer
+      nullable: true
+      options:
+        default: 0
+
+    pict_directory:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    pict_filename:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks: {  }
+
+  oneToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: warehouseTo
+      joinColumn:
+        name: ne_syohin_syohin_code
+        referencedColumnName: ne_syohin_syohin_code
+        nullable: true
+      fetch: EAGER
+      cascade: ["all"]
+

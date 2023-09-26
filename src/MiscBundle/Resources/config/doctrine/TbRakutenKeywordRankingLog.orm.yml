@@ -1,0 +1,30 @@
+MiscBundle\Entity\TbRakutenKeywordRankingLog:
+    type: entity
+    table: tb_rakuten_keyword_ranking_log
+    repositoryClass: MiscBundle\Entity\Repository\TbRakutenKeywordRankingLogRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: id
+            generator:
+                strategy: IDENTITY
+    fields:
+      logDate:
+           type: date
+           nullable: falase
+           column: log_date
+      rank:
+           type: integer
+           nullable: false
+      keyword:
+           type: string
+           nullable: true
+           length: 255
+           options:
+               fixed: false
+
+    lifecycleCallbacks: {  }

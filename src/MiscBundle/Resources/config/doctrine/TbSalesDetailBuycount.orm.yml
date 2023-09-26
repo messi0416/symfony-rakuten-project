@@ -1,0 +1,37 @@
+MiscBundle\Entity\TbSalesDetailBuycount:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbSalesDetailBuycountRepository
+    table: tb_sales_detail_buycount
+    id:
+        voucherNumber:
+            column: "伝票番号"
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            column: "購入者名"
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+        phone:
+            column: "購入者電話番号"
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        buyCount:
+            column: "購入回数"
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+    lifecycleCallbacks: {  }

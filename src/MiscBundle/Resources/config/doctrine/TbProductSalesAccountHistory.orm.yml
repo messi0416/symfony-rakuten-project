@@ -1,0 +1,62 @@
+MiscBundle\Entity\TbProductSalesAccountHistory:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductSalesAccountHistoryRepository
+    table: tb_product_sales_account_history
+    indexes:
+        index_updated:
+            columns:
+                - updated
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 商品売上担当者更新履歴ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        processType:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "処理\n1:追加, 2:削除, 3:変更"
+            column: process_type
+        note:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: 備考
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日
+            default: CURRENT_TIMESTAMP
+        updateAccountId:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: 更新ユーザID
+            column: update_account_id
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps
+    manyToOne:
+        updateAccount:
+            targetEntity: SymfonyUsers
+            joinColumn:
+                name: update_account_id
+                referencedColumnName: id
+            fetch: EAGER
+    manyToMany:
+        productSalesAccounts:
+            targetEntity: TbProductSalesAccount
+            joinTable:
+                name: tb_product_sales_account_history_mapping
+                joinColumns:
+                    product_sales_account_history_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    product_sales_account_id:
+                        referencedColumnName: id

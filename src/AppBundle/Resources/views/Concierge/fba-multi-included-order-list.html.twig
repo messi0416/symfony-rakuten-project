@@ -1,0 +1,131 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+   {% stylesheets
+   'bundles/app/vendor/bootstrap-select/css/bootstrap-select.min.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/bootstrap-select/js/bootstrap-select.min.js'
+  '@AppBundle/Resources/public/js/clipboard.min.js'
+
+  '@AppBundle/Resources/public/js/app.concierge-fba-multi-included-order-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div class="container" id="conciergeFbaMultiIncludedOrderList">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>FBAマルチ商品混合受注 一覧</h2>
+        </div>
+      </div>
+
+      {#&#123;&#35; global-message コンポーネント &#35;&#125;#}
+      {#<div is="parts-global-message" :state="messageState"></div>#}
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="conciergeFbaMultiIncludedOrderListTable">
+
+      {# 絞込フォーム #}
+      {#<div class="panel panel-default">#}
+        {#<div class="panel-body">#}
+          {#<form id="conciergeFbaMultiIncludedOrderListSearchForm" class="form-inline inlineBlock" role="form" action="{{ path('concierge_fba_multi_included_order_list') }}" method="get">#}
+            {#<div class="form-group mr5 mb5">#}
+              {#<select id="filterShopNeIds" name="shop" class="selectpicker" title="店舗" &#123;&#35;multiple data-actions-box="true" data-select-all-text="全選択" data-deselect-all-text="全解除"&#35;&#125; v-on:change="submitSearchForm">#}
+              {#<select id="filterShopNeIds" name="shop" class="form-control" title="店舗" v-on:change="submitSearchForm">#}
+                {#<option value=""></option>#}
+                {#{% for id, name in selectShopNames %}#}
+                  {#<option value="{{ id }}"{% if conditions.shop and conditions.shop == id %} selected{% endif %}>{{ name }}</option>#}
+                {#{% endfor %}#}
+              {#</select>#}
+            {#</div>#}
+
+            {#<div class="form-group mr5 mb5">#}
+              {#<label for="filterReadyOnly">#}
+                {#<input class="checkbox" id="filterReadyOnly" type="checkbox" name="ready" value="1"#}
+                     {#{% if conditions.readyOnly and conditions.readyOnly == "1" %} checked{% endif %}#}
+                     {#v-on:click="submitSearchForm">#}
+                {#「納品書印刷待ち」のみ抽出#}
+              {#</label>#}
+            {#</div>#}
+
+            {#<div class="form-group mr5 mb5">#}
+              {#<input type="submit" value="絞込" class="btn btn-success">#}
+            {#</div>#}
+
+          {#</form>#}
+        {#</div>#}
+      {#</div>#}
+
+      {#&#123;&#35; pagination (Vue component) &#35;&#125;#}
+      {#<div#}
+        {#is="parts-table-pagination"#}
+        {#:init-page-item-num="pageItemNum"#}
+        {#:init-page-item-num-list="pageItemNumList"#}
+        {#:item-num="totalItemNum"#}
+        {#:page="page"#}
+        {#v-on:change-page="showPage"#}
+        {#></div>#}
+
+      <table class="table table-bordered" >
+        <thead>
+          <tr>
+            <th>伝票番号</th>
+            <th>受注日</th>
+            <th>店舗名</th>
+            <th>受注状態</th>
+            <th>明細件数</th>
+            <th>FBA商品件数</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% if data|length > 0 %}
+          {% for i,row in data %}
+            <tr>
+              <td>{{ row['伝票番号'] }}</td>
+              <td>{{ row['受注日'] }}</td>
+              <td>{{ row['店舗名'] }}</td>
+              <td>{{ row['受注状態'] }}</td>
+              <td class="text-right">{{ row['明細件数'] }}</td>
+              <td class="text-right">{{ row['fba_multi_count'] }}</td>
+              <td class="text-center">
+                <button type="button" class="btn btn-default"
+                        v-bind:class="getVoucherOpenedCss('{{ row['伝票番号'] }}')"
+                        v-on:click="openVoucherWindow('{{ row['伝票番号'] }}')"
+                >伝票</button>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center">データがありません。</td>
+          </tr>
+        {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+{% endblock %}
+

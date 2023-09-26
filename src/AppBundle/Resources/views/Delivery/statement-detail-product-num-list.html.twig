@@ -1,0 +1,385 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.delivery.js'
+    '@AppBundle/Resources/public/js/partial/modal-create-picking-list.js'
+    '@AppBundle/Resources/public/js/partial/modal-create-shipping-voucher.js'
+    '@AppBundle/Resources/public/js/partial/modal-change-current-warehouse.js'
+    '@AppBundle/Resources/public/js/partial/modal-change-current-company.js'
+    '@AppBundle/Resources/public/js/partial/modal-display-calculate-shipment.js'
+
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<script type="text/javascript">
+  const DATA = {{ data.result | json_encode | raw }};
+  const METHODS = {{ deliveryMethods | json_encode | raw }};
+</script>
+<div class="container container-large">
+
+  <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+    <div class="row row10">
+      <div class="col-xs-12 col-sm-6">
+        <div class="pull-left">
+          <h2>納品書印刷待ち 伝票一覧</h2>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-6">
+        {#<div class="pull-right mt20 mb10">#}
+          {#<a class="btn btn-default" href="{{ path('delivery_statement_detail_product_num_list_shoplist') }}"><i class="fa fa-exchange"></i> SHOPLIST有効化</a>#}
+        {#</div>#}
+
+        <div class="pull-right mt20 mb10 mr5">
+          <a class="btn btn-default" href="{{ path('delivery_shipping_stock_move_list') }}">
+            倉庫在庫移動一覧
+          </a>
+        </div>
+
+        {% if account.getWarehouse() and account.getWarehouse().isShipmentEnabled() %}
+        <div class="pull-right mt20 mb10 mr5">
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              ﾋﾟｯｷﾝｸﾞﾘｽﾄ <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a data-toggle="modal" data-target="#modalCreatePickingListByOrderNumber">
+                  伝票番号でピッキングリスト作成
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pull-right mt20 mb10 mr5">
+          <a class="btn btn-default" href="{{ path('delivery_change_shipping_method_list') }}" target="changeDeliveryMethod">
+            発送方法変更
+          </a>
+        </div>
+        <div class="pull-right mt20 mb10 mr5">
+          <a class="btn btn-default" href="{{ path('delivery_shipping_voucher_list') }}" target="shippingVoucher">
+            出荷リスト
+          </a>
+        </div>
+        <div class="pull-right mt20 mb10 mr5">
+          <a class="btn btn-default" href="{{ path('delivery_shipping_voucher_auto_generate_history_list') }}" target="autoGenerateHistory">
+            出荷リスト自動生成履歴
+          </a>
+        </div>
+
+        <div class="pull-right mt20 mb10 mr5">
+          <a class="btn btn-info" data-toggle="modal" data-target="#modalImportShippingVoucher">納品書CSV取込</a>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+    <div class="row">
+      <div>
+        <div class="(% messageCssClass %)" v-text="message"></div>
+      </div>
+    </div>
+  </div>
+
+  {% for type, flashMessages in app.session.flashbag.all() %}
+    {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+    <div>
+    {% for flashMessage in flashMessages %}
+      <div class="alert alert-{{ type }}">
+        {{ flashMessage }}
+      </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <div class="row" id="functionBlock">
+  </div>
+
+  <div class="panel panel-default" id="deliveryDetailProductNumList"
+      data-refresh-url="{{ path('delivery_statement_detail_refresh_product_num_list', { settingId: settingId } ) }}"
+      data-refresh-warehouse-stock-move-url="{{ path('delivery_warehouse_stock_move_list_refresh') }}"
+      data-stock-move-remain-check-url="{{ path('delivery_stock_move_warehouse_remain_number') }}"
+      data-delivery-enqueue-csv-download-and-update-shipping-voucher-url="{{ path('delivery_enqueue_csv_download_and_update_shipping_voucher') }}"
+    >
+    <div class="panel-body">
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+
+            <div class="clearfix">
+              <div class="inputHeight text-right pull-left mr5 mb5">
+                納品書印刷指示日 or 初回出荷予定
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+                <input type="text" name="shipping_date" class="form-control" id="shippingDate" value="{{ borderDate.format('Y-m-d') }}" />
+              </div>
+
+              <div class="inputHeight text-right pull-left mr5 mb5">
+                区切明細数
+              </div>
+              <div class="input-group date w80 pull-left mr5 mb5">
+                <input type="number" name="page_item_num" class="form-control" id="pageItemNum" value="{{ pageItemNum }}" v-model="pageItemNum" />
+              </div>
+
+              <div class="inputHeight text-right pull-left mr5 mb5">
+                ロケーション順位変更
+              </div>
+              <div class="btn-group pull-left mr5 mb5" data-toggle="buttons">
+                <label class="btn btn-default" v-bind:class="{ 'active': changeLocationOrder == 0 }" v-on:click="setChangeLocationOrder(0)">
+                  <i v-bind:class="changeLocationOrderIconOff"></i>
+                  しない
+                </label>
+                <label class="btn btn-default" v-bind:class="{ 'active': changeLocationOrder == 1 }" v-on:click="setChangeLocationOrder(1)">
+                  <i v-bind:class="changeLocationOrderIconOn"></i>
+                  する
+                </label>
+              </div>
+
+              {% if account.getWarehouse() and account.getWarehouse().isShipmentEnabled() %}
+              <div class="pull-right">
+                <input type="button" v-on:click="openProgress" class="btn btn-default pull-right mr5 mb10" value="進捗" v-show="state.jobKey">
+                <div v-else>
+                  <input type="button" v-on:click="updateFormSubmit({{ settingId }})" class="btn btn-warning pull-right w100 mr5 mb10" value="集計">
+                  <input type="button" v-on:click="updateWarehouseStockMoveSubmit({{ account.getWarehouse().getId() }},'{{ account.getWarehouse().getName() }}')" class="btn btn-danger pull-right mr5 mb10" value="倉庫在庫">
+                </div>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+      <h3 class="clearfix">
+        納品書印刷待ち 商品件数順 集計 <small style="font-weight: normal">最終更新 : {% if lastUpdated %}{{ lastUpdated.format('Y-m-d H:i:s') }} ({{ lastUpdatedAccountName }}){% else %} - {% endif %}</small>
+
+        <p class="pull-right w150 mr10 mb10" v-bind:class="{ 'has-error': searchVoucherNumberNotExists  }">
+          <input type="text" class="form-control" placeholder="伝票番号検索" v-model="searchVoucherNumber" v-on:change="searchVoucher" v-on:keypress.enter="searchVoucher(true)">
+        </p>
+
+        <div class="pull-right pr5">
+          <a class="btn btn-success" data-toggle="modal" data-target="#modalChangeCurrentWarehouse">
+            <i class="fa fa-fw fa-home"></i>{{ account.getWarehouse().getName() }}
+          </a>
+          <a class="btn btn-success" data-toggle="modal" data-target="#modalChangeCurrentCompany">
+            <i class="fa fa-fw fa-home"></i>{{ account.getCompany().getName() }}
+          </a>
+        </div>
+
+        {% if account.getWarehouse() and account.getWarehouse().isFbaVirtualWarehouse() %}
+          <p class="pull-right mr10 mb10">
+            <a href="{{ path('delivery_fba_multi_download_service_request_csv') }}" class="btn btn-default" download="Order_{{ now.format('YmdHis') }}.txt">
+              <i class="fa fa-fw fa-download"></i>FBA出荷依頼ダウンロード
+            </a>
+          </p>
+        {% endif %}
+        　　　　
+        {% if account.getWarehouse() and account.getWarehouse().isYabuyoshiWarehouse() %}
+          <div class="pull-right mr10 mb10">
+            <a href="{{  path('delivery_yabuyoshi_download_service_request_csv') }}"class="btn btn-default" download="Order_{{ now.format('YmdHis') }}.csv" >
+              <i class="fa fa-fw fa-download"></i>藪吉出荷依頼ダウンロード
+            </a>
+          </div>
+        {% endif %}
+
+
+      </h3>
+
+      <div class="pull-left pr5">
+        <a class="btn btn-success" data-toggle="modal" data-target="#modalDisplayCalculateShipment">
+          <small>
+            {% if calcResult %}
+                  出荷 {{ calcResult.order_amount|number_format(1, '.', ',') }} 倉庫在庫ピッキング {{ calcResult.stock_move_amount|number_format(1, '.', ',') }} 合計 {{ calcResult.total|number_format(1, '.', ',') }}
+            {% else %}
+                  出荷量一覧
+            {% endif %}
+          </small>  
+        </a>
+      </div>
+
+      <div class="row row10 mr5">
+        <div class="pull-right">
+          <div class="inputHeight pull-left mr5">現在の発送方法のページ</div>
+          <div class="pull-left mr10">
+            <input type="number" name="search_score_from" class="form-control mr5 w80" v-model="updateShippingVoucherStartPage">
+          </div>
+          <div class="inputHeight pull-left mr10">～</div>
+          <div class="pull-left mr10 mb5">
+            <input type="number" name="search_score_to" class="form-control mr5 w80" v-model="updateShippingVoucherEndPage">
+          </div>
+          <button type="button" class="btn btn-info" @click="updateShippingVoucher({{ account.getWarehouse().getId() }})" :disabled="!selectMethod">出荷リストを一括生成</button>
+        </div>
+      </div>
+
+      {% if deliveryMethods | length > 0 %}
+      <ul class="nav nav-tabs nav-tabs-justified">
+        {% for tabIndex, method in deliveryMethods %}
+        <li {% if tabIndex == 0 %}class="active"{% endif %}>
+          <a data-toggle="tab" href="#delivery_{{ method.hash }}" @click="changeMethod('{{ method.method }}')">{{ method.method }} ({{ method.num }})</a>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content tab-content-bordered">
+
+        {% for tabIndex, method in deliveryMethods %}
+        <div id="delivery_{{ method.hash }}" class="tab-pane {% if tabIndex == 0 %}active{% endif %}">
+
+          <ul class="nav nav-tabs nav-tabs-justified">
+            {% for page, items in data.result[method.method] %}
+              <li {% if page == 1 %}class="active"{% endif %}><a data-toggle="tab" href="#voucherList_{{ method.hash }}_{{ page }}">{{ page }}</a></li>
+            {% endfor %}
+          </ul>
+
+          <div class="tab-content tab-content-bordered mb10">
+          {% for page, items in data.result[method.method] %}
+            <div id="voucherList_{{ method.hash }}_{{ page }}" class="tab-pane {% if page == 1 %}active{% endif %}">
+              <div class="row">
+                <div class="col-xs-2">
+                  <div class="mb10">
+                  <textarea class="form-control" rows="{{ items | length + 1 }}" readonly v-on:click="selectAll($event)">{% spaceless %}
+                    {% for i, item in items %}{{ item["伝票番号"] }}&#13;{% endfor %}
+                  {% endspaceless %}</textarea>
+                  </div>
+                </div>
+                <div class="col-xs-10">
+                  <table class="table">
+                    <tr>
+                      <th>伝票番号</th>
+                      <th>発送方法</th>
+                      <th>印刷予定日</th>
+                      <th>対象商品コード </th>
+                      {#<th>対象商品明細数</th>#}
+                      <th>対象商品受注数</th>
+                      <th>明細数</th>
+                      <th>受注数</th>
+                    </tr>
+                    {% for i, item in items %}
+                      <tr>
+                        <td class="listVoucherNumber">
+                          <a href="{{ path('concierge_urgent_shipping_stock_list', { num: item["伝票番号"] }) }}" target="conciergeUrgentShippingStockList">
+                            {{ item["伝票番号"] }}
+                          </a>
+                        </td>
+                        <td>{{ item["発送方法"] }}</td>
+                        <td>{{ item["印刷予定日"] }}</td>
+                        <td>{{ item["対象商品コード"] }}</td>
+                        {#<td>{{ item["対象商品明細数"] }}</td>#}
+                        <td>{{ item["対象商品受注数"] }}</td>
+                        <td>{{ item["明細数"] }}</td>
+                        <td>{{ item["受注数"] }}</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          </div>
+
+          <div class="panel panel-default mb0">
+            <div class="panel-body">
+              <ul class="mb0">
+                {#<li>SHOPLISTの伝票は含まれていません。</li>#}
+                <li>納品書印刷指示日が本日（ {{ today.format('Y-m-d') }} ）より未来の伝票は集計に含まれていません。</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="panel panel-default">
+          <div class="panel-body">
+            該当する伝票がありません。
+          </div>
+        </div>
+      {% endif %}
+
+
+      <h3>納品書印刷待ち 全件情報</h3>
+      <table class="table table-hover">
+        <tr class="alert-primary">
+          <th>出荷予定年月</th>
+          <th class="text-right">明細件数</th>
+          <th class="text-right">伝票件数</th>
+          <th class="text-right">代表商品コード数</th>
+          <th class="text-right">SKU数</th>
+          <th class="text-right">商品個数</th>
+        </tr>
+        {% for row in data.monthly %}
+          <tr class="alert-info" v-on:click="showNextRow($event)">
+            <td>{{ row["出荷予定年月"] }}</td>
+            <td class="text-right">{{ row["明細件数"] | number_format }}</td>
+            <td class="text-right">{{ row["伝票件数"] | number_format }}</td>
+            <td class="text-right">{{ row["代表商品コード数"] | number_format }}</td>
+            <td class="text-right">{{ row["SKU数"] | number_format }}</td>
+            <td class="text-right">{{ row["商品個数"] | number_format }}</td>
+          </tr>
+          {% if data.daily[row.year][row.month] %}
+            <tr style="display:none" class="dayList">
+              <td colspan="6">
+                <table class="table">
+                  <tr>
+                    <th>出荷予定年月日</th>
+                    <th class="text-right">明細件数</th>
+                    <th class="text-right">伝票件数</th>
+                    <th class="text-right">代表商品コード数</th>
+                    <th class="text-right">SKU数</th>
+                    <th class="text-right">商品個数</th>
+                  </tr>
+                  {% for day in data.daily[row.year][row.month] %}
+                    <tr>
+                      <td>{{ day["出荷予定年月日"]|date('Y-m-d') }}</td>
+                      <td class="text-right">{{ day["明細件数"] | number_format }}</td>
+                      <td class="text-right">{{ day["伝票件数"] | number_format }}</td>
+                      <td class="text-right">{{ day["代表商品コード数"] | number_format }}</td>
+                      <td class="text-right">{{ day["SKU数"] | number_format }}</td>
+                      <td class="text-right">{{ day["商品個数"] | number_format }}</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              </td>
+            </tr>
+          {% endif %}
+
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+
+</div>
+
+{% include 'AppBundle::modal/create-picking-list.html.twig' %}
+{% include 'AppBundle::modal/create-shipping-voucher.html.twig' %}
+{% include 'AppBundle::modal/change-current-warehouse.html.twig' %}
+{% include 'AppBundle::modal/change-current-company.html.twig' %}
+{% include 'AppBundle::Delivery/modal-statement-list-refresh-progress.html.twig' %}
+{% include 'AppBundle::modal/display-calculate-shipment.html.twig' %}
+
+{% endblock %}
+

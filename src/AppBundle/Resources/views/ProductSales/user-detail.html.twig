@@ -1,0 +1,317 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+    'bundles/app/css/app.product-sales-user-detail.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+    '@AppBundle/Resources/public/js/app.product-sales-user-detail.js'
+  %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const USER_DETAIL = {{ result|raw }};
+  </script>
+  <div
+    id="userDetail"
+    class="container"
+    data-sales-account-url="{{ path('product_sales_account') }}"
+    data-check-url="{{ path('queue_check_existence') }}"
+    data-review-url="{{ path('goods_list_review') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>担当者別売上明細</h2>
+        </div>
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onClick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+
+        <h4 class="inputHeightSm">
+          <span class="mr10">
+            【条件】
+          </span>
+          <button v-if="conditions.sireName" class="btn btn-default" type="button"
+            @click="unfilterBySireName">
+            全仕入先を表示
+          </button>
+          <div v-text="disptitle" class="conditions"></div>
+          <button class="btn btn-primary" @click="downloadCSV">CSVダウンロード</button>
+        </h4>
+
+        {# pagination (Vue component) #}
+        <parts-table-pagination v-bind="paginationInfo" @change-page="changePage">
+        </parts-table-pagination>
+
+        <div>
+          <table class="table table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th class="text-center" colspan="3" rowspan="4">
+                  期間内関連商品数： <span v-text="total.productCount"></span>
+                </th>
+                <th class="text-center" colspan="4">
+                  <span v-text="conditions.stockDate"></span> 時点
+                </th>
+                <th class="vMiddle text-center" colspan="4" rowspan="2">期間内売上</th>
+                <th class="vMiddle text-center"  rowspan="4">担当者<br>情報</th>
+                <th class="vMiddle text-center" rowspan="4">
+                  <span v-if="conditions.applyStartDateFrom || conditions.applyStartDateTo || total.reviewAllAveStar === undefined " >
+                    レビュー
+                  </span>
+                  <span v-else class="cursorPointer"  
+                  :class="addSortArrow('reviewPointAve')"
+                  @click="sortBy('reviewPointAve')">
+                    レビュー
+                  </span>
+                </th>
+              </tr>
+              <tr>
+                <th class="text-center" colspan="2">在庫</th>
+                <th class="text-center" colspan="2">注残</th>
+              </tr>
+              <tr>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('stockQuantity')"
+                  @click="sortBy('stockQuantity')"
+                  rowspan="2"
+                >
+                  数量<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('stockAmount')"
+                  @click="sortBy('stockAmount')"
+                  rowspan="2"
+                >
+                  <span >金額</span><br>
+                  <span class="fz10">(数量*売価原価)</span><br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('remainQuantity')"
+                  @click="sortBy('remainQuantity')"
+                  rowspan="2"
+                >
+                  数量<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('remainAmount')"
+                  @click="sortBy('remainAmount')"
+                  rowspan="2"
+                >
+                  <span>金額</span><br>
+                  <span class="fz10">(数量*基準原価)</span><br>
+                </th>
+                <th class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('salesAmount')"
+                  @click="sortBy('salesAmount')"
+                >
+                  売上額<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap"
+                  :class="addSortArrow('profitAmount')"
+                  @click="sortBy('profitAmount')"
+                >
+                  利益額<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap fz12"
+                  :class="addSortArrow('salesProfitRate')"
+                  @click="sortBy('salesProfitRate')"
+                >
+                  売上利益率(%)<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap fz12"
+                  :class="addSortArrow('inventorySalesProfitRateStr')"
+                  @click="sortBy('inventorySalesProfitRateStr')"
+                  rowspan="2"
+                >
+                  在庫<br>利益率<br>(%)<br>
+                </th>
+              </tr>
+              <tr>
+                <th class="vTop text-center cursorPointer  text-nowrap fz10"
+                  :class="addSortArrow('shoplistSalesAmount')"
+                  @click="sortBy('shoplistSalesAmount')"
+                >
+                  SHOPLIST<br>売上額<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap fz10"
+                  :class="addSortArrow('shoplistProfitAmount')"
+                  @click="sortBy('shoplistProfitAmount')"
+                >
+                  SHOPLIST<br>利益額<br>
+                </th>
+                <th
+                  class="vTop text-center cursorPointer  text-nowrap fz10"
+                  :class="addSortArrow('shoplistSalesProfitRate')"
+                  @click="sortBy('shoplistSalesProfitRate')"
+                >
+                  SHOPLIST<br>売上利益率(%)<br>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="vMiddle text-right" colspan="3" rowspan="2">合計</th>
+                <td class="vMiddle text-right" v-text="total.stockQuantity" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.stockAmount" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.remainQuantity" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.remainAmount" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.salesAmount"></td>
+                <td class="vMiddle text-right" v-text="total.profitAmount"></td>
+                <td class="vMiddle text-right" v-text="total.salesProfitRate"></td>
+                <td class="vMiddle text-right" v-text="total.inventoryProfitRate" rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td class="vMiddle text-right" rowspan="2">
+                    <span v-if="conditions.applyStartDateFrom || conditions.applyStartDateTo || total.reviewAllAveStar === undefined ">
+                      <span v-text="displayUndefinedValue()" ></span>
+                    </span>
+                    <span v-else>
+                      <span v-text="total.reviewAllAveStar"></span><br>
+                      <span v-text="total.reviewAllAve"></span>
+                    </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistSalesAmount"></td>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistProfitAmount"></td>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistSalesProfitRate"></td>
+              </tr>
+              <template  v-for="(item, i) in pageData">
+                <tr>
+                  <td
+                    class="vMiddle text-center"
+                    v-text="paginationObj.initPageItemNum * (paginationObj.page - 1) + i + 1"
+                    rowspan="2"
+                  >
+                  <td class="text-left" rowspan="2">
+                    <p>
+                      <span class="listCategory" v-text="item.bigCategory"></span>
+                      &gt;
+                      <span class="listCategory" v-text="item.midCategory"> </span>
+                    </p>
+                    <p>
+                      <a
+                        :href ="salesAccountUrl + '?code=' + item.daihyoSyohinCode"
+                        v-text="item.daihyoSyohinCode"
+                      ></a>
+                    </p>
+                    <p class="mb0 small">
+                      <a href="#" @click.prevent="filterBySireName(item.sireName)" class="text-muted">
+                        <span class="name" v-text="item.sireName"></span>
+                        (<span class="code" v-text="item.sireCode"></span>)
+                      </a>
+                    </p>
+                  </td>
+                  <td class="vMiddle text-center w80" rowspan="2">
+                    <img :src="item.imageUrl" class="img-responsive"/>
+                  </td>
+                  <td class="vMiddle text-right" v-text="item.stockQuantityStr" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="item.stockAmountStr" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="item.remainQuantityStr" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="item.remainAmountStr" rowspan="2"></td>
+                  <td class="vMiddle text-right" v-text="item.salesAmountStr"></td>
+                  <td class="vMiddle text-right" v-text="item.profitAmountStr"></td>
+                  <td class="vMiddle text-right" v-text="item.salesProfitRateStr"></td>
+                  <td class="vMiddle text-right" v-text="item.inventorySalesProfitRateStr" rowspan="2"></td>
+                  <td class="vMiddle text-right"  rowspan="2">
+                    <p v-text="item.taskName"></p>
+                    <p>
+                      <span v-text="item.applyStartDate"></span>
+                      -
+                      <span v-text="item.applyEndDate"></span>
+                    </p>
+                  </td>
+                  <td class="vMiddle text-right" rowspan="2">
+                    <span v-if="conditions.applyStartDateFrom || conditions.applyStartDateTo">
+                      <span v-text="displayUndefinedValue()" ></span>
+                    </span>
+                    <span v-else>
+                      <span v-text="item.reviewScoreStar"></span><br>
+                      <a :href="reviewUrl + '?df=' + oneYearAgo + '&code=' + item.daihyoSyohinCode"
+                        target="_blank" rel="noopener noreferrer"
+                      >
+                        <span v-if="item.reviewScoreSummary" v-text="item.reviewScoreSummary"></span>
+                      </a>
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistSalesAmount"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistProfitAmount"></td>
+                  <td class="vMiddle text-right text-muted fz12" v-text="item.shoplistSalesProfitRate"></td>
+                </tr>
+              </template>
+              <tr>
+                <th class="vMiddle text-right" colspan="3" rowspan="2">合計</th>
+                <td class="vMiddle text-right" v-text="total.stockQuantity" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.stockAmount" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.remainQuantity" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.remainAmount" rowspan="2"></td>
+                <td class="vMiddle text-right" v-text="total.salesAmount"></td>
+                <td class="vMiddle text-right" v-text="total.profitAmount"></td>
+                <td class="vMiddle text-right" v-text="total.salesProfitRate"></td>
+                <td class="vMiddle text-right" v-text="total.inventoryProfitRate" rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td class="vMiddle text-right" rowspan="2">
+                    <span v-if="conditions.applyStartDateFrom || conditions.applyStartDateTo || total.reviewAllAveStar === undefined ">
+                      <span v-text="displayUndefinedValue()" ></span>
+                    </span>
+                    <span v-else>
+                      <span v-text="total.reviewAllAveStar"></span><br>
+                      <span v-text="total.reviewAllAve"></span>
+                    </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistSalesAmount"></td>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistProfitAmount"></td>
+                <td class="vMiddle text-right text-muted fz12" v-text="total.shoplistSalesProfitRate"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <parts-table-pagination v-bind="paginationInfo" @change-page="changePage">
+        </parts-table-pagination>
+
+        <button class="btn btn-info scrollTop" @click="scrollTop()">最上部へ</button>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

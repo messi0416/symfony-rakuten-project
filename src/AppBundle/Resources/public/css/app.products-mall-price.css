@@ -1,0 +1,53 @@
+/**
+ * モール受注CSV 画面
+ */
+.kv-file-content {
+  display: none;
+}
+
+.file-preview-frame {
+  height: inherit;
+}
+
+.textGray {
+  color: #999999;
+}
+
+#mallPriceList .tablePagination {
+  margin-bottom: 10px;
+}
+
+#mallPriceList .pagination {
+  margin: 0;
+  vertical-align: middle;
+}
+
+img.thumb {
+  width: 50px;
+}
+
+
+th.sortable {
+  cursor: pointer;
+}
+
+th.sortAsc {
+  background: none;
+}
+th.sortDesc {
+  background: none;
+}
+th.sortAsc:before {
+  color: #0000ff;
+  content: "\f160";
+  font-family: FontAwesome;
+}
+th.sortDesc:before {
+  color: #0000ff;
+  content: "\f161";
+  font-family: FontAwesome;
+}
+
+.message-area {
+  white-space: pre-line;
+}

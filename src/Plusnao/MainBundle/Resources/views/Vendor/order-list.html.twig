@@ -1,0 +1,1275 @@
+{% extends 'PlusnaoMainBundle::base-vendor.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/plusnaomain/bfh/css/bootstrap-formhelpers.min.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/bootstrap-select.min.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/bootstrap-tags.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/datetimepicker.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/jquery.bootstrap-touchspin.css' filter='cssrewrite'
+
+    'bundles/plusnaomain/css/admin-style.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/vendor_order_list.css' filter='cssrewrite' %}
+
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  
+  {% javascripts
+    '@PlusnaoMainBundle/Resources/public/js/vendor_order_list.js'
+    '@PlusnaoMainBundle/Resources/public/js/label-print-pdf-list.js'
+
+    '@PlusnaoMainBundle/Resources/public/bfh/js/bootstrap-formhelpers.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-select.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.bootstrap-touchspin.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-tags.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.maskedinput.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/moment.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.bootstrap.wizard.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-datetimepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js' %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+{% endblock %}
+
+{% block title %}
+  {{ 'vendor.order_list.title'|trans }} | {{ 'vendor.company_name'|trans }}
+{% endblock %}
+
+
+{% block body %}
+  <script type="text/javascript">
+    var vendorOrderListData = [];
+    var remainStatusListData = {{ remainStatusList | raw }};
+    var alertListData = {{ alertList | raw }};
+    var bulkListData = {{ bulkList | raw }};
+
+    var SHIPPING_TYPE_LIST = {1: '{{ 'vendor.order_list.shipping_type_button_air'|trans }}', 2: '{{ 'vendor.order_list.shipping_type_button_container'|trans }}' };
+
+    var HOST_MAIN = "{{ host_main | raw }}";
+    var HOST_PLUSNAO = "{{ host_plusnao | raw }}";
+    var LAST_UPDATED = "{% if lastUpdated %}{{ lastUpdated.format('Y/m/d H:i:s') }}{% else %}{% endif %}"
+  </script>
+
+  <div class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Logo -->
+          <div class="logo">
+            <h1 class="inlineBlock"><a href="#">{{ 'vendor.order_list.title'|trans }}</a></h1>
+            <div class="inlineBlock name">
+              （ <span>{{ agent.getName()|trans }}</span> ）
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="name">
+            <a href="{{ path('plusnao_vendor_remain_order_by_voucher', {'_locale':locale, 'agentName': agent.getLoginName()}) }}"
+               class="btn btn-default mb5 mr5" target="_blank">
+              {{ 'vendor.management_by_voucher'|trans }}
+            </a>
+
+            <a href="{{ path('plusnao_vendor_list_download_export_excel') }}"
+               class="btn btn-default btn-primary mb5 mr5" target="_blank">
+              {{ 'vendor.export_shipping_download'|trans }}
+            </a>
+
+            <a href="{{ path('plusnao_vendor_remain_order_status_date_list', { 'agentName': agent.getLoginName() }) }}"
+               class="btn btn-default mb5 mr5" target="_blank">
+              <i class="fa fa-fw fa-table"></i>
+              {{ 'vendor.order_status_list.page_name'|trans }}
+            </a>
+
+            <a href="{{ path('plusnao_logout') }}"
+               class="btn {{ account.isForestStaff() ? 'btn-warning' : 'btn-default' }} mb5 mr5">
+              <i class="fa fa-fw fa-sign-out"></i>
+              {{ account.getUsername() }}
+            </a>
+
+            {% if locale == 'ja' %}
+              <a class="btn btn-default mb5"
+                 href="{{ path('plusnao_vendor_order_list', { '_locale':'cn', 'agentName': agent.getLoginName()  }) }}"><i
+                  class="fa fa-language"></i> {{ 'vendor.language.chinese'|trans }}</a>
+            {% else %}
+              <a class="btn btn-default mb5"
+                 href="{{ path('plusnao_vendor_order_list', { '_locale':'ja', 'agentName': agent.getLoginName()  }) }}"><i
+                  class="fa fa-language"></i> {{ 'vendor.language.japanese'|trans }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content" id="vendorOrderList">
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'notice', 'success', 'warning', 'danger'] %}
+        {% for flashMessage in flashMessages %}
+          <div class="alert alert-{{ type }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+            {{ flashMessage }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    {# ヘッダメニュー #}
+    <div class="row" id="headerMenu"
+      data-reassessment-all-url="{{ path('plusnao_vendor_order_list_reassessment',{ '_locale':locale, 'agentName': agent.getLoginName() ,'update': 'all'}) }}"
+      data-reassessment-individually-url="{{ path('plusnao_vendor_order_list_reassessment',{ '_locale':locale, 'agentName': agent.getLoginName(),'update':'individually' }) }}"
+      data-message-confirm="{{ 'vendor.order_list.messages.common.confirm'|trans }}"
+      data-message-confirm-individual-agent="{{ 'vendor.order_list.messages.reassess_unallocated.confirm_individual_agent'|trans }}"
+      data-message-confirm-all-agent="{{ 'vendor.order_list.messages.reassess_unallocated.confirm_all_agent'|trans }}"
+      data-message-updating="{{ 'vendor.order_list.reassess_unallocated.updating'|trans }}"
+      data-message-complete="{{ 'vendor.order_list.messages.reassess_unallocated.complete'|trans }}"
+      data-message-reload-page="{{ 'vendor.order_list.messages.reassess_unallocated.reload_page'|trans }}"
+    >
+      <div class="col-md-12">
+
+        <div class="content-box-large mb5">
+
+          <div class="row">
+            <div class="col-xs-8">
+            </div>
+
+            <div class="col-xs-4">
+              <div class="dropdown pull-right">
+                <button class="btn btn-default dropdown-toggle" type="button" id="menuCsv" data-toggle="dropdown">
+                  CSV
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="menuCsv">
+                  <li role="presentation">
+                    <a href="#" class="bigger" v-on:click="openCsvDownloadModal($event)">
+                      <i class="fa fa-download text-success"></i> {{ 'vendor.csv.download'|trans }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+{% if agent.getId() > 0 %}
+              <div class="pull-right mr10">
+                <div>
+                  <button class="btn btn-default w120 inlineBlock" v-on:click="reassessmentIndividually">
+                    <i class="fa fa-calculator"></i>
+                    {{ 'vendor.present_recount'|trans }}
+                  </button>
+                </div>
+              </div>
+{% endif %}
+              <div class="pull-right mr10">
+                <div>
+                  <button class="btn btn-default w120 inlineBlock" v-on:click="reassessmentAll">
+                    <i class="fa fa-calculator"></i>
+                    {{ 'vendor.all_recount'|trans }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12">
+              <div class="pull-right">
+                <span>{{ 'vendor.last_update'|trans }}：</span>
+                <span v-text="displayLastUpdated"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-xs-12">
+      <div class="pull-left text-danger backButtonMessage">
+        <span>※ {{ 'vendor.order_list.messages.back_button'|trans }}</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12" id="vendorOrderListTable"
+           data-search-url="{{ path('plusnao_vendor_find_order_list', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+           data-search-label-url="{{ path('plusnao_vendor_find_order_list_for_label', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+           data-update-status-url="{{ path('plusnao_vendor_order_list_update_status', { 'agentName': agent.getLoginName() }) }}"
+           data-update-shipping-number-url="{{ path('plusnao_vendor_order_list_update_shipping_number', { 'agentName': agent.getLoginName() }) }}"
+           data-update-receive-order-number-url="{{ path('plusnao_vendor_order_list_update_receive_order_number', { 'agentName': agent.getLoginName() }) }}"
+           data-update-warehousing-number-url="{{ path('plusnao_vendor_order_list_update_warehousing_number', { 'agentName': agent.getLoginName() }) }}"
+           data-update-order-num-url="{{ path('plusnao_vendor_order_list_update_order_num', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+           data-update-quality-level-url="{{ path('plusnao_vendor_order_list_update_quality_level', { 'agentName': agent.getLoginName() }) }}"
+           data-edit-spec-url="{{ path('goods_weight_size_edit') }}"
+      >
+
+
+
+        <div class="content-box-header">
+          <div class="row mb5">
+            <div class="col-xs-12">
+
+              <form class="form-inline" role="form"
+                    action="{{ path('plusnao_vendor_order_list', { '_locale':locale, 'agentName': agent.getLoginName()  }) }}"
+                    method="get">
+                <fieldset>
+                  {# 商品コード #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="productCode">{{ 'vendor.search.product_code'|trans }}</label>
+                    <input type="text" class="form-control w150" id="productCode" v-model="conditions.syohinCode"
+                           placeholder="{{ 'vendor.search.product_code'|trans }}" v-on:change="changeSearchedFlgFalse">
+                  </div>
+
+                  {# 発注日 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionOrderDateFrom">{{ 'vendor.search.order_date'|trans }} FROM</label>
+                    <div class="input-group mr5">
+                      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                      <input id="conditionOrderDateFrom" type="text" class="form-control w120"
+                        placeholder="{{ 'vendor.search.order_date'|trans }} From" 
+                        v-model="conditions.orderDateFrom" v-on:change="changeSearchedFlgFalse"
+                      >
+                    </div>
+                    <i class="fa fa-long-arrow-right"></i>
+                    <label class="sr-only" for="orderDate">{{ 'vendor.search.order_date'|trans }} TO</label>
+                    <div class="input-group mr5">
+                      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                      <input id="conditionOrderDateTo" type="text" class="form-control w120"
+                        placeholder="{{ 'vendor.search.order_date'|trans }} To" 
+                        v-model="conditions.orderDateTo" v-on:change="changeSearchedFlgFalse"
+                      >
+                    </div>
+                  </div>
+                  
+                  {#　伝票番号　#}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionVoucherNumber">{{ 'vendor.search.voucher_number'|trans }}</label>
+                    <input type="text" class="form-control w150" id="conditionVoucherNumber" v-model="conditions.voucherNumber"
+                           placeholder="{{ 'vendor.search.voucher_number'|trans }}"  v-on:change="changeSearchedFlgFalse">
+                  </div>
+
+                  {#　ステータス　#}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionStatus">{{ 'vendor.search.status'|trans }}</label>
+                    <select class="form-control" id="conditionStatus" v-model="conditions.status" v-on:change="changeSearchedFlgFalse">
+                      <option value="">[ {{ 'vendor.search.status'|trans }} ]</option>
+                      <option v-for="item in remainStatusList" v-bind:value="item.code" v-text="item.translated_value"></option>
+                    </select>
+                  </div>
+
+                  {#　連絡事項　#}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionVendorComment">{{ 'vendor.search.vendor_comment'|trans }}</label>
+                    <select class="form-control" id="conditionVendorComment" v-model="conditions.vendorComment" v-on:change="changeSearchedFlgFalse">
+                      <option value="">[ {{ 'vendor.search.vendor_comment'|trans }} ]</option>
+                      <option value="1">有</option>
+                    </select>
+                  </div>
+
+                  {#　未引当 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionUnallocated">{{ 'vendor.search.unallocated'|trans }}</label>
+                    <select class="form-control" id="conditionUnallocated" v-model="conditions.unallocated" v-on:change="changeSearchedFlgFalse">
+                      <option value="">[ {{ 'vendor.search.unallocated'|trans }} ]</option>
+                      <option value="1">有</option>
+                    </select>
+                  </div>
+
+                  {#　発送種別 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionShippingType">{{ 'vendor.search.shipping_type.select'|trans }}</label>
+                    <select class="form-control" id="conditionShippingType" v-model="conditions.shippingType" v-on:change="changeSearchedFlgFalse">
+                      <option value="">[ {{ 'vendor.search.shipping_type.select'|trans }} ]</option>
+                      <option value="1">{{ 'vendor.search.shipping_type.air'|trans }}</option>
+                      <option value="2">{{ 'vendor.search.shipping_type.container'|trans }}</option>
+                    </select>
+                  </div>
+
+                  {#　発送伝票番号 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only"
+                           for="conditionShippingNumber">{{ 'vendor.search.shipping_number'|trans }}</label>
+                    <input type="text" class="form-control" id="conditionShippingNumber" v-model="conditions.shippingNumber"
+                           placeholder="{{ 'vendor.order_list.header.shipping_number'|trans }}" style="width: 90px" v-on:change="changeSearchedFlgFalse"/>
+                  </div>
+
+                  {#　受注番号 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only"
+                           for="conditionReceiveOrderNumber">{{ 'vendor.search.receive_order_number'|trans }}</label>
+                    <input type="text" class="form-control" id="conditionReceiveOrderNumber"
+                           v-model="conditions.receiveOrderNumber"
+                           placeholder="{{ 'vendor.order_list.header.receive_order_number'|trans }}"
+                           style="width: 90px" v-on:change="changeSearchedFlgFalse"/>
+                  </div>
+
+                  {#　入庫番号 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only"
+                           for="conditionWarehousingNumber">{{ 'vendor.search.warehousing_number'|trans }}</label>
+                    <input type="text" class="form-control" id="conditionWarehousingNumber"
+                           v-model="conditions.warehousingNumber"
+                           placeholder="{{ 'vendor.order_list.header.warehousing_number'|trans }}" style="width: 90px" v-on:change="changeSearchedFlgFalse"/>
+                  </div>
+
+                  {#　出庫番号 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only"
+                           for="conditionShippingOperationNumber">{{ 'vendor.search.shipping_operation_number'|trans }}</label>
+                    <input type="text" class="form-control" id="conditionShippingOperationNumber"
+                           v-model="conditions.shippingOperationNumber"
+                           placeholder="{{ 'vendor.order_list.header.shipping_operation_number'|trans }}" style="width: 90px" v-on:change="changeSearchedFlgFalse"/>
+                  </div>
+                  
+                  {#　担当者 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionPerson">{{ 'vendor.search.person'|trans }}</label>
+                    <input type="text" class="form-control" id="conditionPerson" v-model="conditions.person"
+                           placeholder="{{ 'vendor.search.person'|trans }}"
+                           style="width: 90px" v-on:change="changeSearchedFlgFalse"/>
+                  </div>
+
+                  {#　警告・注意 #}
+                  <div class="form-group mb5">
+                    <label class="sr-only" for="conditionAlert">{{ 'vendor.search.alert.select'|trans }}</label>
+                    <select class="form-control" id="conditionAlert" v-model="conditions.alert" v-on:change="changeSearchedFlgFalse">
+                      <option value="">[ {{ 'vendor.search.alert.select'|trans }} ]</option>
+                      <option v-for="item in alertList" v-bind:value="item.code" v-text="item.translated_value"></option>
+                    </select>
+                  </div>
+                  
+                  {#　検索 #}
+                  <div class="form-group mb5">
+                    <button type="button" class="btn btn-primary" v-on:click="search">
+                      {{ 'vendor.search.submit'|trans }}
+                    </button>
+                    <button type="button" class="btn btn-default" v-on:click="clearSearchConditions">
+                      {{ 'vendor.search.clear'|trans }}
+                    </button>
+                  </div>
+                </fieldset>
+              </form>
+
+
+              <div class="pull-left">
+                <a class="btn btn-default mb5" v-on:click="openLabelPdfDownloadModal"><i
+                    class="fa fa-tags"></i> {{ 'default.label.label_pdf'|trans }}</a>
+              </div>
+
+              <div class="pull-right">
+                {# pagination (Vue component) #}
+                <div
+                    is="parts-table-pagination"
+                    :page="searchParams.page"
+                    :init-page-item-num="searchParams.pageItemNum"
+                    :init-page-item-num-list="pageItemNumList"
+                    :init-page-list-max-length="10"
+                    :item-num="totalItemNum"
+                    :related-page-item-num="searchParams.pageItemNum"
+                    v-on:change-page="showPage"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          {# 集計値 #}
+          <div class="row listTotal">
+            <div class="col-xs-12">
+              <div class="pull-left col">
+                SKU:<span v-text="displaySkuCount"></span>
+              </div>
+              <div class="pull-left col">
+                {{ 'vendor.order_list.header.remain_num'|trans }}:<span v-text="displayRemainSum"></span>
+              </div>
+              <div class="pull-left col">
+                {{ 'vendor.order_list.cost'|trans }}:<span v-text="displayRemainCostSum"></span> JPY
+              </div>
+
+              <div class="pull-left col">
+                <form class="form-inline" id="frm-bulk-data" role="form"
+                      action="{{ path('plusnao_vendor_order_list_bulk_update', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+                      method="post">
+                  {{ 'vendor.bulk.word'|trans }}
+
+                  <select class="form-control" name="bulkTrigger" v-model="bulkTrigger">
+                    <option value="">[ {{ 'vendor.bulk.select'|trans }} ]</option>
+                    <option v-for="item in bulkList" v-bind:value="item.code" v-text="item.translated_value"></option>
+                  </select>
+
+                  <button type="button" class="btn btn-primary mr5 mb5" v-on:click="triggerExport()"
+                          v-bind:disabled="buttonBulkDisabled()">
+                    {{ 'vendor.bulk.submit'|trans }}
+                  </button>
+                  <button type="button" class="btn btn-default mr20" v-on:click="showModalSetting($event)">
+                    <i class="fa fa-cog" aria-hidden="true"></i>
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="content-box-large box-with-header">
+          <div class="panel-body">
+            <table class="table table-responsive">
+              <thead>
+              <tr>
+                <th class="sortable" v-bind:class="sortMarks.voucherNumber">
+                  <a v-on:click="switchSort('voucherNumber')">
+                    {{ 'vendor.order_list.header.voucher_number'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.orderDate">
+                  <a v-on:click="switchSort('orderDate')">
+                    {{ 'vendor.order_list.header.order_date'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.syohinCode" nowrap>
+                  <a v-on:click="switchSort('syohinCode')">
+                    {{ 'vendor.order_list.header.syohin_code'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.category">
+                  <a v-on:click="switchSort('category')">
+                    {{ 'vendor.order_list.header.category'|trans }}
+                  </a>
+                </th>
+                <th>{{ 'vendor.order_list.header.image'|trans }}</th>
+                <th class="vendorAddress">{{ 'vendor.order_list.header.address'|trans }}</th>
+                <th class="sortable" v-bind:class="sortMarks.supportColName">
+                  <a v-on:click="switchSort('supportColName')">
+                    {{ 'vendor.order_list.header.size'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.supportRowName">
+                  <a v-on:click="switchSort('supportRowName')">
+                    {{ 'vendor.order_list.header.color'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.cost">
+                  <a v-on:click="switchSort('cost')">
+                    {{ 'vendor.order_list.header.cost'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.orderNum">
+                  <a v-on:click="switchSort('orderNum')">
+                    {{ 'vendor.order_list.header.order_num'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainNum">
+                  <a href="#" v-on:click="switchSort('remainNum')">
+                    {{ 'vendor.order_list.header.remain_num'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.unallocatedFlg">
+                  <a v-on:click="switchSort('unallocatedFlg')">
+                    {{ 'vendor.order_list.header.button_unallocated'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainOrderedDate">
+                  <a v-on:click="switchSort('remainOrderedDate')">
+                    {{ 'vendor.order_list.header.button_ordered'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainArrivedDate">
+                  <a v-on:click="switchSort('remainArrivedDate')">
+                    {{ 'vendor.order_list.header.button_arrived'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainWaitingDate">
+                  <a v-on:click="switchSort('remainWaitingDate')">
+                    {{ 'vendor.order_list.header.button_waited'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainShippingDate">
+                  <a v-on:click="switchSort('remainShippingDate')">
+                    {{ 'vendor.order_list.header.button_shipped'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.remainStockOutDate">
+                  <a v-on:click="switchSort('remainStockOutDate')">
+                    {{ 'vendor.order_list.header.button_shortage'|trans }}
+                  </a>
+                </th>
+                <th class="sortable" v-bind:class="sortMarks.shippingNumber">
+                  <a v-on:click="switchSort('shippingNumber')">
+                    {{ 'vendor.order_list.header.shipping_number'|trans }}
+                  </a>
+                </th>
+              </tr>
+              </thead>
+              <tbody is="result-item"
+                  v-for="item in pageData"
+                  :key="item.id"
+                  :item="item"
+                  :quality-level-list="qualityLevelList"
+                  :shipping-type-list="shippingTypeList"
+              ></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="copy text-center">
+        Copyright 2016 Forest Inc.
+      </div>
+    </div>
+  </footer>
+
+  {# Vue.js コンポーネントテンプレート #}
+  <script id="result-item" type="x-template">
+    <tbody>
+    <tr class="text-left" v-bind:class="rowCss">
+      <td rowspan="2">
+        <p v-text="item.voucherNumber"></p>
+        <p>
+          <button class="btn btn-sm btn-info"
+                  v-on:click="openManipulateModal">{{ 'vendor.order_list.manipulate_order.button'|trans }}</button>
+        </p>
+        <p class="text-center align-middle">
+          <!-- 発送種別 -->
+          <button class="btn" v-bind:class="shippingTypeLabelCssClass" v-text="shippingTypeString" v-on:click="openChangeShippingTypeModal"></button>
+        </p>
+      </td>
+      <td rowspan="2" v-text="displayOrderDate"></td>
+      <td rowspan="2" v-bind:class="stockedCss" nowrap>
+        <p v-text="item.syohinCode" class="text-center align-middle" style="padding-top:30px;"></p>
+
+        <p class="text-center align-middle">
+          <a class="btn btn-sm"
+             v-bind:class="editSpecButtonCss"
+             v-bind:href="editSpecUrl"
+             target="editSpecPage"
+          >{{ 'vendor.order_list.edit_spec.button'|trans }}</a>
+        </p>
+        
+        <p class="text-center align-middle">
+          <span v-text="displayReviewScoreStar"></span><br>
+          <span v-text="displayReviewScoreSummary"></span>
+        </p>
+      </td>
+      <td rowspan="2" class="category" v-text="item.category"></td>
+      <td class="thumb" rowspan="2">
+        <a v-if="item.imageUrl" v-bind:href="item.imageListPageUrl" target="_blank">
+          <img v-bind:src="item.imageUrl">
+        </a>
+      </td>
+      <td rowspan="2" class="vendorAddress">
+        <a v-for="(address, index) in item.addresses" v-bind:href="address" target="_blank"
+           class="btn btn-default mr5 mb5" v-bind:title="address" data-toggle="tooltip">
+          <span v-text="index + 1"></span>
+        </a>
+      </td>
+      <td v-text="item.supportColName"></td>
+      <td v-text="item.supportRowName"></td>
+      <td class="text-right" v-text="item.cost"></td>
+      <td class="orderNum clearfix">
+        <div v-if="inEdit" class="text-center">
+          <div class="w100 text-right inlineBlock">
+            <input type="number" class="form-control text-right mb5" v-model="editOrderNum" number>
+            <button class="btn btn-default btn-sm" v-on:click="changeEditOrderNum('off')"><i class="fa fa-times"></i>
+            </button>
+            <button class="btn btn-primary btn-sm" v-on:click="submitEditOrderNum">{{ 'vendor.update'|trans }}</button>
+          </div>
+        </div>
+        <div v-else>
+          <p v-text="item.orderNum"></p>
+          <button class="btn btn-info btn-sm" v-on:click="changeEditOrderNum('on')"><i class="fa fa-pencil"></i>
+          </button>
+        </div>
+      </td>
+      <td class="orderNum" v-text="item.remainNum"></td>
+      <td class="button">
+        <button data-action="unallocated"
+                class="btn"
+                v-bind:class="buttonClass('unallocated')"
+                v-bind:disabled="buttonDisabled('unallocated')"
+        >{{ 'vendor.order_list.header.button_unallocated'|trans }}</button>
+      </td>
+      <td class="button">
+        <button data-action="ordered"
+                class="btn"
+                v-bind:class="buttonClass('ordered')"
+                v-bind:disabled="buttonDisabled('ordered')"
+                v-on:click="changeStatus('ordered', buttonUpdateFlag('ordered'))"
+        >{{ 'vendor.order_list.status_ordered'|trans }}</button>
+
+        <p v-text="displayRemainOrderedDate" class="statusDate"></p>
+        <p v-text="item.remainOrderedPerson" class="statusPerson"></p>
+      </td>
+      <td class="button">
+        <button class="btn"
+                data-action="arrived"
+                v-bind:class="buttonClass('arrived')"
+                v-bind:disabled="buttonDisabled('arrived')"
+                v-on:click="changeStatus('arrived', buttonUpdateFlag('arrived'))"
+        >{{ 'vendor.order_list.status_arrived'|trans }}</button>
+        <p v-text="displayRemainArrivedDate" class="statusDate"></p>
+        <p v-text="item.remainArrivedPerson" class="statusPerson"></p>
+      </td>
+      <td class="button">
+        <button class="btn"
+                data-action="waited"
+                v-bind:class="buttonClass('waited')"
+                v-bind:disabled="buttonDisabled('waited')"
+                v-on:click="changeStatus('waited', buttonUpdateFlag('waited'))"
+        >{{ 'vendor.order_list.status_waited'|trans }}</button>
+        <p v-text="displayRemainWaitingDate" class="statusDate"></p>
+        <p v-text="item.remainWaitingPerson" class="statusPerson"></p>
+      </td>
+      <td class="button">
+        <button class="btn"
+                data-action="shipped"
+                v-bind:class="buttonClass('shipped')"
+                v-bind:disabled="buttonDisabled('shipped')"
+                v-on:click="changeStatus('shipped', buttonUpdateFlag('shipped'))"
+        >{{ 'vendor.order_list.status_shipped'|trans }}</button>
+        <p v-text="displayRemainShippingDate" class="statusDate"></p>
+        <p v-text="item.remainShippingPerson" class="statusPerson"></p>
+      </td>
+      <td class="button">
+        <button class="btn btn-default"
+                data-action="shortage"
+                v-bind:class="buttonClass('shortage')"
+                v-bind:disabled="buttonDisabled('shortage')"
+                v-on:click="changeStatus('shortage', buttonUpdateFlag('shortage'))"
+        >{{ 'vendor.order_list.status_shortage'|trans }}</button>
+        <p v-text="displayRemainStockOutDate" class="statusDate"></p>
+        <p v-text="item.remainStockOutPerson" class="statusPerson"></p>
+      </td>
+      <td class="shippingVoucherNumber">
+        <input type="text" class="form-control input-xs shippingNumber"
+               placeholder="{{ 'vendor.order_list.header.shipping_number'|trans }}"
+               v-model="shippingNumber" v-on:blur="updateShippingNumber">
+
+        <input type="text" class="form-control input-xs receiveOrderNumber"
+               placeholder="{{ 'vendor.order_list.header.receive_order_number'|trans }}"
+               v-model="receiveOrderNumber" v-on:blur="updateReceiveOrderNumber">
+
+        <input type="text" class="form-control input-xs warehousingNumber"
+               placeholder="{{ 'vendor.order_list.header.warehousing_number'|trans }}"
+               v-model="warehousingNumber" v-on:blur="updateWarehousingNumber">
+
+        <input type="text" readonly class="form-control input-xs shippingOperationNumber"
+               placeholder="{{ 'vendor.order_list.header.shipping_operation_number'|trans }}"
+               v-bind:value="item.shippingOperationNumber">
+      </td>
+    </tr>
+    <tr v-bind:class="rowCss">
+      <td colspan="5" class="noBorder">
+        <table class="vendorComment" v-show="item.orderComment">
+          <tr>
+            <td>
+              <div class="content-box narrow">
+                <div class="panel-body" v-text="item.orderComment"></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td colspan="7" class="noBorder">
+        <table class="vendorComment">
+          <tr>
+            <td>
+              <div class="content-box narrow" v-show="item.vendorComment">
+                <div class="panel-body">
+                  <label class="label label-warning" v-show="isVendorCommentNew"><i class="fa fa-star"></i></label>
+                  <span v-text="item.vendorComment"></span>
+                </div>
+              </div>
+            </td>
+            <td class="button" v-on:click="openEditVendorCommentModal">
+              <button class="btn btn-info">
+                <i class="fa fa-pencil"></i> {{ 'vendor.order_list.vendor_comment'|trans }}
+              </button>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </tbody>
+  </script>
+
+
+  {# modal #}
+  <div class="modal"
+       id="modalEditVendorComment"
+       tabindex="-1"
+       data-get-url="{{ path('plusnao_vendor_order_list_get_vendor_comment', { 'agentName': agent.getLoginName() }) }}"
+       data-update-url="{{ path('plusnao_vendor_order_list_update_vendor_comment', { 'agentName': agent.getLoginName() }) }}"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.order_list.vendor_comment'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div v-show="message">
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}"/>
+          </div>
+
+          <div v-if="!nowLoading">
+            <textarea class="form-control vendorComment" v-model="vendorComment"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">{{ 'vendor.cancel'|trans }}</button>
+          <button type="button" class="btn btn-lg btn-primary"
+                  v-on:click="onSubmit()">{{ 'vendor.update'|trans }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal"
+       id="modalCsvUpload"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url="{{ path('plusnao_vendor_order_csv_upload', { 'agentName': agent.getLoginName() }) }}"
+       data-message-other-extension="{{ 'vendor.order_list.messages.csv_upload.other_extension'|trans }}"
+       data-message-nothing-select="{{ 'vendor.order_list.messages.csv_upload.nothing_select'|trans }}"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.csv.upload'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="loading" v-show="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}" />
+            <p class="notice">
+              {{ 'vendor.order_list.messages.csv_upload.updating'|trans }}
+            </p>
+          </div>
+
+          <div v-show="!nowLoading">
+            <div>
+              <div v-bind:class="messageClass">
+                <div class="multiLineWrap" v-text="message"></div>
+              </div>
+            </div>
+            <div v-bind:class="{ hidden: noticeHidden }">
+              <div v-bind:class="noticeClass">
+                <ul>
+                  <li v-for="notice in notices" v-text="notice"></li>
+                </ul>
+              </div>
+            </div>
+
+            <form action="{{ path('plusnao_vendor_order_csv_upload', { 'agentName': agent.getLoginName() }) }}" method="post" id="csvUploadForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-sm-12 form-group text-center mb20">
+                  <input type="file" name="upload" class="">
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-lg btn-default" data-dismiss="modal">{{ 'vendor.cancel'|trans }}</button>
+          <button class="btn btn-lg btn-primary" v-on:click="onSubmit">{{ 'vendor.csv.upload'|trans }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal"
+       id="modalCsvDownload"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.csv.download'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div v-show="message">
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}"/>
+          </div>
+
+          <form role="form"
+                class="form-horizontal"
+                action="{{ path('plusnao_vendor_order_csv_download', { 'agentName': agent.getLoginName() }) }}"
+                method="post"
+                id="downloadCsvForm">
+
+            <fieldset class="mb20">
+              {# 伝票番号 #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="text" class="form-control" id="voucherNumber" name="csv[voucher_number]"
+                         placeholder="{{ 'vendor.search.voucher_number'|trans }}" value="">
+                </div>
+              </div>
+
+              {# 商品コード #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="text" class="form-control" id="syohinCode" name="csv[syohin_code]"
+                         placeholder="{{ 'vendor.search.syohin_code'|trans }}" value="">
+                </div>
+              </div>
+              
+              {#　ステータス　#}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <select class="form-control" id="status" name="csv[status]">
+                    <option value="">[ {{ 'vendor.search.status'|trans }} ]</option>
+                    <option v-for="item in remainStatusList" v-bind:value="item.code" v-text="item.translated_value"></option>
+                  </select>
+                </div>
+              </div>
+
+              {# 発送伝票番号 #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="text" class="form-control" id="shippingNumber" name="csv[shipping_number]"
+                         placeholder="{{ 'vendor.search.shipping_number'|trans }}" value="">
+                </div>
+              </div>
+
+              {# 受注番号 #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="text" class="form-control" id="receiveOrderNumber" name="csv[receive_order_number]"
+                         placeholder="{{ 'vendor.search.receive_order_number'|trans }}" value="">
+                </div>
+              </div>
+
+              {# 発注日 #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  {{ 'vendor.search.order_date'|trans }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <div class="bfh-datepicker" id="csvDownloadDateFrom" data-name="csv[order_date_from]"
+                       data-format="y-m-d" data-date=""
+                       data-placeholder="{{ 'vendor.search.order_date'|trans }} FROM"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <div class="bfh-datepicker" id="csvDownloadDateTo" data-name="csv[order_date_to]" data-format="y-m-d"
+                       data-date="" data-placeholder="{{ 'vendor.search.order_date'|trans }} TO"></div>
+                </div>
+              </div>
+              
+              {# フォレスト確認済未入荷残 #}
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="checkbox" name="csv[check]" class="check_all" id="csvCheck"><label for="csvCheck">{{ 'vendor.search.check'|trans }}</label>
+                </div>
+              </div>
+
+            </fieldset>
+
+            <div class="row">
+              <div class="col-xs-6 text-right">
+                <label class="btn btn-default" v-on:click="clearForm">{{ 'vendor.search.clear'|trans }}</label>
+              </div>
+
+              <div class="col-xs-6 text-left">
+                <button class="btn btn-success" v-on:click="onSubmit"><i
+                    class="fa fa-download"></i> {{ 'vendor.csv.download'|trans }}</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {{ 'vendor.cancel'|trans }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include 'PlusnaoMainBundle:Default:parts/label-print-pdf-list.html.twig' %}
+
+
+  <div class="modal"
+       id="modalManipulateOrder"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url-submit-split="{{ path('plusnao_vendor_order_manipulate_split', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+       data-message-confirm-split="{{ 'vendor.order_list.messages.manipulate_order.confirm_split'|trans }}"
+       data-message-complete-split="{{ 'vendor.order_list.messages.manipulate_order.complete_split'|trans }}"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.order_list.manipulate_order.title'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div v-show="message">
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}"/>
+          </div>
+
+          <ul class="nav nav-tabs mb20" id="manipulateOrderNavTab">
+            <li class="active"><a href="#tabManipulateOrderSplit"
+                                  data-toggle="tab">{{ 'vendor.order_list.manipulate_order.split'|trans }}</a></li>
+          </ul>
+
+          <div id="manipulateOrderTabBlock" class="tab-content">
+
+            <div class="tab-pane active" id="tabManipulateOrderSplit">
+
+              <div class="row mb20">
+                <div class="col-xs-4">
+                  <div>
+                    <img class="img-responsive" v-bind:src="item.imageUrl">
+                  </div>
+                </div>
+
+                <div class="col-xs-8">
+                  <table class="table manipulateOrderInfo">
+                    <tr>
+                      <th class="col-xs-4">{{ 'vendor.order_list.header.voucher_number'|trans }}</th>
+                      <td class="col-xs-8" v-text="item.voucherNumber"></td>
+                    </tr>
+                    <tr>
+                      <th class="col-xs-4">{{ 'vendor.order_list.header.syohin_code'|trans }}</th>
+                      <td class="col-xs-8" v-text="item.syohinCode"></td>
+                    </tr>
+                    <tr>
+                      <th class="col-xs-4">{{ 'vendor.order_list.header.size'|trans }}</th>
+                      <td class="col-xs-8" v-text="item.supportColName"></td>
+                    </tr>
+                    <tr>
+                      <th class="col-xs-4">{{ 'vendor.order_list.header.color'|trans }}</th>
+                      <td class="col-xs-8" v-text="item.supportRowName"></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="row row10">
+                <div class="col-xs-4">
+                  <input type="number" class="form-control readonlyWhite" v-model="leftOrderNum" number readonly/>
+                </div>
+                <div class="col-xs-4">
+                  <input id="splitOrderNum" class="form-control" type="number" v-model="newOrderNum" v-bind:max="newOrderNumOption.max" v-bind:min="newOrderNumOption.min" />
+                </div>
+                <div class="col-xs-4">
+                  <button class="btn btn-primary fullWidth" v-show="isShowSubmit"
+                          v-on:click="onSubmit">{{ 'vendor.order_list.manipulate_order.submit_split'|trans }}</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {{ 'vendor.cancel'|trans }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal"
+       id="modalEmptyShipping"
+       tabindex="-1"
+       data-check-url-status-job="{{ path('api_check_job_request_status', { key: '00000000000000000000' }) }}"
+       data-order-list-export-excel="{{ path('plusnao_vendor_order_list_export_excel', { '_locale':locale, 'agentName': agent.getLoginName()  }) }}"
+       data-dummy-key="00000000000000000000" {# 下記 URLのkey指定に合わせる #}
+       data-url-download-excel={{ path('plusnao_vendor_download_file_excel_order_list') }}
+       data-message-sku-spec-empty="{{ 'vendor.order_list.messages.empty_shipping.sku_spec_empty'|trans }}"
+       data-message-empty-shipping-number="{{ 'vendor.order_list.messages.empty_shipping.empty_shipping_number'|trans }}"
+       data-message-pushed-to-queue="{{ 'vendor.order_list.messages.empty_shipping.pushed_to_queue'|trans }}"
+       data-message-confirm-print="{{ 'vendor.order_list.messages.empty_shipping.confirm_print'|trans }}"
+  >
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div v-if="pushedToQueue">
+            <h4 class="modal-title" id="modal-label">
+              {{ 'vendor.order_list.empty_shipping.modal_title'|trans }}
+            </h4>
+          </div>
+          <div v-else>
+            <div v-if="showTitle">
+              <h4 class="modal-title" id="modal-label">
+                {{ 'vendor.order_list.empty_shipping.modal_updating_title'|trans }}
+              </h4>
+            </div>
+            <div v-else>
+              <h4 class="modal-title" id="modal-label">
+                {{ 'vendor.confirm'|trans }}
+              </h4>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-body">
+          <div v-if="nowLoading">
+            <div class="loading">
+              <img src="{{ asset('img/loading-large.gif') }}"/>
+            </div>
+          </div>
+          <div v-if="pushedToQueue">
+            <div>
+              <div v-html="messagePushedToQueue" style="font-size: 18px;"></div>
+            </div>
+          </div>
+          <div v-else>
+            <div v-html="message" style="font-size: 18px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" v-if="pushedToQueue">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">{{ 'vendor.cancel'|trans }}</button>
+        </div>
+        <div class="modal-footer" v-if="showFooter">
+          <div v-if="pushedToQueue">
+            <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">{{ 'vendor.cancel'|trans }}</button>
+          </div>
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">No</button>
+          <button type="button" v-show="showShippingNumberEmpty" class="btn btn-lg btn-primary"
+                  v-on:click="onSubmitShippingNumberEmpty($event)">Yes
+          </button>
+          <button type="button" v-show="showSkuEmpty" class="btn btn-lg btn-primary"
+                  v-on:click="onSubmitSkuEmpty($event)">Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 一括更新 #}
+  <div class="modal"
+       id="modalConfirmExport"
+       data-url-order-bulk-update="{{ path('plusnao_vendor_order_list_bulk_update', { '_locale':locale, 'agentName': agent.getLoginName() }) }}"
+       data-message-confirm-update-ordered="{{ 'vendor.order_list.messages.status_update.ordered'|trans }}"
+       data-message-confirm-update-arrived="{{ 'vendor.order_list.messages.status_update.arrived'|trans }}"
+       data-message-confirm-update-waited ="{{ 'vendor.order_list.messages.status_update.waited' |trans }}"
+       data-message-confirm-update-shipped="{{ 'vendor.order_list.messages.status_update.shipped'|trans }}"
+       tabindex="-1"
+  >
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            確認
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div v-html="message" style="font-size: 18px;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmitConfirmExport($event)">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal"
+       id="modalErrorUpdate"
+       data-message-error-update="{{ 'vendor.order_list.messages.status_update.error'|trans }}"
+       tabindex="-1"
+  >
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            Error
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div v-html="message" style="font-size: 18px;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-primary" v-on:click="close()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setting rate -->
+  <div class="modal"
+       id="modalSettingRate"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url-get-rate="{{ path('plusnao_vendor_order_get_rate') }}"
+       data-url-update-rate="{{ path('plusnao_vendor_order_update_rate') }}"
+       data-message-update-success="{{ 'vendor.order_list.messages.common.update_success'|trans }}"
+       data-message-update-failure="{{ 'vendor.order_list.messages.common.update_failure'|trans }}"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.order_list.edit_rate.modal_title'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div v-show="message">
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}"/>
+          </div>
+          <div v-else>
+            <div class="form-group row">
+              <div class="col-sm-10" id="row-rate-ja-usd">
+                <label for="rate-ja-usd" class="text-right">{{ 'vendor.order_list.edit_rate.one_dollar'|trans }} = </label>
+                <input type="text" class="form-control" v-model="rateUsd" id="rate-ja-usd" placeholder="__._">
+                <span class="label-unit">{{ 'vendor.order_list.edit_rate.yen'|trans }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            {{ 'vendor.cancel'|trans }}
+          </button>
+          <button type="button" class="btn btn-primary" v-on:click="updateRateSetting($event)">
+            {{ 'vendor.update'|trans }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 発送種別変更 modal #}
+  <div class="modal"
+       id="modalChangeShippingType"
+       tabindex="-1"
+       data-update-url="{{ path('plusnao_vendor_order_list_update_shipping_type', { 'agentName': agent.getLoginName() }) }}"
+       data-message-confirm-change="{{ 'vendor.order_list.change_shipping_type.confirm_message'|trans }}"
+       data-message-string-air="{{ 'vendor.order_list.change_shipping_type.shipping_type_air'|trans }}"
+       data-message-string-container="{{ 'vendor.order_list.change_shipping_type.shipping_type_container'|trans }}"
+  >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            {{ 'vendor.order_list.change_shipping_type.modal_title'|trans }}
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div v-show="message">
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div class="loading" v-if="nowLoading">
+            <img src="{{ asset('img/loading-large.gif') }}"/>
+          </div>
+          <div v-if="!nowLoading">
+            <ul>
+              <li>{{ 'vendor.order_list.header.voucher_number'|trans }}：  <span v-text="item.voucherNumber"></span></li>
+              <li>{{ 'vendor.order_list.header.syohin_code'|trans }}：　<span v-text="item.syohinCode"></span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">{{ 'vendor.cancel'|trans }}</button>
+          <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">{{ 'vendor.update'|trans }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,80 @@
+MiscBundle\Entity\TbLog:
+    type: entity
+    table: tb_log
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        pc:
+            type: string
+            length: 50
+            nullable: true
+        exec_title:
+            type: string
+            length: 100
+            nullable: false
+        exec_timestamp:
+            type: datetime
+            nullable: false
+        log_level:
+            type: string
+            length: 100
+            nullable: false
+        log_title:
+            type: string
+            length: 100
+            nullable: false
+        log_subtitle1:
+            type: string
+            length: 100
+            nullable: false
+        log_subtitle2:
+            type: string
+            length: 100
+            nullable: false
+        log_subtitle3:
+            type: string
+            length: 100
+            nullable: false
+        log_timestamp:
+            type: datetime
+            nullable: false
+        log_interval:
+            type: integer
+            nullable: false
+            default: 0
+        log_elapse:
+            type: integer
+            nullable: false
+            default: 0
+        information:
+            type: string
+            nullable: true
+        error_flag:
+          type: integer
+          nullable: false
+          default: 0
+        num:
+          type: integer
+          nullable: false
+          default: 0
+        size:
+          type: integer
+          nullable: false
+          default: 0
+        group_start_id:
+          type: integer
+          nullable: false
+          default: 0
+        group_start:
+          type: integer
+          nullable: false
+          default: 0
+        group_end:
+          type: integer
+          nullable: false
+          default: 0
+    lifecycleCallbacks: {  }

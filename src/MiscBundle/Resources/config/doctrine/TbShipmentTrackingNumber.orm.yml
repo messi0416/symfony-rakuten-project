@@ -1,0 +1,52 @@
+MiscBundle\Entity\TbShipmentTrackingNumber:
+  type: entity
+  table: tb_shipment_tracking_number
+  repositoryClass: MiscBundle\Entity\Repository\TbShipmentTrackingNumberRepository
+  indexes:
+    voucher_number:
+      columns:
+        - voucher_number
+    tb_used_tracking_number_report_id:
+      columns:
+        - tb_used_tracking_number_report_id
+  id:
+    trackingNumber:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: 発送伝票番号
+      id: true
+      column: tracking_number
+    deliveryMethodId:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: "発送方法id\ntb_delivery_method.delivery_id"
+      id: true
+      column: delivery_method_id
+  fields:
+    voucherNumber:
+      type: integer
+      nullable: true
+      length: 20
+      fixed: false
+      comment: 伝票番号
+      column: voucher_number
+    usedTrackingNumberReportId:
+      type: integer
+      nullable: true
+      unsigned: false
+      comment: "使用済発送伝票番号報告CSVテーブルID\ntb_used_tracking_number_report.id"
+      column: used_tracking_number_report_id
+    status:
+      type: integer
+      nullable: false
+      comment: "ステータス\n0:未使用1:使用済 2:報告CSV作成済 3:キャンセル"
+      default: "0"
+    usedDatetime:
+      type: datetime
+      nullable: true
+      comment: 使用日時
+      column: used_datetime
+  lifecycleCallbacks: {}

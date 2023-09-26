@@ -1,0 +1,10 @@
+services:
+  app.symfony_user_product_editor_provider:
+    class: AppBundle\Security\User\SymfonyUserProductEditorProvider
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  app.symfony_user_client_provider:
+    class: AppBundle\Security\User\SymfonyUserClientProvider
+    calls:
+      - [setContainer, ["@service_container"] ]

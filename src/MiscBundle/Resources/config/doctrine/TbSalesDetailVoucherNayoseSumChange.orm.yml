@@ -1,0 +1,60 @@
+MiscBundle\Entity\TbSalesDetailVoucherNayoseSumChange:
+    type: entity
+    table: tb_sales_detail_voucher_nayose_sum_change
+    id:
+        idx:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+##        伝票数:
+##            type: integer
+##            nullable: false
+##            options:
+##                unsigned: false
+##                default: '0'
+##            id: true
+#    fields:
+#        開始年月日:
+#            type: date
+#            nullable: false
+#        終了年月日:
+#            type: date
+#            nullable: false
+#        占有率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        購入者電話番号のカウント:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        購入金額合計の合計:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        購入金額平均の平均:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        粗利額平均の平均:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+    lifecycleCallbacks: {  }

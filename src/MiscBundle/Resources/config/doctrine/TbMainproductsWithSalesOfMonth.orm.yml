@@ -1,0 +1,39 @@
+# 一覧表示用 Entity。保存するとエラーになる。（読込専用フィールド的な機能が欲しい。）
+# 継承: MappedSuperClassTbMainproducts
+MiscBundle\Entity\TbMainproductsWithSalesOfMonth:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbMainproductsRepository
+  table: tb_mainproducts
+
+  fields:
+    # このフィールドは、SQLのAlias（AS）で指定する仮想のフィールド
+    salesOfMonth:
+      type: integer
+      nullable: false
+      column: '一ヶ月受注数'
+      options:
+        unsigned: false
+        default: '0'
+
+  oneToOne:
+    cal:
+      targetEntity: TbMainproductsCal
+      mappedBy: product
+      fetch: EAGER
+
+  oneToMany:
+    choiceItems:
+      targetEntity: TbProductchoiceitems
+      mappedBy: product
+      # orderBy: displayOrder
+      orderBy:
+        displayOrder : ASC
+
+  manyToOne:
+    vendor:
+      targetEntity: TbVendormasterdata
+      # inversedBy: products
+      joinColumn:
+        name: sire_code
+        referencedColumnName: sire_code
+      fetch: EAGER

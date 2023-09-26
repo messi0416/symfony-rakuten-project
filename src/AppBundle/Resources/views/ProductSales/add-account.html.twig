@@ -1,0 +1,183 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/select2.min.css' filter='cssrewrite'
+    'bundles/app/css/select2-bootstrap.min.css' filter='cssrewrite'
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/vendor/datetimepicker/css/bootstrap-datetimepicker.min.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/select2.min.js'
+    '@AppBundle/Resources/public/js/select-custom-directive.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.product-sales-add-account.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const USERS_DATA = {{ users|raw }};
+    const TEAMS_DATA = {{ teams|raw }};
+    const TASKS_DATA = {{ tasks|raw }};
+  </script>
+
+  <div id="addAccount" class="container"
+    data-confirm-url="{{ path('product_sales_add_account_confirm') }}"
+    data-register-url="{{ path('product_sales_add_account_register') }}"
+    data-list-url="{{ path('product_sales_account') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品売上担当者追加画面</h2>
+        </div>
+        <div class="pull-right mt20">
+          <a class="cursorPointer" href="{{ path('product_sales_account_history') }}">売上担当者更新履歴へ</a>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div>
+          <div class="row">
+            <div class="form-group col-xs-2">
+              <label>担当者</label>
+              <select class="form-control" v-model="settingFrom.selectUser" v-select>
+                <option v-for="user in users" :value="user.id" v-text="user.username"></option>
+              </select>
+            </div>
+            <div class="form-group col-xs-2">
+              <label>担当チーム</label>
+              <select class="form-control" v-model="settingFrom.selectTeam" v-select>
+                <option v-for="team in teams" :value="team.id" v-text="team.teamName"></option>
+              </select>
+            </div>
+            <div class="form-group col-xs-2">
+              <label>タスク種別</label>
+              <select class="form-control" v-model="settingFrom.selectTask" v-select>
+                <option v-for="task in tasks" :value="task.id" v-text="task.taskName"></option>
+              </select>
+            </div>
+            <div class="form-group col-xs-5">
+              <label>詳細</label>
+              <input type="text" class="form-control" v-model="settingFrom.detail">
+            </div>
+            <div class="form-group col-xs-1">
+              <label>仕事量</label>
+              <input type="number" class="form-control" step="0.1" v-model="settingFrom.workAmount">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-xs-6">
+              <label>適用日</label>
+              <div>
+                <div class="input-group date w200 pull-left mr10 mb5">
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                    <input
+                      v-model="settingFrom.applyStartDate"
+                      name="applyStartDate"
+                      class="form-control datepicker"
+                      size="10"
+                      type="text"
+                      placeholder="適用開始日"
+                    >
+                </div>
+                <div class="inputHeight text-center pull-left mr10 mb5">～</div>
+                <div class="input-group date w200 pull-left mr10 mb5">
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                    <input
+                      v-model="settingFrom.applyEndDate"
+                      name="applyEndDate"
+                      class="form-control datepicker"
+                      size="10"
+                      type="text"
+                      placeholder="適用終了日"
+                    >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-xs-3">
+              <div class="form-inline">
+                <label>単体対象商品</label>
+                <div class="form-group pull-right">
+                  <label for="bulkInsertFlg">
+                    <input
+                      class="checkbox"
+                      id="bulkInsertFlg"
+                      type="checkbox"
+                      value="true"
+                      v-model="bulkInsertFlg"
+                      :disabled="singleConfirmDisabled"
+                    >
+                    一括登録する
+                  </label>
+                </div>
+              </div>
+              <textarea v-if="bulkInsertFlg" class="form-control" rows="5" :disabled="singleConfirmDisabled" v-model="settingFrom.singleProduct"></textarea>
+              <input v-else type="text" class="form-control" :disabled="singleConfirmDisabled" v-model="settingFrom.singleProduct">
+            </div>
+            <div class="form-group col-xs-1">
+              <label class="fullWidth">&nbsp;</label>
+              <button type="button" class="btn btn-success" :disabled="singleConfirmDisabled" @click="confirm">確認</button>
+            </div>
+            <div class="form-group col-xs-3">
+              <label>複数対象商品</label>
+              <textarea class="form-control" rows="5" :disabled="multiConfirmDisabled" v-model="settingFrom.multiProduct"></textarea>
+            </div>
+            <div class="form-group col-xs-1">
+              <label class="fullWidth">&nbsp;</label>
+              <button type="button" class="btn btn-success" :disabled="multiConfirmDisabled" @click="confirm">確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 結果 #}
+    <div class="panel panel-default" v-if="list.length > 0">
+      <div class="panel-body">
+        <div class="row row10 mb10">
+          <button type="button" class="btn btn-primary pull-right" @click="register">登録</button>
+        </div>
+
+        <div>
+          <table class="table table-bordered table-condensed">
+            <tr>
+              <th class="col-xs-1"></th>
+              <th class="col-xs-1">商品コード</th>
+              <th class="col-xs-9">商品名</th>
+              <th class="col-xs-1">仕事量</th>
+            </tr>
+            {# データリスト #}
+            <tr v-for="item in list">
+              <td class="vMiddle"><img :src="item.imageUrl" class="img-responsive"></td>
+              <td class="vMiddle" v-text="item.daihyoSyohinCode"></td>
+              <td class="vMiddle" v-text="item.daihyoSyohinName"></td>
+              <td class="vMiddle" v-text="item.workAmount"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

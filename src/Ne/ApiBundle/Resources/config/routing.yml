@@ -1,0 +1,3 @@
+ne_api_callback:
+    path:     /callback
+    defaults: { _controller: NeApiBundle:Default:callback }

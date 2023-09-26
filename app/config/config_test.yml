@@ -1,0 +1,118 @@
+imports:
+    - { resource: config_dev.yml }
+
+parameters:
+    app_notification_url: %test_plusnao_notification_host% # テスト用
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        default_connection: main
+        connections:
+            main:
+                driver:   pdo_mysql
+                host:     "%test_database_host%"
+                port:     "%test_database_port%"
+                dbname:   "%test_database_name%"
+                user:     "%test_database_user%"
+                password: "%test_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            log:
+                driver:   pdo_mysql
+                host:     "%test_log_database_host%"
+                port:     "%test_log_database_port%"
+                dbname:   "%test_log_database_name%"
+                user:     "%test_log_database_user%"
+                password: "%test_log_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            tmp:
+                driver:   pdo_mysql
+                host:     "%test_tmp_database_host%"
+                port:     "%test_tmp_database_port%"
+                dbname:   "%test_tmp_database_name%"
+                user:     "%test_tmp_database_user%"
+                password: "%test_tmp_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec_batch:
+                driver:   pdo_mysql
+                host:     "%ec_batch_database_host%"
+                port:     "%ec_batch_database_port%"
+                dbname:   "%ec_batch_database_name%"
+                user:     "%ec_batch_database_user%"
+                password: "%ec_batch_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec01:
+                driver:   pdo_mysql
+                host:     "%ec01_database_host%"
+                port:     "%ec01_database_port%"
+                dbname:   "%ec01_database_name%"
+                user:     "%ec01_database_user%"
+                password: "%ec01_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+            ec02:
+                driver:   pdo_mysql
+                host:     "%ec02_database_host%"
+                port:     "%ec02_database_port%"
+                dbname:   "%ec02_database_name%"
+                user:     "%ec02_database_user%"
+                password: "%ec02_database_password%"
+                charset:  UTF8
+                options:
+                    1001: 1 # PDO::MYSQL_ATTR_LOCAL_INFILE = 1
+                logging: true
+                profiling: true
+        types:
+            datetime:  MiscBundle\Extend\Doctrine\Types\DateTimeType
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        # naming_strategy: doctrine.orm.naming_strategy.underscore
+        default_entity_manager:   main
+        entity_managers:
+            main:
+                connection:       main
+                mappings:
+                    AppBundle:   ~
+                    MiscBundle:   ~
+            log:
+                connection:       log
+                mappings:
+                    AppBundle:   ~
+                    MiscBundle:   ~
+            tmp:
+                connection:       tmp
+                mappings:
+                    AppBundle:    ~
+                    MiscBundle:   ~
+
+# BCCResqueBundle
+bcc_resque:
+    class: BCC\ResqueBundle\Resque
+    vendor_dir: %kernel.root_dir%/../vendor
+    redis:
+        host: localhost
+        port: 6379
+        database: 1 # ここがテスト用
+    auto_retry:
+        BatchBundle\Job\MainJob             : []
+        BatchBundle\Job\NextEngineUploadJob : []
+        BatchBundle\Job\NonExclusiveJob     : []

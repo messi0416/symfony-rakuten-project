@@ -1,0 +1,34 @@
+MiscBundle\Entity\TbPostalZipsiwake:
+    type: entity
+    table: tb_postal_zipsiwake
+    indexes:
+        siwake_code_id:
+            columns:
+                - zip_code
+                - siwake_code
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        zipCode:
+            type: string
+            nullable: false
+            length: 7
+            fixed: false
+            comment: 郵便番号
+            default: ''
+            column: zip_code
+        siwakeCode:
+            type: string
+            nullable: false
+            length: 6
+            fixed: false
+            comment: 仕分番号
+            default: ''
+            column: siwake_code
+    lifecycleCallbacks: {  }

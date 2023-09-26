@@ -1,0 +1,233 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+    'bundles/app/css/app.logistics-purchase-list.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/js/fixed_midashi.js'
+  '@AppBundle/Resources/public/js/app.logistics-purchase-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="purchaseList" class="container"
+      data-list-url="{{ path('logistics_purchase_list_find') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>仕入・注残一覧</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    {# main #}
+    <div>
+
+      {# 絞込 #}
+      <div class="panel panel-default mb10">
+        {#<div class="panel-heading">#}
+          {#<button slot="left-part" class="btn btn-sm btn-default" v-on:click="toggleShowSearchPanel">#}
+            {#絞込 <span class="glyphicon glyphicon-triangle-bottom"></span>#}
+          {#</button>#}
+        {#</div>#}
+        <div class="panel-body">
+
+          <div class="form-inline mb10">
+            <div class="form-group mr10">
+              <label class="sr-only" for="searchOrderNumber">発注伝票番号</label>
+              <input type="text" class="form-control" id="searchOrderNumber" placeholder="発注伝票番号"
+                     v-model="searchConditions.orderNumber"
+                     v-on:keypress.enter="search"
+                >
+            </div>
+
+            <div class="form-group mr10">
+              <label class="sr-only" for="searchShippingNumber">発送番号</label>
+              <input type="text" class="form-control" id="searchShippingNumber" placeholder="発送番号"
+                     v-model="searchConditions.shippingNumber"
+                     v-on:keypress.enter="search"
+                >
+            </div>
+
+            <div class="form-group mr10">
+              <label class="sr-only" for="searchSyohinCode">商品コード</label>
+              <input type="text" class="form-control" id="searchSyohinCode" placeholder="商品コード"
+                     v-model="searchConditions.syohinCode"
+                     v-on:keypress.enter="search"
+                >
+            </div>
+
+            <div class="form-group mr10">
+              <label for="searchRemainNum">注残数</label>
+              <input type="text" class="form-control w80" id="searchRemainNum" number
+                     v-model="searchConditions.remainNum"
+                     v-on:keypress.enter="search"
+                >
+              <span>以上</span>
+            </div>
+
+          </div>
+          <div class="form-inline">
+            <div class="form-group mr10">
+              <label for="searchSireCode">仕入先</label>
+              <select class="form-control" id="searchSireCode"
+                      v-model="searchConditions.sireCode"
+                      v-on:change="search"
+                >
+                <option value=""></option>
+              </select>
+            </div>
+
+            <div class="form-group mr10">
+              <label for="searchAgentCode">依頼先</label>
+              <select class="form-control" id="searchAgentCode"
+                      v-model="searchConditions.agentCode"
+                      v-on:change="search"
+                >
+                <option value=""></option>
+              </select>
+            </div>
+
+            <div class="form-group mr10">
+              <label for="searchAgentStatus">依頼先状態</label>
+              <select class="form-control" id="searchAgentStatus"
+                      v-model="searchConditions.agentStatus"
+                      v-on:change="search"
+                >
+                <option value=""></option>
+                {% for code, status in statuses %}
+                  <option value="{{ code }}">{{ status }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group mr10">
+              <label class="sr-only" for="searchComment">備考</label>
+              <input type="text" class="form-control" id="searchComment" placeholder="備考"
+                     v-model="searchConditions.comment"
+                     v-on:keypress.enter="search"
+                >
+            </div>
+
+            <div class="form-group mr10">
+              <button class="btn btn-default" v-on:click="resetSearchConditions">クリア</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :init-page-item-num="pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :page="page"
+          v-on:change-page="showPage"
+      >
+      </div>
+
+      <div class="scrollTableDiv">
+        <table class="listTable" _fixedhead="rows:1; div-full-mode:yes;">
+          <tr>
+            <th class="sortable cursorPointer" v-bind:class="getSortMarkCssClass('orderNumber')" v-on:click="toggleOrder('orderNumber')">発番</th>
+            <th class="sortable cursorPointer" v-bind:class="getSortMarkCssClass('sireName')" v-on:click="toggleOrder('sireName')">仕入先</th>
+            <th class="sortable cursorPointer" v-bind:class="getSortMarkCssClass('deliveryDate')" v-on:click="toggleOrder('deliveryDate')">予定納期</th>
+            <th class="sortable cursorPointer" v-bind:class="getSortMarkCssClass('syohinCode')" v-on:click="toggleOrder('syohinCode')">商品コード</th>
+            <th>発</th>
+            <th>良</th>
+            <th>暫</th>
+            <th>欠</th>
+            <th class="sortable cursorPointer" v-bind:class="getSortMarkCssClass('remainNum')" v-on:click="toggleOrder('remainNum')">残</th>
+            <th>備考</th>
+            <th>単価</th>
+            <th>発</th>
+            <th>良</th>
+            <th>暫</th>
+            <th>欠</th>
+            <th>発停</th>
+            <th>依頼先</th>
+            <th>依頼先状態</th>
+            <th>横補助</th>
+            <th>縦補助</th>
+            <th>連絡事項</th>
+            <th>発送番号</th>
+          </tr>
+
+          <tr v-for="(item, index) in pageData"
+              is="result-item"
+              :item="item"
+              :index="index"
+              {#v-on:update-item="updateItem"#}
+            ></tr>
+
+        </table>
+      </div>
+
+    </div>
+    
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateLogisticsPurchaseListTableRow">
+    <tr class="text-center">
+      <td class="orderNumber" v-text="item.orderNumber"></td>
+      <td class="sireName" v-text="item.sireName" v-bind:title="item.sireName"></td>
+      <td class="deliveryDate" v-text="displayDeliveryDate"></td>
+      <td class="syohinCode" v-text="item.syohinCode"></td>
+      <td class="orderNum" v-text="item.orderNum"></td>
+      <td class="regularNum" v-text="item.regularNum"></td>
+      <td class="defectiveNum" v-text="item.defectiveNum"></td>
+      <td class="shortageNum" v-text="item.shortageNum"></td>
+      <td class="remainNum" v-text="item.remainNum"></td>
+      <td class="comment" v-text="item.comment"></td>
+      <td class="quantityPrice" v-text="displayQuantityPrice"></td>
+      <td class="inputOrderNum">
+        <input type="text" v-on:keydown.enter="onInputEnter($event)">
+      </td>
+      <td class="inputRegularNum">
+        <input type="text" v-on:keydown.enter="onInputEnter($event)">
+      </td>
+      <td class="inputDefectiveNum">
+        <input type="text" v-on:keydown.enter="onInputEnter($event)">
+      </td>
+      <td class="inputShortageNum">
+        <input type="text" v-on:keydown.enter="onInputEnter($event)">
+      </td>
+      <td class="orderStop" v-text="item['']"></td>{# 入力値：発注停止 #}
+      <td class="agentName" v-text="item.agentName" v-bind:title="item.agentName"></td>
+      <td class="agentStatus" v-text="item.agentStatus"></td>
+      <td class="supportColName" v-text="item.supportColName"></td>
+      <td class="supportRowName" v-text="item.supportRowName"></td>
+      <td class="vendorComment" v-text="item.vendorComment" v-bind:title="item.vendorComment"></td>
+      <td class="shippingNumber" v-text="item.shippingNumber"></td>
+    </tr>
+  </script>
+
+{% endblock %}

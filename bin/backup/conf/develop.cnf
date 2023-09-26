@@ -1,0 +1,5 @@
+[client]
+user="testuser"
+password="N9tgKzyA"
+host="localhost"
+socket=/var/run/mysqld/mysqld.sock

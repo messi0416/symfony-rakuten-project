@@ -1,0 +1,29 @@
+MiscBundle\Entity\TbVendorCostRateLog:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbVendorCostRateLogRepository
+    table: tb_vendor_cost_rate_log
+    # indexes:
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        log_date:
+            type: datetime
+            nullable: false
+        sire_code:
+            type: string
+            length: 10
+            nullable: false
+        sire_name:
+            type: string
+            length: 255
+            nullable: false
+            default: ''
+        cost_rate:
+            type: integer
+            nullable: false
+
+    lifecycleCallbacks: {  }

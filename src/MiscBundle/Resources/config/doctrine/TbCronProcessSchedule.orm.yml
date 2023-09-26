@@ -1,0 +1,73 @@
+MiscBundle\Entity\TbCronProcessSchedule:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbCronProcessScheduleRepository
+    table: tb_cron_process_schedule
+    id:
+      code:
+        type: string
+        id: true
+    fields:
+      type:
+        type: string
+        length: 30
+        nullable: false
+        options:
+          default: ''
+      name:
+        type: string
+        length: 30
+        nullable: false
+        options:
+          default: ''
+      hours:
+        type: string
+        length: 80
+        nullable: false
+        options:
+          default: ''
+      minutes:
+        type: string
+        length: 2
+        nullable: false
+        options:
+          default: ''
+      active:
+        type: integer
+        nullable: false
+        options:
+          default: 0
+      stocks:
+        type: integer
+        nullable: true
+      arrival_date:
+        type: integer
+        nullable: true
+      magnification_percent:
+        type: float
+        nullable: true
+      order_date:
+        type: integer
+        nullable: true
+      import_order_list_months:
+        type: string
+        length: 3
+        nullable: true
+      limit_time_hour:
+        type: string
+        length: 2
+        nullable: true
+      limit_time_minute:
+        type: string
+        length: 2
+        nullable: true
+      created:
+        type: datetime
+        nullable: false
+      updated:
+        type: datetime
+        nullable: false
+
+    lifecycleCallbacks:
+      # 初回登録時 処理
+      prePersist:
+      - fillTimestamps

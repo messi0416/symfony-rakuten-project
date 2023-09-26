@@ -1,0 +1,5 @@
+MiscBundle\Entity\TbYahooApiAuth:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbYahooApiAuthRepository
+  table: tb_yahoo_api_auth
+

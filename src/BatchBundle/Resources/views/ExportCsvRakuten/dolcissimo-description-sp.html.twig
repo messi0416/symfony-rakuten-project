@@ -1,0 +1,62 @@
+{# SPテンプレート #}
+
+{# SP用商品トップヘッダ ※input_の上にもつける。全商品 #}
+{{ spTopBanner|raw }}
+
+{% if row['input_SP商品説明文']|length > 0 %}
+  {{ row['input_SP商品説明文']|raw }}
+{% else %}
+
+{# ゲリラSALEバナー #}
+{% if row['価格非連動チェック'] != 0 and row['手動ゲリラSALE'] != 0 %}
+<a href="{{ settings['DOLCISSIMO_GUERRILLA_SALE_URL'] }}"><img src="{{ settings['DOLCISSIMO_GUERRILLA_SALE_PIC_URL'] }}" width="100%" border="0"></a><hr>
+{% endif %}
+
+{# パンくず #}
+{% if row['cat_list_html']|length > 0 %}
+  {{ row['cat_list_html']|raw }}
+{% endif %}
+
+{# 画像 #}
+{% for code, dirPath in spImages %}
+<img src="{{ constant('BatchBundle\\MallProcess\\RakutenMallProcess::RAKUTEN_DOLCISSIMO_CABINET_URL') }}{{ dirPath }}" width="100%"><br>
+{% endfor %}
+
+{# 商品コメントPC or 旧楽天P説明 #}
+{% if row['商品コメントPC']|length == 0 %}
+  {{ row['旧楽天P説明']|raw }}{# こちらはHTML #}
+{% else %}
+  {{ row['商品コメントPC']|nl2br }}
+{% endif %}
+{# 【サイズについて】 #}
+{% if row['サイズについて']|length > 0 %}
+  <br><br>【サイズについて】<br>{{ row['サイズについて']|nl2br }}
+{% endif %}
+{# 【カラーについて】 #}
+{% if row['カラーについて']|length > 0 %}
+  <br><br>【カラーについて】<br>{{ row['カラーについて']|nl2br }}
+{% endif %}
+{# 【素材について】 #}
+{% if row['素材について']|length > 0 %}
+  <br><br>【素材について】<br>{{ row['素材について']|nl2br }}
+{% endif %}
+{# 【ブランド】 #}
+{% if row['ブランドについて']|length > 0 %}
+  <br><br>【ブランド】<br>{{ row['ブランドについて']|nl2br }}
+{% endif %}
+{# 【使用上の注意】 #}
+{% if row['使用上の注意']|length > 0 %}
+  <br><br>【使用上の注意】<br>{{ row['使用上の注意']|nl2br }}
+{% endif %}
+{# 【補足説明PC】 #}
+{% if row['補足説明PC']|length > 0 %}
+  <br><br>【補足説明】<br>{{ row['補足説明PC']|nl2br }}
+{% endif %}
+
+{# 配送方法説明 画像 #}
+  <a href="https://image.rakuten.co.jp/kobe-s/cabinet/08661832/concierge.jpg">
+    <img src="https://image.rakuten.co.jp/kobe-s/cabinet/08661832/concierge.jpg" width=100% border="0">
+  </a>
+<hr>
+
+{% endif %}

@@ -1,0 +1,27 @@
+MiscBundle\Entity\TbRakutenExpressConversion:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbRakutenExpressConversionRepository
+  table: tb_rakuten_express_conversion
+  id:
+    conversion_date:
+      type: string
+      column: 変換日
+      options:
+    converted_csv_name: 
+      type: string
+      length: 30
+      column: 変換後csvファイル名
+
+  fields:
+    saved_count:
+      type: integer
+      length: 5
+      options:
+        default: '0'
+      column: 保存回数
+    error_voucher_numbers:
+      type: string
+      length: 5
+      length: 50
+      nullable: true
+      column: エラー伝票番号

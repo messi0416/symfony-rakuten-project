@@ -1,0 +1,257 @@
+MiscBundle\Entity\TbSalesDetailProfit:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_profit
+#    indexes:
+#        代表商品コード:
+#            columns:
+#                - 代表商品コード
+#        商品コード:
+#            columns:
+#                - 商品コード
+#        受注年月日:
+#            columns:
+#                - 受注年月日
+    id:
+        # 伝票番号:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+#        明細行:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#            id: true
+    fields:
+#        受注番号:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+         orderDate:
+            type: date
+            nullable: true
+            column: 受注年月日
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        出荷年月日:
+#            type: date
+#            nullable: true
+#        出荷年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        出荷月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        キャンセル区分:
+#            type: string
+#            nullable: true
+#            length: 1
+#            options:
+#                fixed: false
+#        明細行キャンセル:
+#            type: string
+#            nullable: true
+#            length: 1
+#            options:
+#                fixed: false
+#        受注状態:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        店舗コード:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        店舗名:
+#            type: string
+#            nullable: false
+#            length: 100
+#            options:
+#                fixed: false
+#        配送方法コード:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        配送方法名:
+#            type: string
+#            nullable: false
+#            length: 100
+#            options:
+#                fixed: false
+#        支払方法コード:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        支払方法名:
+#            type: string
+#            nullable: false
+#            length: 100
+#            options:
+#                fixed: false
+#        商品コード:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#        代表商品コード:
+#            type: string
+#            nullable: true
+#            length: 50
+#            options:
+#                fixed: false
+#        商品オプション:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        仕入先コード:
+#            type: string
+#            nullable: true
+#            length: 4
+#            options:
+#                fixed: false
+#        仕入先名:
+#            type: string
+#            nullable: false
+#            length: 100
+#            options:
+#                fixed: false
+#        受注数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        引当数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数を含む総合計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        総合計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        商品計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        税金:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        発送代:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        手数料:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        他費用:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        売単価:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        小計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        仕入先費用率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        仕入先費用額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        仕入原価:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        付加費用額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        固定費用額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        明細粗利額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                comment: 伝票単位の費用を差し引く前の粗利額
+#                default: '0'
+    lifecycleCallbacks: {  }

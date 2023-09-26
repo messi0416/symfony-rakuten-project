@@ -1,0 +1,54 @@
+
+{# ページ送りリンク #}
+<script type="text/x-template" id="partsTablePagination">
+  <nav class="tablePagination clearfix" v-bind:id="elementId">
+
+    <div class="pull-left">
+      <div class="pagination vMiddle">
+        <slot name="left-part">
+        {#<button class="btn btn-sm btn-primary">ここにボタンやボタングループ、プルダウンなど</button>#}
+        </slot>
+      </div>
+    </div>
+
+    <div class="pull-right">
+      <div class="pageNum inlineBlock mr5 inputHeight vMiddle">
+        <span v-text="pageFirstItemIndex"></span> - <span v-text="pageLastItemIndex"></span>
+        /
+        <span v-text="displayItemNum"></span>
+      </div>
+
+      <ul class="pagination pagination-sm vMiddle">
+        <li v-bind:class="[isStartPage ? 'disabled' : '']">
+          <a href="#" aria-label="Previous" class="disabled" v-on:click="showPrev">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li v-for="pageIndex in pageList" track-by="$index" v-bind:class="[isPage(pageIndex) ? 'active' : '']">
+          <template v-if="isNaN(pageIndex)" >
+            <span v-text="pageIndex"></span>
+          </template>
+          <template v-else>
+            <a href="#" v-on:click="showPage(pageIndex, $event)" v-text="pageIndex"></a>
+          </template>
+        </li>
+        <li v-bind:class="[isEndPage ? 'disabled' : '']">
+          <a href="#" aria-label="Next" v-on:click="showNext">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+
+      <form class="inlineBlock" role="form" v-if="pageItemNumList.length > 0">
+        <select class="form-control input-sm" v-model="pageItemNum" v-on:change="changePageItemNum">
+          <option v-for="item in pageItemNumList" v-text="item" v-bind:value="item"></option>
+        </select>
+      </form>
+    </div>
+
+  </nav>
+</script>
+
+{% javascripts '@AppBundle/Resources/public/js/partial/pagination.js' %}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}

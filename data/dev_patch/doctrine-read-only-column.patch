@@ -1,0 +1,165 @@
+diff --git lib/Doctrine/ORM/Mapping/Builder/FieldBuilder.php lib/Doctrine/ORM/Mapping/Builder/FieldBuilder.php
+index 5a89667..8c5d12b 100644
+--- lib/Doctrine/ORM/Mapping/Builder/FieldBuilder.php
++++ lib/Doctrine/ORM/Mapping/Builder/FieldBuilder.php
+@@ -154,6 +154,20 @@ class FieldBuilder
+     }
+ 
+     /**
++     * Sets readOnly.
++     *
++     * @param bool $flag
++     *
++     * @return FieldBuilder
++     */
++    public function readOnly($flag = true)
++    {
++        $this->mapping['readOnly'] = (bool) $flag;
++
++        return $this;
++    }
++
++    /**
+      * Sets field as primary key.
+      *
+      * @deprecated Use makePrimaryKey() instead
+diff --git lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+index 9e036b6..4eb0b20 100644
+--- lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
++++ lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+@@ -380,6 +380,9 @@ class ClassMetadataInfo implements ClassMetadata
+      * - <b>nullable</b> (boolean, optional)
+      * Whether the column is nullable. Defaults to FALSE.
+      *
++     * - <b>readOnly</b> (boolean, optional)
++     * Whether the column is readOnly. Defaults to FALSE.
++     *
+      * - <b>columnDefinition</b> (string, optional, schema-only)
+      * The SQL fragment that is used when generating the DDL for the column.
+      *
+@@ -1209,6 +1212,24 @@ class ClassMetadataInfo implements ClassMetadata
+     }
+ 
+     /**
++     * Checks if the field is readOnly.
++     *
++     * @param string $fieldName The field name.
++     *
++     * @return boolean TRUE if the field is readOnly, FALSE otherwise.
++     */
++    public function isReadOnly($fieldName)
++    {
++        $mapping = $this->getFieldMapping($fieldName);
++
++        if ($mapping !== false) {
++            return isset($mapping['readOnly']) && $mapping['readOnly'] == true;
++        }
++
++        return false;
++    }
++
++    /**
+      * Gets a column name for a field name.
+      * If the column name for the field cannot be found, the given field name
+      * is returned.
+diff --git lib/Doctrine/ORM/Mapping/Column.php lib/Doctrine/ORM/Mapping/Column.php
+index 7033732..cd2f173 100644
+--- lib/Doctrine/ORM/Mapping/Column.php
++++ lib/Doctrine/ORM/Mapping/Column.php
+@@ -65,6 +65,11 @@ final class Column implements Annotation
+     public $nullable = false;
+ 
+     /**
++     * @var boolean
++     */
++    public $readOnly = false;
++
++    /**
+      * @var array
+      */
+     public $options = array();
+diff --git lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+index 9dd64bb..4ace289 100644
+--- lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
++++ lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+@@ -617,7 +617,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
+             'length'    => $column->length,
+             'unique'    => $column->unique,
+             'nullable'  => $column->nullable,
+-            'precision' => $column->precision
++            'precision' => $column->precision,
++            'readOnly' => $column->readOnly
+         );
+ 
+         if ($column->options) {
+diff --git lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
+index 00de4f2..761eab6 100644
+--- lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
++++ lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
+@@ -748,6 +748,10 @@ class XmlDriver extends FileDriver
+             $mapping['nullable'] = $this->evaluateBoolean($fieldMapping['nullable']);
+         }
+ 
++        if (isset($fieldMapping['readOnly'])) {
++            $mapping['readOnly'] = $this->evaluateBoolean($fieldMapping['readOnly']);
++        }
++
+         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+             $mapping['version'] = $this->evaluateBoolean($fieldMapping['version']);
+         }
+diff --git lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php
+index fe40678..937fd4f 100644
+--- lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php
++++ lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php
+@@ -750,6 +750,10 @@ class YamlDriver extends FileDriver
+             $mapping['nullable'] = $column['nullable'];
+         }
+ 
++        if (isset($column['readOnly'])) {
++            $mapping['readOnly'] = $column['readOnly'];
++        }
++
+         if (isset($column['version']) && $column['version']) {
+             $mapping['version'] = $column['version'];
+         }
+diff --git lib/Doctrine/ORM/Persisters/BasicEntityPersister.php lib/Doctrine/ORM/Persisters/BasicEntityPersister.php
+index 3b2faf8..ebc81a5 100644
+--- lib/Doctrine/ORM/Persisters/BasicEntityPersister.php
++++ lib/Doctrine/ORM/Persisters/BasicEntityPersister.php
+@@ -619,6 +619,10 @@ class BasicEntityPersister implements EntityPersister
+                 continue;
+             }
+ 
++            if ($this->class->hasField($field) && $this->class->isReadOnly($field)) {
++                continue;
++            }
++
+             $newVal = $change[1];
+ 
+             if ( ! isset($this->class->associationMappings[$field])) {
+@@ -1430,6 +1434,10 @@ class BasicEntityPersister implements EntityPersister
+                 continue;
+             }
+ 
++            if ($this->class->hasField($name) && $this->class->isReadOnly($name)) {
++                continue;
++            }
++
+             if (isset($this->class->associationMappings[$name])) {
+                 $assoc = $this->class->associationMappings[$name];
+ 
+diff --git lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+index ba41d99..2396f8f 100644
+--- lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
++++ lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+@@ -222,6 +222,10 @@ class XmlExporter extends AbstractExporter
+                 if (isset($field['nullable'])) {
+                     $fieldXml->addAttribute('nullable', $field['nullable'] ? 'true' : 'false');
+                 }
++
++                if (isset($field['readOnly'])) {
++                    $fieldXml->addAttribute('readOnly', $field['readOnly'] ? 'true' : 'false');
++                }
+             }
+         }
+ 

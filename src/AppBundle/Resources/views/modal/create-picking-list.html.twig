@@ -1,0 +1,124 @@
+
+{# ピッキングリスト取込処理 #}
+<div class="modal"
+     id="modalImportPickingList"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('delivery_import_picking_list') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="loading" v-show="nowLoading">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+          <p class="notice">
+            現在データの更新中です。完了するまで画面を閉じないでください。
+          </p>
+        </div>
+
+        <div v-show="!nowLoading">
+          <div>
+            <div v-bind:class="messageClass">
+              <div class="multiLineWrap" v-text="message"></div>
+            </div>
+          </div>
+          <div v-bind:class="{ hidden: noticeHidden }">
+            <div v-bind:class="noticeClass">
+              <ul>
+                <li v-for="notice in notices">(% notice %)</li>
+              </ul>
+            </div>
+          </div>
+
+          <form action="{{ path('delivery_import_picking_list') }}" method="post" id="importPickingListForm" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-sm-12 form-group text-center mb20">
+                <input type="file" name="upload" class="">
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button class="btn btn-lg btn-primary" v-on:click="onSubmit">アップロード</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{# 納品書番号からピッキングリスト作成処理 #}
+<div class="modal"
+     id="modalCreatePickingListByOrderNumber"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-url="{{ path('delivery_create_picking_list_by_order_number') }}"
+     data-verify-url="{{ path('api_verify_enqueue') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="loading" v-show="nowLoading">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+          <p class="notice">
+            現在データの更新中です。完了するまで画面を閉じないでください。
+          </p>
+        </div>
+
+        <div v-show="!nowLoading">
+          <div>
+            <div v-bind:class="messageClass">
+              <div class="multiLineWrap" v-text="message"></div>
+            </div>
+          </div>
+          <div v-bind:class="{ hidden: noticeHidden }">
+            <div v-bind:class="noticeClass">
+              <ul>
+                <li v-for="notice in notices">(% notice %)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 form-group text-center mb20">
+              <textarea class="form-control" v-model="numbers" style="height: 300px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button class="btn btn-lg btn-primary" v-on:click="onSubmit">作成</button>
+      </div>
+
+    </div>
+  </div>
+</div>

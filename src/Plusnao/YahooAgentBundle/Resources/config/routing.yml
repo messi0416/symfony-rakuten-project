@@ -1,0 +1,53 @@
+# トップページ
+yahoo_homepage:
+  path:     /{shopCode}/
+  defaults: { _controller: PlusnaoYahooAgentBundle:Default:index }
+
+# ログイン関連はPlusnaoMainBundleと共用
+## ログイン
+#plusnao_login:
+#    path: /login
+#    defaults: { _controller: PlusnaoYahooAgentBundle:Default:login }
+#
+## ログイン確認
+#plusnao_login_check:
+#    path: /login_check
+#
+## ログアウト
+#plusnao_logout:
+#    path: /logout
+
+
+# -----------------------------------------
+# Default
+# -----------------------------------------
+yahoo_product_list:
+  path:     /{shopCode}/product/list/{page}
+  defaults:
+    _controller: PlusnaoYahooAgentBundle:Default:product
+    page: 1
+  requirements:
+    page:  \d+
+
+yahoo_product_list_checked_target_update:
+  path:     /{shopCode}/product/list/update/checked
+  defaults:
+    _controller: PlusnaoYahooAgentBundle:Default:productListUpdateChecked
+
+
+# ===========================================
+# WEBサービス認証
+# ===========================================
+# Yahoo代理店 Yahoo API コールバック
+yahoo_service_auth_yahoo:
+  path: /{shopCode}/service_auth/yahoo
+  defaults: { _controller: PlusnaoYahooAgentBundle:ServiceAuth:yahooAuth }
+
+# Yahoo代理店 API コールバック
+yahoo_service_auth_yahoo_callback:
+  path: /{shopCode}/service_auth/yahoo_callback
+  defaults: { _controller: PlusnaoYahooAgentBundle:ServiceAuth:yahooAuthCallback }
+
+# ------------------------------------------
+
+

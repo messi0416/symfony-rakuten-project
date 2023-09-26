@@ -1,0 +1,35 @@
+MiscBundle\Entity\TbBoxCode:
+  type: entity
+  table: tb_box_code
+  repositoryClass: MiscBundle\Entity\Repository\TbBoxCodeRepository
+  indexes:
+    box_code:
+      columns:
+        - box_code
+    barcode:
+      columns:
+        - barcode
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      comment: ID
+      id: true
+      generator:
+        strategy: IDENTITY
+  fields:
+    boxCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: 箱コード
+      column: box_code
+    barcode:
+      type: string
+      nullable: false
+      length: 13
+      fixed: false
+      comment: "バーコード\nJANのインストアPOSを参考に、20開始、末尾はチェックディジットで有効桁は10桁"
+  lifecycleCallbacks: {}

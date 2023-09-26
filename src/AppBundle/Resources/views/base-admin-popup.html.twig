@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="layout" content="main"/>
+
+  <title>{% block title %}Plusnao Web System{% endblock %}</title>
+  {% block stylesheets %}
+    {% stylesheets
+    'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+    'bundles/app/css/app.css' filter='cssrewrite'
+    'bundles/app/css/custom-buttons.css' filter='cssrewrite'
+    'bundles/app/css/font-awesome.min.css' filter='cssrewrite'
+    %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+    {% endstylesheets %}
+
+    {% if (app.environment != 'prod') %}
+      {%stylesheets
+      '@AppBundle/Resources/public/css/app.dev.css' filter='cssrewrite'
+      %}
+      <link href="{{ asset_url }}" rel="stylesheet" />
+      {% endstylesheets %}
+    {% endif %}
+  {% endblock %}
+  <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+</head>
+<body>
+
+<div id="body-content">
+  {% block body %}{% endblock %}
+</div>
+
+{% block javascripts %}
+  {% javascripts
+  '@AppBundle/Resources/public/js/jquery-3.3.1.min.js'
+  '@AppBundle/Resources/public/js/jquery-migrate-3.0.1.min.js'
+  '@AppBundle/Resources/public/js/bootstrap.js'
+  '@AppBundle/Resources/public/js/socket.io/socket.io.js'
+  '@AppBundle/Resources/public/js/app.images.js'
+  %}
+  {# '@AppBundle/Resources/public/js/bootstrap.min.js' #}{# modalが右端にいらない隙間を作る不具合を修正したものを固定利用 #}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+  {# この画面では Vue.js2 を利用 #}
+  {% if (app.environment != 'prod') %}
+    {% javascripts
+    '@AppBundle/Resources/public/js/vue.2.5.16.js'
+    '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+    '@AppBundle/Resources/public/js/app.common.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+  {% else %}
+    {% javascripts
+    '@AppBundle/Resources/public/js/vue.2.5.16.min.js'
+    '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+    '@AppBundle/Resources/public/js/app.common.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+  {% endif %}
+
+{% endblock %}
+
+</body>
+</html>

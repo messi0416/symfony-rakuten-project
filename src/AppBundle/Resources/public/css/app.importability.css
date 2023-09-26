@@ -1,0 +1,47 @@
+.bg-blue {
+  background-color: #EBF3FF;
+  border: solid 1px #CCE0FF;
+}
+
+.bg-yellow {
+  background-color: #FDFFEB;
+  border: solid 1px #FAFFCC;
+}
+
+.bg-green {
+  background-color: #E0F0F0;
+  border: solid 1px #CCFFEB;
+}
+
+.d-block {
+  display: block;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.f-wrap {
+  flex-wrap: wrap;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.w80v {
+  width: 80vw;
+}
+
+.py2 {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.mxauto {
+  margin: 0 auto;
+}
+
+.image-frame {
+  border: 1px solid #ddd;
+}

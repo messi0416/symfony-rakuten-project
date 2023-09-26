@@ -1,0 +1,196 @@
+{% extends 'AppBundle::base.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.sales-research-cost.css' filter='cssrewrite' %}
+  <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  '@AppBundle/Resources/public/js/app.sales-research.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="rakutenKeywordRankingList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>楽天キーワード</h2>
+        </div>
+      </div>
+
+      <div class="h4 bg-danger text-muted text-center p10">2022/11/24までのデータしかないためご利用の際は注意してください</div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+    <div id="rakutenKeywordRankingListTable"
+         data-date-comparison-search-url="{{ path('sales_rakuten_keyword_ranking_date_comparison_search') }}"
+         data-keyword-search-url="{{ path('sales_rakuten_keyword_ranking_keyword_search') }}"
+      >
+      {# 絞込フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h4>【日付比較検索】</h4>
+          <form class="inlineBlock" role="form">
+            <div class="form-inline">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="targetDate">検索対象日</label>
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="target_date" class="form-control" id="targetDate"
+                       value=""
+                       v-model="searchParams.targetDate"
+                       placeholder="検索対象日"
+                  />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="diffTargetDate">比較対象日</label>
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="diff_target_date" class="form-control" id="diffTargetDate"
+                       value=""
+                       v-model="searchParams.diffTargetDate"
+                       placeholder="比較対象日"
+                  />
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <select class="form-control" name="number" v-model="searchParams.limit" id="number">
+                  <option value="100" >100件</option>
+                  <option value="500" >500件</option>
+                  <option value="1000" >1000件</option>
+                </select>
+              </div>
+              <div class="pull-right">
+                <button type="button" class="btn btn-success mb5 mr5" v-on:click="showSearchDateComparison">検索</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h4>【キーワード検索】</h4>
+          <form class="inlineBlock" role="form">
+            <div class="form-inline">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="targetDateFrom">検索期間</label>
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="target_date_from" class="form-control"  id="targetDateFrom"
+                       value=""
+                       v-model="searchParams.targetDateFrom"
+                       placeholder="検索期間FROM"
+                  />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="target_date_to" class="form-control" id="targetDateTo"
+                       value=""
+                       v-model="searchParams.targetDateTo"
+                       placeholder="検索期間TO"
+                  />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="keyword">キーワード</label>
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <input type="text" name="keyword" v-model="searchParams.keyword" class="form-control mb5 mr5 w400" id="keyword" />
+              </div>
+              <div class="pull-right">
+                <button type="button" class="btn btn-success mb5 mr5"  v-on:click="showSearchKeyword">検索</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div v-if="showDateComparisonSearchArea">
+        <table class="table-bordered table-condensed">
+          <tr>
+            <th class="w100">順位</th>
+            <th class="w100" v-text="conditions.diff_target_date"></th>
+            <th class="w100" v-text="conditions.target_date"></th>
+            <th class="w100">変動</th>
+          </tr>
+          <tr v-for="item in dateComparisonSearchList">
+            <td class="vMiddle" v-text="item.rank"></td>
+            <td class="vMiddle"><a :href="item.url1" v-text="item.keyword1" target="_blank"></a></td>
+            <td class="vMiddle"><a :href="item.url2" v-text="item.keyword2" target="_blank"></a></td>
+            <td class="vMiddle" v-text="item.fluctuation"></td>
+          </tr>
+        </table>
+      </div>
+      <div class="panel panel-default" v-if="showKeywordSearchArea" style="white-space: nowrap; overflow-x: scroll;overflow-y: auto; height: 380px;">
+        <table class="table-bordered table-condensed sticky_table">
+          <thead>
+            <tr>
+              <th class="w100" style="z-index:300;">キーワード</th>
+              <th class="w50" v-for="date in targetDateList" v-text="date"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr  v-for="item in keywordSearchList">
+              <td class="vMiddle"><a :href="item.url" v-text="item.keyword" target="_blank"></a></td>
+              <td class="vMiddle" v-text="item.rank1" v-show="item.rank1 != null"></td>
+              <td class="vMiddle" v-text="item.rank2" v-show="item.rank2 != null"></td>
+              <td class="vMiddle" v-text="item.rank3" v-show="item.rank3 != null"></td>
+              <td class="vMiddle" v-text="item.rank4" v-show="item.rank4 != null"></td>
+              <td class="vMiddle" v-text="item.rank5" v-show="item.rank5 != null"></td>
+              <td class="vMiddle" v-text="item.rank6" v-show="item.rank6 != null"></td>
+              <td class="vMiddle" v-text="item.rank７" v-show="item.rank7 != null"></td>
+              <td class="vMiddle" v-text="item.rank8" v-show="item.rank8 != null"></td>
+              <td class="vMiddle" v-text="item.rank9" v-show="item.rank9 != null"></td>
+              <td class="vMiddle" v-text="item.rank10" v-show="item.rank10 != null"></td>
+              <td class="vMiddle" v-text="item.rank11" v-show="item.rank11 != null"></td>
+              <td class="vMiddle" v-text="item.rank12" v-show="item.rank12 != null"></td>
+              <td class="vMiddle" v-text="item.rank13" v-show="item.rank13 != null"></td>
+              <td class="vMiddle" v-text="item.rank14" v-show="item.rank14 != null"></td>
+              <td class="vMiddle" v-text="item.rank15" v-show="item.rank15 != null"></td>
+              <td class="vMiddle" v-text="item.rank16" v-show="item.rank16 != null"></td>
+              <td class="vMiddle" v-text="item.rank17" v-show="item.rank17 != null"></td>
+              <td class="vMiddle" v-text="item.rank18" v-show="item.rank18 != null"></td>
+              <td class="vMiddle" v-text="item.rank19" v-show="item.rank19 != null"></td>
+              <td class="vMiddle" v-text="item.rank20" v-show="item.rank20 != null"></td>
+              <td class="vMiddle" v-text="item.rank21" v-show="item.rank21 != null"></td>
+              <td class="vMiddle" v-text="item.rank22" v-show="item.rank22 != null"></td>
+              <td class="vMiddle" v-text="item.rank23" v-show="item.rank23 != null"></td>
+              <td class="vMiddle" v-text="item.rank24" v-show="item.rank24 != null"></td>
+              <td class="vMiddle" v-text="item.rank25" v-show="item.rank25 != null"></td>
+              <td class="vMiddle" v-text="item.rank26" v-show="item.rank26 != null"></td>
+              <td class="vMiddle" v-text="item.rank27" v-show="item.rank27 != null"></td>
+              <td class="vMiddle" v-text="item.rank28" v-show="item.rank28 != null"></td>
+              <td class="vMiddle" v-text="item.rank29" v-show="item.rank29 != null"></td>
+              <td class="vMiddle" v-text="item.rank30" v-show="item.rank30 != null"></td>
+              <td class="vMiddle" v-text="item.rank31" v-show="item.rank31 != null"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

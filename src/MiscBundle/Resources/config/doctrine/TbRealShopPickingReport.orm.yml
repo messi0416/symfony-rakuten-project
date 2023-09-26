@@ -1,0 +1,67 @@
+MiscBundle\Entity\TbRealShopPickingReport:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbRealShopPickingReportRepository
+  table: tb_real_shop_picking_report
+
+  id:
+    picking_date:
+      type: datetime
+      nullable: false
+      id: true
+    number:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+      id: true
+
+  fields:
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+      id: true
+
+    free_stock:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    ordered_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    move_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    create_account_id:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    create_account_name:
+      type: string
+      nullable: false
+      size: 24
+      options:
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks: {  }

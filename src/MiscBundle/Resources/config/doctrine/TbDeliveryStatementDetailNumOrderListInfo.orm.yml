@@ -1,0 +1,42 @@
+MiscBundle\Entity\TbDeliveryStatementDetailNumOrderListInfo:
+  type: entity
+  table: tb_delivery_statement_detail_num_order_list_info
+  repositoryClass: MiscBundle\Entity\Repository\TbDeliveryStatementDetailNumOrderListInfoRepository
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      id: true
+      column: id
+      generator:
+        strategy: IDENTITY
+  fields:
+    shipping_date:
+      type: date
+      nullable: true
+
+    page_item_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    account_name:
+      type: string
+      length: 30
+      nullable: false
+      options:
+        default: ''
+
+    update_number:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    last_updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks: {  }

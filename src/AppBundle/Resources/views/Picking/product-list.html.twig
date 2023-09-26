@@ -1,0 +1,106 @@
+{% extends 'AppBundle:Picking:base.html.twig' %}
+
+{% block headerTitle %}ピッキング商品一覧{% endblock %}
+
+{% block contents %}
+
+  {% if listIndex|length > 0 and list|length > 0 %}
+
+    <div class="row row10 mb10">
+      <div class="col-xs-12">
+        <a class="btn btn-default fullWidth" href="{{ path('picking_list') }}">
+          <span>{{ listIndex.date_short }}</span>
+          <span>[ <strong>{{ listIndex.symbol }}-{{ listIndex.warehouse_daily_number }}</strong> ]</span>
+          <span>[ <strong>{{ listIndex.number }}</strong> ]</span>
+        </a>
+      </div>
+    </div>
+    <div class="row row10 mb10 text-center">{{ comment }}</div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% if listIndex.status == '未処理' or listIndex.status == '未完了' %}
+          {% if confirm %}
+            <div class="alert alert-warning">
+              <p>すでにピッキング開始されています。( {{ listIndex.picking_account_name }} )</p>
+              <p>改めてピッキング開始処理を行いますか？</p>
+            </div>
+
+            <div class="row row10">
+              <div class="col-xs-6">
+                <a class="btn btn-lg btn-warning fullWidth mb10" href="{{ path('picking_product_start', { date: listIndex.date, number: listIndex.number, confirmed: 1 }) }}">
+                  開始処理
+                </a>
+              </div>
+              <div class="col-xs-6">
+                <a class="btn btn-lg btn-default fullWidth mb10" href="{{ path('picking_product_list', { date: listIndex.date, number: listIndex.number }) }}">
+                  <i class="fa fa-repeat"></i>
+                  戻る
+                </a>
+              </div>
+              {% if forceStart %}
+                <div class="col-xs-6">
+                  <a class="btn btn-lg btn-warning fullWidth mb10" href="{{ path('picking_product_start', { date: listIndex.date, number: listIndex.number, confirmed: 1, forceStart: 1 }) }}">
+                    開始処理(強制)
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+
+          {% else %}
+            <a class="btn btn-lg btn-primary fullWidth mb10" href="{{ path('picking_product_start', { date: listIndex.date, number: listIndex.number }) }}">
+              ピッキング開始
+            </a>
+            {% if forceStart %}
+              <a class="btn btn-lg btn-primary fullWidth mb10" href="{{ path('picking_product_start', { date: listIndex.date, number: listIndex.number, forceStart: 1 }) }}">
+                ピッキング開始(強制)
+              </a>
+            {% endif %}
+          {% endif %}
+
+        {% elseif listIndex.status == '要チェック' %}
+          <div class="alert alert-warning text-center">要チェック</div>
+        {% elseif listIndex.status == '完了' %}
+          <div class="alert alert-success text-center">完了</div>
+        {% endif %}
+
+        {% if listIndex.picking_account_name %}
+        <div class="panel panel-default mb0">
+          <div class="panel-body text-center">
+            開始済み ( {{ listIndex.picking_account_name }} )
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+
+    <div class="list-group">
+
+      {% for item in list %}
+        <a class="list-group-item" href="{{ path('picking_product_detail', { id: item.getId() }) }}">
+          <div class="row row10">
+            <div class="col-xs-4">{{ item.getSyohinCode() }}</div>
+            <div class="col-xs-2 text-center">
+              <strong class="bigger">{{ item.getItemNum() }}</strong>
+            </div>
+            <div class="col-xs-4">{{ item.getCurrentLocation() }}</div>
+            <div class="col-xs-2 text-center">
+              <span class="label {{ item.getPickingStatusLabelCssClass() }} fullWidth">{{ item.getPickingStatusDisplay() }}</span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+    <div class="row row10 mb10">
+      <div class="col-xs-12">
+        <div class="alert alert-warning">
+          データがありません
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}

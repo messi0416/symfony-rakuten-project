@@ -1,0 +1,177 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-empty-rack-list.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}空き棚一覧{% endblock %}
+
+{% block contents %}
+
+<script type="text/javascript">
+  var CURRENT_WAREHOUSE_ID = Number("{{ account.getWarehouseId() }}");
+</script>
+
+<div id="locationEmptyRackList"
+   data-url="{{ path('location_empty_rack_find') }}"
+>
+
+  <div class="panel panel-default mb10" id="searchLocation">
+    <div class="panel-body">
+      <div class="row row10">
+        <div class="col-xs-8">
+          <input type="text" class="form-control" v-model="filterRackCode" placeholder="棚番号">
+        </div>
+        <div class="col-xs-4">
+          <select class="form-control" v-model="filterLocationType">
+            <option value="">[箱種別]</option>
+            <option value="S">S</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mb10">
+    <table class="table table-bordered table-condensed table-responsive">
+      <tr>
+        <template v-for="rackInitial in rackInitialList">
+          <th class="text-center"><span v-text="rackInitial"></span></th>
+          <td class="text-right"><span v-text="filteredListAllCount[rackInitial]"></span></td>
+        </template>
+      </tr>
+    </table>
+  </div>
+
+
+  <table class="table table-responsive table-condensed">
+    <tr class="bg-info">
+
+      <td class="col-xs-3 text-left vMiddle">
+        棚番号
+      </td>
+      <td class="col-xs-2 text-left vMiddle">
+        位置
+      </td>
+      <td class="col-xs-5 text-left vMiddle">
+        箱番号
+      </td>
+      <td class="col-xs-2 text-left vMiddle">
+      </td>
+    </tr>
+
+    <tr is="result-item"
+        v-for="item in filteredList"
+        :item="item"
+        :current-warehouse-id="currentWarehouseId"
+      ></tr>
+
+  </table>
+
+  <div is="update-confirm-modal"></div>
+
+</div>
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr
+    style="height: 40px;"
+    >
+
+    <td class="col-xs-3 text-center vMiddle" v-text="item.rackCode"></td>
+    <td class="col-xs-2 text-center vMiddle" v-text="item.placeCode"></td>
+    <template v-if="item.moved">
+      <td class="col-xs-5 vMiddle">
+        <span v-text="item.boxCode"></span>
+      </td>
+      <td class="col-xs-2 text-center vMiddle">
+        <button type="button" class="btn btn-default disabled" >済</button>
+      </td>
+    </template>
+    <template v-else>
+      <td class="col-xs-5 vMiddle">
+        <div class="input-group">
+          <span class="input-group-addon" v-text="item.locationType"></span>
+          <input type="number" class="form-control" v-model.number="item.boxNumber" placeholder="箱番号" number>
+        </div>
+      </td>
+      <td class="col-xs-2 text-center vMiddle">
+        <button type="button" class="btn btn-warning" v-bind:class="confirmButtonCss" v-on:click="updateConfirm">確認</button>
+      </td>
+    </template>
+  </tr>
+</script>
+
+
+{# 確認モーダル #}
+<script id="update-confirm-modal" type="x-template">
+  <div class="modal"
+       id="modalUpdateConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+
+       data-confirm-url="{{ path('location_empty_rack_move_confirm') }}"
+       data-update-url="{{ path('location_empty_rack_move_submit') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            空き棚 箱移動
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert" v-bind:class="messageCss" v-text="message" v-show="message && message.length > 0"></div>
+
+          <form role="form" v-show="isConfirmed">
+            <div class="panel panel-default">
+              <div class="panel-body">
+
+                <div class="row row10 mb5">
+                  <div class="form-group col-xs-4 inputHeight vMiddle mb0">
+                    移動元
+                  </div>
+                  <div class="form-group col-xs-8 inputHeight vMiddle" v-text="confirmInfo.locationCode"></div>
+                </div>
+
+                <div class="row row10 mb5">
+                  <div class="form-group col-xs-4 inputHeight vMiddle mb0">
+                    移動先
+                  </div>
+                  <div class="form-group col-xs-8 inputHeight vMiddle" v-text="confirmInfo.moveTo"></div>
+                </div>
+
+              </div>
+            </div>
+          </form>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6" v-show="isConfirmed && !isMoved">
+              <button type="button" class="btn btn-lg fullWidth btn-danger" v-on:click="updateSubmit">移動実行</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+{% endblock %}

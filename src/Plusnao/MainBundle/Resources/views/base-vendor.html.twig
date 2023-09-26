@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex,nofollow" />
+        <title>{% block title %}株式会社フォレスト{% endblock %}</title>
+        {% block stylesheets %}
+          {% stylesheets
+            'bundles/app/css/bootstrap.min.css' filter='cssrewrite'
+            'bundles/app/css/app.css' filter='cssrewrite'
+            'bundles/plusnaomain/css/main.css' filter='cssrewrite'
+            'bundles/app/css/custom-buttons.css' filter='cssrewrite'
+            'bundles/app/css/font-awesome.min.css' filter='cssrewrite'
+          %}
+          <link href="{{ asset_url }}" rel="stylesheet" />
+          {% endstylesheets %}
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+
+        {% block javascripts %}
+            {% javascripts
+              '@AppBundle/Resources/public/js/jquery-2.1.4.min.js'
+              '@AppBundle/Resources/public/js/bootstrap.min.js'
+              '@AppBundle/Resources/public/js/socket.io/socket.io.js'
+              '@AppBundle/Resources/public/js/app.images.js'
+            %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% if useVue200 is defined and useVue200 == true %}
+              {% javascripts
+                '@AppBundle/Resources/public/js/vue.2.5.16.js'
+                '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+                '@AppBundle/Resources/public/js/app.common.js'
+                '@AppBundle/Resources/public/js/partial/global-message.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% elseif useVue100 is defined and useVue100 == true %}
+              {% javascripts
+                '@AppBundle/Resources/public/js/vue.1.0.15.js'
+                '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% else %}
+              {% javascripts
+              '@AppBundle/Resources/public/js/vue.min.js'
+              '@AppBundle/Resources/public/js/app.common.js'
+              %}
+              <script src="{{ asset_url }}"></script>
+              {% endjavascripts %}
+            {% endif %}
+        {% endblock %}
+
+    </body>
+</html>

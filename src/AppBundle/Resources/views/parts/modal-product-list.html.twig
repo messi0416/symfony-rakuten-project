@@ -1,0 +1,103 @@
+{# 商品一覧モーダル #}
+<script type="text/x-template" id="templateModalProductList">
+  <div class="modal"
+       id="modalProductList"
+       tabindex="-1"
+       {# data-backdrop="static" data-keyboard="false" #}
+       data-search-sku-url="{{ path('api_find_product_sku_list') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" v-on:click="hideModal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+        </div>
+
+        <div class="modal-body">
+          <keep-alive>
+            <div
+              :is="productListState.component"
+              :mainState="state"
+              :productListState="productListState"
+              v-on:show-component="showComponent"
+              v-on:emit-parent-event="emitParentEvent"
+              ></div>
+          </keep-alive>
+
+          <div v-show="productListState.message.length > 0">
+            <div class="alert" v-bind:class="productListState.messageCssClass" v-text="productListState.message">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" v-on:click="hideModal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-template" id="templateModalProductListBodyIndex">
+  <div id="modalProductListIndex"
+       data-search-url="{{ path('api_find_product_list') }}"
+    >
+    <div class="row row10 mb10">
+      <div class="col-xs-7 col-sm-9">
+        <input type="text" class="form-control" placeholder="代表商品コード" v-model="searchCode" v-on:keypress.enter="search">
+      </div>
+      <div class="col-xs-2 col-sm-1">
+        <button type="button" class="btn btn-default fullWidth" v-on:click="reset">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="col-xs-3 col-sm-2">
+        <button type="button" class="btn btn-default fullWidth" v-on:click="search">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="list-group mb0" v-show="list.length > 0">
+      <button class="list-group-item" v-on:click.stop.prevent="choiceProduct(item)" v-for="item in list" v-text="item.daihyoSyohinCode"></button>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-template" id="templateModalProductListBodySku">
+  <div id="modalProductListSku">
+    <div class="row row10 mb10">
+      <div class="col-xs-10">
+        <input type="text" class="form-control" placeholder="代表商品コード" readonly v-bind:value="productListState.currentItem.daihyoSyohinCode">
+      </div>
+      <div class="col-xs-2">
+        <button type="button" class="btn btn-default fullWidth" v-on:click="showIndex">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+
+    <table class="table table-condensed mb0">
+      <tbody>
+        <tr v-for="item in productListState.currentItemSku">
+          <td class="col-xs-4" v-text="item.neSyohinSyohinCode"></td>
+          <td class="col-xs-3" v-text="item.colname"></td>
+          <td class="col-xs-3" v-text="item.rowname"></td>
+          <td class="col-xs-2 text-center">
+            <button type="button" class="btn btn-primary fullWidth" v-on:click="choiceSku(item)">選択</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</script>
+
+{% javascripts '@AppBundle/Resources/public/js/partial/modal-product-list.js' %}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+

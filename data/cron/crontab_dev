@@ -1,0 +1,7 @@
+MAILTO=""
+
+@reboot /bin/bash /home/workuser/working/ne_api/bin/restart_resque_worker.sh
+
+
+# -- main cron ここまで --------------------------------------------
+

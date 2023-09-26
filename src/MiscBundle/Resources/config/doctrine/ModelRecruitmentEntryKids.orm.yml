@@ -1,0 +1,69 @@
+MiscBundle\Entity\ModelRecruitmentEntryKids:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\BaseRepository
+  table: model_recruitment_entry_kids
+  # indexes:
+  id:
+    id:
+      type: integer
+      nullable: false
+      id: true
+      generator:
+        strategy: IDENTITY
+
+  fields:
+    name:
+      type: string
+      length: 100
+      nullable: false
+      default: ''
+    address:
+      type: string
+      length: 100
+      nullable: false
+      default: ''
+    phone:
+      type: string
+      length: 20
+      nullable: false
+      default: ''
+    mail:
+      type: string
+      length: 255
+      nullable: false
+      default: ''
+    age_y:
+      type: integer
+      nullable: false
+      default: 0
+    age_m:
+      type: integer
+      nullable: false
+      default: 0
+    age_months:
+      type: integer
+      nullable: false
+      default: 0
+    height:
+      type: integer
+      nullable: false
+      default: 0
+    weight:
+      type: integer
+      nullable: false
+      default: 0
+    comment:
+      type: string
+      nullable: true
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps

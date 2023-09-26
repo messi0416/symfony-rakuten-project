@@ -1,0 +1,87 @@
+MiscBundle\Entity\VProductCostRateItem:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\VProductCostRateItemRepository
+  table: tb_mainproducts
+  id:
+    daihyo_syohin_code:
+      type: string
+      nullable: false
+      length: 30
+      options:
+        fixed: false
+      id: true
+      column: daihyo_syohin_code
+      generator:
+        strategy: IDENTITY
+
+  fields:
+    sire_code:
+      type: string
+      nullable: true
+      length: 10
+      options:
+        fixed: false
+      column: sire_code
+    syohin_kbn:
+      type: string
+      nullable: true
+      length: 10
+      options:
+        fixed: false
+        default: '10'
+      column: syohin_kbn
+    genka_tnk:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: genka_tnk
+    daihyo_syohin_name:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+      column: daihyo_syohin_name
+
+    stock_num:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '0'
+      column: 総在庫数
+    stock_cost:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '0'
+      column: 総在庫金額
+
+    weight:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        comment: 重量(g)
+        default: '0'
+    additional_cost:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        comment: 仕入付加費用
+        default: '0'
+      column: additional_cost
+
+    # TODO cal 項目追加
+    baika_tnk:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+        default: '0'
+      column: baika_tnk
+
+  lifecycleCallbacks: {  }

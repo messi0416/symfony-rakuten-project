@@ -1,0 +1,44 @@
+MiscBundle\Entity\TbRakutenGenre:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbRakutenGenreRepository
+  table: tb_rakuten_genre
+  indexes:
+    path_name:
+      columns:
+        - path_name
+    first_path_name:
+      columns:
+        - first_path_name
+  id:
+    rakutenGenreId:
+      type: string
+      nullable: false
+      length: 6
+      fixed: false
+      comment: "楽天ジャンルID\n楽天で払い出されるジャンルID"
+      id: true
+      column: rakuten_genre_id
+      generator:
+        strategy: IDENTITY
+  fields:
+    firstPathName:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: トップジャンル名
+      column: first_path_name
+    pathName:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: "ジャンル階層名\nトップジャンルも含めた全階層名。階層間の区切りは > （楽天データに従う）"
+      column: path_name
+    unavailableFlg:
+      type: integer
+      nullable: false
+      comment: "商品登録不可フラグ\n0:登録可能 1:登録不可\n楽天側で商品登録不可とされたジャンルに設定"
+      default: "0"
+      column: unavailable_flg
+  lifecycleCallbacks: {}

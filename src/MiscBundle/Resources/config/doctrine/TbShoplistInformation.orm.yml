@@ -1,0 +1,10 @@
+MiscBundle\Entity\TbShoplistInformation:
+  type: entity
+  table: tb_shoplist_information
+  fields:
+    title:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      default: ""

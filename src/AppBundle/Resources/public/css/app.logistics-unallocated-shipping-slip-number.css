@@ -1,0 +1,59 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+#unallocatedTable > table > thead > tr > th {
+  border:1px solid #BBBBBB;
+}
+
+#unallocatedTable > table > thead > tr > th > p {
+  font-size: calc(12px + 0.25vw);
+  white-space: nowrap;
+}
+
+#unallocatedTable > table > tbody > tr > td {
+  border:1px solid #BBBBBB;
+  padding:0;
+}
+
+#unallocatedTable > table > tbody > tr > td > p {
+  white-space: nowrap;
+  margin: 0;
+  line-height: 1em;
+}
+
+
+#matter-head {
+  min-width: 10em;
+}
+
+#gw-head ,#meas-head, #shipping-operation-number-head {
+  min-width: 6em;
+}
+
+/* 発送伝票番号 */
+.shipping-number {
+  font-size: 1.8em;
+  font-weight: 700;
+}
+
+/* 連絡事項 */
+.contact-matters > textarea {
+  height: 1.8em;
+  border-radius: 0px;
+  padding: 0;
+  line-height: 0.9em;
+}
+
+/* G.W Meas 出庫番号 */
+.g-w > input[type="text"] , .meas >  input[type="text"], .shipping-operation-number > input[type="text"] {
+  height: 1.8em;
+  padding: 0;
+}
+
+#filter {
+  height: 35px;
+  margin: 0 0 10px 0;
+  border-radius: 5px;
+}

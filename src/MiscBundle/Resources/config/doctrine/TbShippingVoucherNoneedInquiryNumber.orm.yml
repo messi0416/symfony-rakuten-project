@@ -1,0 +1,60 @@
+MiscBundle\Entity\TbShippingVoucherNoneedInquiryNumber:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShippingVoucherNoneedInquiryNumberRepository
+    table: tb_shipping_voucher_noneed_inquiry_number
+    indexes:
+        index_shipping_voucher_packing_id:
+            columns:
+                - shipping_voucher_packing_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 不要お問い合わせ番号ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        shippingVoucherPackingId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 出荷伝票梱包ID
+            default: '0'
+            column: shipping_voucher_packing_id
+        deliveryMethodId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 発送方法
+            default: '0'
+            column: delivery_method_id
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n0:未発行 1:登録済み"
+            default: '0'
+        inquiryNumber:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: お問い合わせ番号
+            default: ''
+            column: inquiry_number
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\nバッチ登録は0"
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

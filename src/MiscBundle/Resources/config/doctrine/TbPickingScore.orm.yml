@@ -1,0 +1,76 @@
+MiscBundle\Entity\TbPickingScore:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbPickingScoreRepository
+  table: tb_picking_score
+  id:
+    userId:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      column: user_id
+  fields:
+    scFirstScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: SC箱1カラム目ピッキングスコア ミリ秒
+      column: sc_1_score
+    scSecondScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: SC箱2カラム目ピッキングスコア ミリ秒
+      column: sc_2_score
+    scThirdScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: SC箱3カラム目ピッキングスコア ミリ秒
+      column: sc_3_score
+    vFirstScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: V箱1カラム目ピッキングスコア ミリ秒
+      column: v_1_score
+    vSecondScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: V箱2カラム目ピッキングスコア ミリ秒
+      column: v_2_score
+    vThirdScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: V箱3カラム目ピッキングスコア ミリ秒
+      column: v_3_score
+    othersFirstScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: その他の箱1カラム目ピッキングスコア ミリ秒
+      column: others_1_score
+    othersSecondScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: その他の箱2カラム目ピッキングスコア ミリ秒
+      column: others_2_score
+    othersThirdScore:
+      type: integer
+      nullable: true
+      default: null
+      length: 11
+      comment: その他の箱3カラム目ピッキングスコア ミリ秒
+      column: others_3_score

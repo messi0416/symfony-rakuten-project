@@ -1,0 +1,635 @@
+services:
+  # 在庫CSVダウンロード
+  batch.csv_download_stock_command:
+    class: BatchBundle\Command\CsvDownloadStockListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 在庫一覧 DB更新処理
+  batch.update_db_by_stock_list_csv:
+    class: BatchBundle\Command\UpdateDbByStockListCsvCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 在庫CSV（オリジナルCSV）ダウンロード
+  batch.csv_download_stock_original_command:
+    class: BatchBundle\Command\CsvDownloadStockListOriginalCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 受注CSVダウンロード
+  batch.csv_download_order_command:
+    class: BatchBundle\Command\CsvDownloadOrderDataCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 受注明細 DB更新処理
+  batch.update_db_by_order_list_csv:
+    class: BatchBundle\Command\UpdateDbByOrderListCsvCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 受注明細 伝票別利益集計処理
+  batch.aggregate_sales_detail:
+    class: BatchBundle\Command\AggregateSalesDetailCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 受注明細 差分更新処理（NextEngine API利用）
+  batch.update_db_by_order_list_next_engine_api:
+    class: BatchBundle\Command\UpdateDbByOrderListNextEngineApiCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 入出庫データ取込処理（ダウンロード & DB更新）
+  batch.update_stock_in_out:
+    class: BatchBundle\Command\CsvDownloadAndUpdateStockInOutCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 閲覧ランキングデータ取込処理（ダウンロード & DB更新）
+  batch.update_view_ranking:
+    class: BatchBundle\Command\CsvDownloadAndUpdateViewRankingCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 楽天レビュー取込（ダウンロード & DB更新）
+  batch.update_rakuten_review:
+    class: BatchBundle\Command\CsvDownloadAndUpdateRakutenReviewCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 楽天商品属性項目マスタ更新処理
+  batch.update_rakuten_genre_attribute:
+    class: BatchBundle\Command\UpdateRakutenGenreAttributeCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SKU別商品属性項目更新処理
+  batch.update_sku_rakuten_attribute:
+    class: BatchBundle\Command\UpdateSkuRakutenAttributeCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 楽天SKU属性情報値取込処理
+  batch.import_rakuten_sku_attribute_value:
+    class: BatchBundle\Command\ImportRakutenSkuAttributeValueCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Amazon在庫取込処理（ダウンロード & DB更新）
+  batch.import_amazon_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateAmazonProductStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 藪吉在庫取込処理（ダウンロード & DB更新）
+  batch.import_yabuyoshi_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateYabuyoshiProductStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+  # 倉庫間箱移動処理
+  batch.warehouse_box_move:
+    class: BatchBundle\Command\WarehouseBoxMoveCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+  # RSL在庫取込処理（ダウンロード & DB更新）
+  batch.import_rsl_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateRSLProductStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST在庫取込処理（ダウンロード & DB更新）
+  batch.import_shoplist_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateShoplistProductStockSpeedCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NextEngine CSVアップロード状態取込処理
+  batch.update_ne_upload_status:
+    class: BatchBundle\Command\CsvDownloadAndUpdateUploadCheckCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NextEngine 区分値マスタ更新処理
+  batch.update_next_engine_api_kubun_list:
+    class: BatchBundle\Command\UpdateNextEngineApiKubunListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # ロケーション更新処理
+  batch.refresh_location:
+    class: BatchBundle\Command\RefreshLocationCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # ロケーション 倉庫へ 在庫数更新処理
+  batch.refresh_location_warehouse_to_list:
+    class: BatchBundle\Command\RefreshLocationWarehouseToListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 在庫移動一覧更新処理
+  batch.refresh_warehouse_stock_move_list:
+    class: BatchBundle\Command\RefreshWarehouseStockMoveListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # ロケーション 自動並べ替え処理
+  batch.product_location_sort_order:
+    class: BatchBundle\Command\ProductLocationSortOrderCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 納品書印刷待ち伝票一覧 再集計処理
+  batch.refresh_delivery_statement_detail_product_num_list:
+    class: BatchBundle\Command\RefreshStatementDetailProductNumListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Batch export order list to excel
+  batch.export_order_list_to_excel:
+    class: BatchBundle\Command\ExportOrderListToExcelCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 発送方法変更 配送情報更新処理
+  batch.update_change_shipping_method_order:
+    class: BatchBundle\Command\UpdateChangeShippingMethodOrderCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Yahoo 商品CSVダウンロード
+  # 在庫CSVダウンロード
+  batch.csv_download_yahoo_products:
+    class: BatchBundle\Command\CsvDownloadYahooProductsCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Ppm 商品CSVダウンロード
+  batch.csv_download_ppm_products:
+    class: BatchBundle\Command\CsvDownloadPpmProductsCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 実店舗 スマレジ在庫取込
+  batch.real_shop_import_smaregi_stock:
+    class: BatchBundle\Command\RealShopImportSmaregiStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Amazon 在庫情報取得処理
+  batch.csv_down_load_and_update_amazon_product_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateAmazonProductStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Amazon FBAマルチチャネル 移動伝票作成処理
+  batch.create_amazon_fba_multi_channel_transport_list:
+    class: BatchBundle\Command\CreateAmazonFbaMultiChannelTransportListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 共通日次処理
+  batch.daily_batch:
+    class: BatchBundle\Command\DailyBatchCommand
+    calls:
+    - [setContainer, ["@service_container"] ]
+    - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 倉庫実績集計集計処理
+  batch.aggregate_warehouse_result_history:
+    class: BatchBundle\Command\AggregateWarehouseResultHistoryCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 商品売上実績集計処理
+  batch.aggregate_product_sales_account_result_history:
+    class: BatchBundle\Command\AggregateProductSalesAccountResultHistoryCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 出荷リスト自動生成
+  batch.csv_download_and_update_shipping_voucher:
+    class: BatchBundle\Command\CsvDownloadAndUpdateShippingVoucherCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 商品売上担当者適用終了処理
+  batch.update_product_sales_account_apply_end:
+    class: BatchBundle\Command\UpdateProductSalesAccountApplyEndCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLISTスピード便移動伝票一括作成
+  batch.create_transport_list_shoplist_speed_bin:
+    class: BatchBundle\Command\CreateTransportListForShoplistSpeedBinCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # -------------------------------------------------
+  # CSV出力・データ反映処理
+  # -------------------------------------------------
+  # NE CSV出力
+  batch.export_csv_next_engine:
+    class: BatchBundle\Command\ExportCsvNextEngineCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+ 
+  # NE モール商品CSV出力
+  batch.export_csv_next_engine_mall_product:
+    class: BatchBundle\Command\ExportCsvNextEngineMallProductCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+ 
+  # NE セット商品CSV出力
+  batch.export_csv_next_engine_set_product:
+    class: BatchBundle\Command\ExportCsvNextEngineSetProductCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NE 在庫同期CSV出力
+  batch.export_csv_next_engine_update_stock:
+    class: BatchBundle\Command\ExportCsvNextEngineUpdateStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NE CSVアップロード
+  batch.export_csv_next_engine_upload:
+    class: BatchBundle\Command\ExportCsvNextEngineUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NE モール商品CSVアップロード
+  batch.export_csv_next_engine_upload_mall_product:
+    class: BatchBundle\Command\ExportCsvNextEngineUploadMallProductCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NE セット商品CSVアップロード
+  batch.export_csv_next_engine_upload_set_product:
+    class: BatchBundle\Command\ExportCsvNextEngineUploadSetProductCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo CSV出力
+  batch.export_csv_yahoo:
+    class: BatchBundle\Command\ExportCsvYahooCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo CSV（おとりよせ）出力
+  batch.export_csv_yahoo_otoriyose:
+    class: BatchBundle\Command\ExportCsvYahooOtoriyoseCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo 画像チェック
+  batch.image_check_yahoo:
+    class: BatchBundle\Command\ImageCheckYahooCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo CSV・画像 FTPアップロード
+  batch.export_csv_yahoo_upload:
+    class: BatchBundle\Command\ExportCsvYahooUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo 在庫更新CSVアップロード
+  batch.export_csv_yahoo_update_stock:
+    class: BatchBundle\Command\ExportCsvYahooUpdateStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Amazon CSV出力
+  batch.export_csv_amazon:
+    class: BatchBundle\Command\ExportCsvAmazonCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Amazon 在庫更新CSV出力
+  batch.export_csv_amazon_update_stock:
+    class: BatchBundle\Command\ExportCsvAmazonUpdateStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Amazon CSVアップロード
+  batch.export_csv_amazon_upload:
+    class: BatchBundle\Command\ExportCsvAmazonUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Amazon.com CSV出力
+  batch.export_csv_amazon_com:
+    class: BatchBundle\Command\ExportCsvAmazonComCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST 差分確認テーブル 更新
+  batch.update_shoplist_product_stock:
+    class: BatchBundle\Command\CsvDownloadAndUpdateShoplistProductStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST CSV出力
+  batch.export_csv_shoplist:
+    class: BatchBundle\Command\ExportCsvShoplistCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST 在庫更新CSV出力
+  batch.export_csv_shoplist_update_stock:
+    class: BatchBundle\Command\ExportCsvShoplistUpdateStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST CSVアップロード
+  batch.export_csv_shoplist_upload:
+    class: BatchBundle\Command\ExportCsvShoplistUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SHOPLIST 画像アップロード
+  batch.product_image_upload_ftp_shoplist:
+    class: BatchBundle\Command\ProductImageUploadFtpShoplistCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+  
+  # SHOPLISTスピード便出荷数集計処理
+  batch.aggregate_shoplist_speedbin_delivery:
+    class: BatchBundle\Command\AggregateShoplistSpeedbinDeliveryCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 楽天 CSV出力
+  batch.export_csv_rakuten:
+    class: BatchBundle\Command\ExportCsvRakutenCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 楽天 CSV出力 アップロード
+  batch.export_csv_rakuten_upload:
+    class: BatchBundle\Command\ExportCsvRakutenUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 楽天 即納のみ在庫更新CSV出力
+  batch.export_csv_rakuten_update_stock:
+    class: BatchBundle\Command\ExportCsvRakutenUpdateStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+      
+  # 楽天 RPP除外CSV出力
+  batch.export_csv_rakuten_rpp_exclude:
+    class: BatchBundle\Command\ExportCsvRakutenRppExcludeCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 楽天GOLD CSV出力
+  batch.export_csv_rakuten_gold:
+    class: BatchBundle\Command\ExportCsvRakutenGoldCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Wowma CSV出力
+  batch.export_csv_wowma:
+    class: BatchBundle\Command\ExportCsvWowmaCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Q10 CSV出力
+  batch.export_csv_q10:
+    class: BatchBundle\Command\ExportCsvQ10Command
+    calls:
+    - [setContainer, ["@service_container"] ]
+    - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # PPM CSV出力
+  batch.export_csv_ppm:
+    class: BatchBundle\Command\ExportCsvPpmCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # Amazon FBA出荷用CSV出力
+  batch.export_csv_amazon_fba_order:
+    class: BatchBundle\Command\ExportCsvAmazonFbaOrderCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # モール受注CSV変換処理
+  batch.convert_mall_order_csv_data:
+    class: BatchBundle\Command\ConvertMallOrderCsvDataCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # モール受注CSV EC-CUBE変換処理
+  batch.convert_mall_order_csv_ec_cube_and_upload:
+    class: BatchBundle\Command\ConvertMallOrderCsvEcCubeAndUploadCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+  
+  # 商品画像 アップロード処理（楽天・Yahoo・PPM）
+  batch.product_image_upload_ftp:
+    class: BatchBundle\Command\ProductImageUploadFtpCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # -------------------------------------------------
+  # 履歴
+  # -------------------------------------------------
+  batch.log_product_price:
+    class: BatchBundle\Command\LogProductPriceCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # -------------------------------------------------
+  # データ処理
+  # -------------------------------------------------
+  # 値下確定
+  batch.discount_process:
+    class: BatchBundle\Command\DiscountProcessCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 商品別原価率更新
+  batch.update_product_cost_rate_process:
+    class: BatchBundle\Command\UpdateProductCostRateProcessCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # NextEngine店舗一覧更新
+  batch.update_next_engine_api_shop_list:
+    class: BatchBundle\Command\UpdateNextEngineApiShopListCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 商品在庫数再計算処理
+  batch.recalculate_product_stock:
+    class: BatchBundle\Command\RecalculateProductStocksCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 注残未引当欠品通知処理
+  batch.notify_non_assigned_shortage_stock:
+    class: BatchBundle\Command\NotifyNonAssignedShortageStockCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # アリババ商品巡回
+  batch.fetch_update_1688_products:
+    class: BatchBundle\Command\FetchUpdate1688ProductsCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, [ '%kernel.environment%' ] ]
+
+  # 発注再計算
+  batch.recalculate_purchase_order:
+    class: BatchBundle\Command\RecalculatePurchaseOrderCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # SKU別送料設定自動設定
+  batch.sku_shippingdivision_auto_setting:
+    class: BatchBundle\Command\SkuShippingdivisionAutoSettingCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # SKU別送料設定の商品マスタ反映
+  batch.sku_shippingdivision_reflect_mainproduct:
+    class: BatchBundle\Command\SkuShippingdivisionReflectMainproductCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 代表商品サイズ更新
+  batch.update_product_size:
+    class: BatchBundle\Command\UpdateProductSizeCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+      
+  # SKUのサイズ変更に伴う各種更新処理
+  batch.sku_size_change_related_update:
+    class: BatchBundle\Command\SkuSizeChangeRelatedUpdateCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 代表商品販売ステータス更新処理
+  batch.update_product_sales_status:
+    class: BatchBundle\Command\UpdateProductSalesStatusCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # SKU別カラー種別更新処理
+  batch.update_sku_color:
+    class: BatchBundle\Command\UpdateSkuColorCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # ---- コマンド群 ここまで
+
+
+  # -------------------------------------------------
+  # モール別特殊処理
+  # -------------------------------------------------
+  # NextEngine 各種処理
+  batch.mall_process.next_engine:
+    class: BatchBundle\MallProcess\NextEngineMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # 楽天 CSV出力時処理
+  batch.mall_process.rakuten:
+    class: BatchBundle\MallProcess\RakutenMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # Wowma CSV出力時処理
+  batch.mall_process.wowma:
+    class: BatchBundle\MallProcess\WowmaMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # Q10 CSV出力時処理
+  batch.mall_process.q10:
+    class: BatchBundle\MallProcess\Q10MallProcess
+    calls:
+    - [setContainer, ["@service_container"] ]
+    - [setEnvironment, ['%kernel.environment%']]
+
+  # Amazon CSV出力時処理
+  batch.mall_process.amazon:
+    class: BatchBundle\MallProcess\AmazonMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # PPM CSV出力時処理
+  batch.mall_process.ppm:
+    class: BatchBundle\MallProcess\PpmMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # SHOPLIST CSV出力時処理
+  batch.mall_process.shoplist:
+    class: BatchBundle\MallProcess\ShoplistMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # 実店舗 スマレジ処理
+  batch.mall_process.smaregi:
+    class: BatchBundle\MallProcess\RealShopSmaregiMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+  # Alibaba 処理
+  batch.mall_process.alibaba:
+    class: BatchBundle\MallProcess\AlibabaMallProcess
+    calls:
+      - [setContainer, ["@service_container"] ]
+      - [setEnvironment, ['%kernel.environment%']]
+
+
+  # -------------------------------------------------
+  # 各種レビュー取込処理
+  # -------------------------------------------------
+      # 受注明細 差分更新処理（NextEngine API利用）
+  batch.order_method_change:
+    class: BatchBundle\Command\OrderMethodChangeCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # Yahoo商品レビューCSVデータ登録処理
+  batch.update_yahoo_review:
+    class: BatchBundle\Command\UpdateYahooReviewCommand
+    calls:
+      - [setContainer, ["@service_container"] ]
+
+  # 最新在庫データを取得し、DBに保存する処理（NextEngine API利用）
+  batch.update_db_by_stock_list_next_engine_api:
+    class: BatchBundle\Command\UpdateDbByStockListNextEngineApiCommand
+    calls:
+      - [setContainer, ["@service_container"] ]

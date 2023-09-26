@@ -1,0 +1,33 @@
+MiscBundle\Entity\TbSalesVoucherCustomerStatisticsInfo:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbSalesVoucherCustomerStatisticsInfoRepository
+    table: tb_sales_voucher_customer_statistics_info
+    id:
+        voucherNumber:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "伝票番号\ntb_sales_detailで管理している伝票番号。NEで振られる"
+            default: '0'
+            id: true
+            column: voucher_number
+            generator:
+                strategy: IDENTITY
+    fields:
+        hashTel:
+            type: string
+            nullable: false
+            length: 64
+            fixed: false
+            comment: "ハッシュ電話番号\n電話番号＋saltをsha256で取得したMD"
+            default: ''
+            column: hash_tel
+        prefectureCd:
+            type: string
+            nullable: false
+            length: 2
+            fixed: true
+            comment: "購入者都道府県コード\n不明は空文字（外国、ハッシュ後など）"
+            default: ''
+            column: prefecture_cd
+    lifecycleCallbacks: {  }

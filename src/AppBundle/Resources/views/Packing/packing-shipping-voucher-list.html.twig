@@ -1,0 +1,113 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+    '@AppBundle/Resources/public/js/app.packing-shipping-voucher-list.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.packing.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block headerTitle %}出荷伝票リスト{% endblock %}
+
+{% block contents %}
+  <script type="text/javascript">
+    const ITEM = {{ item|raw }};
+  </script>
+  <div id="voucherList"
+      data-start-url="{{ path('packing_packing_start') }}"
+      v-cloak
+    >
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+    <div v-if="item">
+      <div class="row row10 mb30">
+        <h2 class="text-center">
+          <a href="{{ path('packing_packing_group_index', {id: groupId}) }}" v-text="'[' + item.shippingVoucher.name + '] '"></a>
+          <span v-text="item.shippingVoucher.deliveryName"></span>
+        </h2>
+      </div>
+
+      <div class="text-right p10">
+        <a class="h4 text-info bold cursorPointer" data-toggle="modal" data-target="#modalCheckShippingVoucher">伝票リスト</a>
+      </div>
+
+      <div v-if="item.shippingVoucher.status > 0" class="panel panel-default">
+        <div class="panel-body">
+          <div v-if="item.shippingVoucher.status === 1" class="btn btn-lg btn-primary fullWidth" v-text="item.shippingVoucher.statusName" @click="startPacking"></div>
+          <template v-else>
+            <div class="btn btn-lg btn-primary fullWidth" v-text="item.shippingVoucher.statusName"></div>
+            <p class="text-center mt10" v-text="item.shippingVoucher.packingAccountName"></p>
+          </template>
+        </div>
+      </div>
+
+      {# 出荷伝票梱包のリスト #}
+      <div class="list-group">
+        <a
+          class="list-group-item inputHeight"
+          v-for="shippingVoucherPacking in item.packingList"
+          :href="shippingVoucherPacking.detailUrl"
+        >
+          <div class="vMiddle row row10">
+            <div class="col-xs-4" v-text="shippingVoucherPacking.voucherNumber"></div>
+            <div class="col-xs-2 text-center" v-text="shippingVoucherPacking.productQuantity"></div>
+            <div class="col-xs-5 text-right">
+              <div class="vMiddle" :class="shippingVoucherPacking.css" v-text="shippingVoucherPacking.statusName"></div>
+            </div>
+          </div>
+          <div v-if="shippingVoucherPacking.changeFlg" class="vMiddle row row10">
+            <div class="lh100 col-xs-11 text-right">
+              <div class="small text-danger" v-text="shippingVoucherPacking.deliveryName"></div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div v-else>
+      <div class="col-xs-12">
+        <div class="alert alert-info">出荷伝票リストはありません。</div>
+      </div>
+    </div>
+    {# 伝票リスト・モーダル #}
+    <div class="modal fade" id="modalCheckShippingVoucher" tabindex="-1"
+          role="dialog" aria-labelledby="label1" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="label1">出荷伝票リスト</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-border table-condensed">
+              <tr v-for="detail in item.detailList">
+                <td v-text="detail.voucherNumber"></td>
+                <td v-text="detail.accountName"></td>
+                <td v-text="detail.sku"></td>
+                <td v-text="detail.quantity"></td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

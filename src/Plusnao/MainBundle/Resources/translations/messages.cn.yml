@@ -1,0 +1,245 @@
+# DefaultController
+default:
+  cancel: 关闭
+  submit: 是
+  update: 更新
+
+  label:
+    label_pdf: 标签PDF
+    error_message: PDF download error.
+    download: 下载
+    print_target: 印刷对象
+    num_change: 更改所有行的数量
+    search:
+      product_code: 商品代码
+
+# VendorController
+vendor:
+  company_name: "Forest Inc."
+  honorific: ""
+  language:
+    japanese: "日本語"
+    chinese: "中文"
+
+  cancel: 关闭
+  submit: 是
+  update: 更新
+  confirm: 确认
+  present_recount: 现据点更新
+  all_recount: 全据点更新
+  last_update: 最后更新
+  export_shipping_download: 下载出口资料
+  management_by_voucher: 根据单号管理下单进度
+
+  search:
+    submit:          搜索
+    clear:           清除
+    product_code:    商品代码
+    order_date:      订购日
+    voucher_number:  单号
+    syohin_code:     商品代码
+    status:          购买剩余
+    vendor_comment:  联络事宜
+    unallocated:     未准备
+    shipping_number: 运单号
+    receive_order_number: 订单号
+    warehousing_number: 快递单号
+    person: 入库人
+    check: 已确认未入库残余0输出
+    alert:
+      select: 警告・注意
+      all: 有任意一项是警告或者注意
+      regular_none: 没有良品
+      unset_weight_size: 未设置重量，尺寸
+      unset_material_description: 未设置材质，说明
+    shipping_type:
+      select: 运输方式
+      air: 空运
+      container: 船运
+
+  bulk:
+    word: 抽出结果总括处理
+    select: 选择处理内容
+    status_update_ordered: 全部已订货
+    status_update_arrived: 全部已进货
+    status_update_waited: 全部待出货
+    status_update_shipping: 全部已发货
+    export_shipping: 输出出口资料
+    submit: 实行
+
+  # 注残履歴一覧
+  order_status_list:
+    page_name: 总计
+
+  # 注残一覧画面
+  order_list:
+    title: 剩余
+
+    status_untreated: 未处理
+    status_ordered: 已订货
+    status_arrived: 已进货
+    status_waited: 待出货
+    status_shipped: 已发货
+    status_shortage: 缺货
+
+    vendor_comment: 联络事宜
+    cost: 原价
+    
+    shipping_type_button_air: 空运
+    shipping_type_button_container: 船运
+
+    header:
+      voucher_number: 单号
+      order_date:     进货日期
+      syohin_code:    商品代码
+      category:       商品种类
+      image:          图片
+      address:        卖家网址
+      size:           型号
+      color:          颜色
+      cost:           原价(元)
+      order_num:      进货数量
+      remain_num:     剩余进货数量
+      order_comment:  进货备考
+      button_unallocated: 未准备
+      button_ordered: 已订货
+      button_arrived: 已进货
+      button_waited: 待出货
+      button_shipped: 已发货
+      button_shortage:  缺货
+      shipping_number:  运单号
+      receive_order_number: 订单号
+      warehousing_number: 快递单号
+      shipping_operation_number: 集装箱号
+
+    manipulate_order:
+      button      : 票据
+      title       : 操作票据
+      split       : 分割
+      submit_split: 实施分割
+
+    edit_spec:
+      button        : spec
+      title         : 商品数据编辑
+      weight        : 重量
+      depth         : 纵向(mm)
+      width         : 横向(mm)
+      height        : 高度(mm)
+      submit_update : 保存变更
+      
+    edit_rate:
+      modal_title: 汇率设定
+      one_dollar: 1美金
+      yen: 日元
+      
+    change_shipping_type:
+      modal_title   : 运输方式变更确认
+      confirm_message : 下记票据的运输方式变更成[ %shippingTypeString% ]、可以吗？
+      shipping_type_air: 空运
+      shipping_type_container: 船运
+
+    empty_shipping:
+      modal_title   : 处理确认
+      modal_updating_title: 正在生成出口资料
+    
+    reassess_unallocated:
+      updating: 更新中
+
+    messages:
+      common:
+        update_success: 更新成功了
+        update_failure: 更新失败了
+        confirm: 可以吗？
+      csv_upload:
+        other_extension: 文件扩张子不是.csv。
+        nothing_select: 没有选择上传文件
+        updating: 信息正在更新中。完全之前请不要关闭页面。
+      manipulate_order:
+        confirm_split: 按照指定件数分割票据可以吗？
+        complete_split: 分割了订货单
+      status_update:
+        ordered: 可以把抽出行全部做成已订货吗？
+        arrived: 可以把抽出行全部做成已进货吗？
+        waited: 可以把抽出行全部做成待出货吗？
+        shipped: 可以把抽出行全部做成已出货吗？
+        error: 不能更新的阶段也包括在其中，请再次确定抽出的条件和抽出的结果。
+      empty_shipping:
+        sku_spec_empty: spec有未计测行
+        empty_shipping_number: 发货单编号栏有空栏
+        pushed_to_queue: 出口资料的处理，已追加到提示栏（キュー）
+        confirm_print: 可以这样做成出口资料吗？
+      reassess_unallocated:
+        confirm_all_agent: 更新全部据点的未销售库存
+        confirm_individual_agent: 更新当前据点的未销售库存。
+        complete: 更新正常完成
+        reload_page: 再次读取页面信息
+      back_button: 请不要使用浏览器上的返回键
+
+    errors:
+      update_order_num:
+        no_data: '数据没找到，中止更新 '
+        invalid_data: '数据不正确，中止更新'
+        no_value: '订货数没输入，中止更新'
+        same_value: '订货数相同，中止更新'
+        small_value: '不能减少订货数'
+        too_small: '比已经入库・欠品订货量少的数据不能更新，中止更新'
+        server_busy: '服务器故障不能更新，请再次实施'
+
+  remain_order:
+    title: 根据单号管理下单进度
+
+    voucher_number     : 入库箱代码
+    shipping_type      : 运输方式
+    agent_code         : 采单办事处代码
+    order_date         : 下单日
+    min_remain_status  : 最终的进度更新
+    oldest_update_date : 最终的进度更新日期
+    product_code       : 主要商品代码
+    image              : 图片
+    total_remain_num   : 采购的剩余合计
+    comment            : 备注
+
+  csv:
+    upload: 上传
+    download: 下载
+    description_download: 下载说明
+    hint_download: 下载材质商品说明
+
+    upload_message: CSV上传完了，更新画面
+    error_message: 异常，CSV不能下载
+
+    header:
+      voucher_number      : 单号
+      order_date          : 进货日期
+      sire_name           : 进货公司
+      syohin_code         : 商品代码
+      daihyo_syohin_label : 商品亚码
+      colname             : 横轴名称
+      rowname             : 纵轴名称
+      support_colname     : 横轴名称辅助
+      support_rowname     : 纵轴名称辅助
+      cost                : 原价(元)
+      order_num           : 已确认进货数量
+      regular             : 已确认良品衣入库数量
+      defective           : 已确认暂时缺货数量
+      shortage            : 已确认缺货数量
+      remain_num          : 已确认未入库残余
+      remain_ordered_date : web已订货
+      remain_arrived_date : web已进货
+      remain_waiting_date : web待出货
+      remain_shipping_date: web已发货
+      remain_stockout_date: web缺货
+      vendor_comment      : web进货备考
+      shipping_number     : web运单号
+      receive_order_number: web订单号
+      warehousing_number  : web快递单号
+      sire_adress         : 采购商网址
+      image_url           : 图片网址
+      barcode             : 条码
+      order_comment       : 指示内容
+      weight              : 重量
+      depth               : 长
+      width               : 宽
+      height              : 高
+      description_en      : 说明
+      hint_ja             : 商品材质（成分）说明

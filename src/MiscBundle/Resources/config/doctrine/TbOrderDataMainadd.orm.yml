@@ -1,0 +1,110 @@
+MiscBundle\Entity\TbOrderDataMainadd:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbOrderDataMainaddRepository
+    table: tb_order_data_mainadd
+    id:
+        # 伝票番号:
+        voucher_number:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            id: true
+            column: 伝票番号
+
+    fields:
+
+#        checkForDatesConfirmed:
+#            type: date
+#            nullable: true
+#            column: check_for_dates_confirmed
+#        作業者欄Former:
+#            type: text
+#            nullable: true
+#            length: 65535
+#            options:
+#                fixed: false
+#            column: 作業者欄_former
+#        確認チェック:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        holdReason:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#            column: hold_reason
+#        確認チェックChecked:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#            column: 確認チェック_checked
+#        beingProcessed:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '-1'
+#            column: being_processed
+#        shippingTime:
+#            type: date
+#            nullable: true
+#            column: shipping_time
+
+        order_status:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+                default: ''
+            column: 受注状態
+
+        payment_method:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+                default: ''
+            column: 支払方法
+
+        payment_status:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+                default: ''
+            column: 入金区分
+
+#        deliveryTerms:
+#            type: datetime
+#            nullable: true
+#            column: delivery_terms
+
+        sun_payment_reminder:
+            type: date
+            nullable: true
+            column: sun_payment_reminder
+
+        order_date:
+            type: datetime
+            nullable: true
+            column: 受注日
+
+        purchase_quantity:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+                default: 0
+            column: purchase_quantity
+
+    lifecycleCallbacks: {  }

@@ -1,0 +1,166 @@
+{# modals #}
+<div class="modal"
+     id="modalAccountForm"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-find-url="{{ path('admin_account_find') }}"
+     data-update-url="{{ path('admin_account_update') }}"
+  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          (% caption %)
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div>
+          <div class="(% messageClass %)" v-text="message"></div>
+        </div>
+
+        <div v-bind:class="{ hidden: noticeHidden }">
+          <div class="(% noticeClass %)">
+            <ul>
+              <li v-for="notice in notices">(% notice %)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div v-show="nowLoading" class="row">
+          <div class="col-sm-12 text-center">
+            <img src="{{ asset('img/loading.gif') }}" />
+          </div>
+        </div>
+
+        <div id="modalAccountFormBody" class="row" v-show="!nowLoading">
+          <div class="col-sm-1"></div>
+
+          <div class="col-sm-10 p0">
+            <form role="form">
+              <div class="form-group">
+                <label for="username">名前</label>
+                <input type="text" id="username" v-model="username" {% if is_granted('ROLE_ADMIN') == false %} disabled {% endif %} class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="user_cd">ユーザコード</label>
+                <input type="text" id="user_cd" v-model="user_cd" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" v-model="password" v-on:blur="validatePassword" class="form-control" placeholder="半角英数を含む8文字以上を指定してください" />
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <label for="ne_account">NEアカウント</label>
+                  <input type="text" id="ne_account" v-model="ne_account" class="form-control" />
+                </div>
+                <div class="col-sm-6 form-group">
+                  <label for="ne_password">NEパスワード</label>
+                  <input type="text" id="ne_password" v-model="ne_password" class="form-control" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6 form-group">
+                  <div class="col-sm-12 p0">ロック</div>
+                  <div class="radio-inline">
+                    <input type="radio" id="is_locked_yes" name="is_locked" value="{{ constant('MiscBundle\\Entity\\SymfonyUsers::IS_LOCKED') }}" v-model="is_locked" />
+                    <label for="is_locked_yes">有効</label>
+                  </div>
+
+                  <div class="radio-inline">
+                    <input type="radio" id="is_locked_no" name="is_locked" value="{{ constant('MiscBundle\\Entity\\SymfonyUsers::IS_NOT_LOCKED') }}" v-model="is_locked" />
+                    <label for="is_locked_no">無効</label>
+                  </div>
+                </div>
+
+                <div class="col-sm-6 form-group">
+                  <div class="col-sm-12 p0">アカウント</div>
+                  <div class="radio-inline">
+                    <input type="radio" id="is_active_yes" name="is_active" value="{{ constant('MiscBundle\\Entity\\SymfonyUsers::IS_ACTIVE_YES') }}" v-model="is_active" />
+                    <label for="is_active_yes">有効</label>
+                  </div>
+
+                  <div class="radio-inline">
+                    <input type="radio" id="is_active_no" name="is_active" value="{{ constant('MiscBundle\\Entity\\SymfonyUsers::IS_ACTIVE_NO') }}" v-model="is_active" />
+                    <label for="is_active_no">無効</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-3 form-group">
+                  <label for="buyer_order">バイヤー表示順</label>
+                  <input type="text" id="buyer_order" v-model="buyer_order" class="form-control text-right" />
+                </div>
+              </div>
+              {% if is_granted('ROLE_ADMIN') %}
+              <div>
+                <label>権限の変更・追加</label>
+                <div class="col-sm-12 mb20 p0">
+                  <form method="post" action="">
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('cm')">
+                      <input type="checkbox"  id="role_customer_manager" v-model="role_customer_manager" />
+                      <label for="role_customer_manager">カスタマー管理者</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('dm')">
+                      <input type="checkbox" id="role_delivery_manager" v-model="role_delivery_manager"/>
+                      <label for="role_delivery_manager">梱包管理者</label>
+                    </div>
+                    <div class="col-sm-4"  v-on:mouseover="roleMouseover('sm')">
+                      <input type="checkbox" id="role_system_manager" v-model="role_system_manager"/>
+                      <label for="role_system_manager">システム管理者</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('su')">
+                      <input type="checkbox" id="role_system_user" v-model="role_system_user"/>
+                      <label for="role_system_user">システム運用者</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('sb')">
+                      <input type="checkbox" id="role_score_browsing" v-model="role_score_browsing"/>
+                      <label for="role_score_browsing">スコア閲覧許可</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('spa')">
+                      <input type="checkbox" id="role_sales_product_account" v-model="role_sales_product_account"/>
+                      <label for="role_sales_product_account">商品売上担当者</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('spd')">
+                      <input type="checkbox" id="role_sales_product_default_display" v-model="role_sales_product_default_display"/>
+                      <label for="role_sales_product_default_display">商品売上標準表示</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('pmb')">
+                      <input type="checkbox" id="role_product_management_browsing" v-model="role_product_management_browsing"/>
+                      <label for="role_product_management_browsing">商品管理閲覧許可</label>
+                    </div>
+                    <div class="col-sm-4" v-on:mouseover="roleMouseover('pmu')">
+                      <input type="checkbox" id="role_product_management_updating" v-model="role_product_management_updating"/>
+                      <label for="role_product_management_updating">商品管理更新許可</label>
+                    </div>
+                  </form>
+                </div>
+                <div v-text="role_message"></div>
+              </div>
+              {% endif %}
+
+            </form>
+          </div>
+
+          <div class="col-sm-1"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

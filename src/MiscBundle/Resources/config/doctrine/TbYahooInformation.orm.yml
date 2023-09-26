@@ -1,0 +1,3 @@
+MiscBundle\Entity\TbYahooInformation:
+  type: entity
+  table: tb_yahoo_information

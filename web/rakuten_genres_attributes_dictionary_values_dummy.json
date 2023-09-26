@@ -1,0 +1,1104 @@
+{
+    "version": {
+        "id": 23,
+        "fixedAt": "2022-11-14T15:20:00+09:00"
+    },
+    "genre": {
+        "genreId": 300426,
+        "genreIdPath": [
+            100804,
+            200166,
+            300408,
+            300426
+        ],
+        "nameJa": "カラーボックス",
+        "nameJaPath": [
+            "インテリア・寝具・収納",
+            "収納家具",
+            "本棚・ラック・カラーボックス",
+            "カラーボックス"
+        ],
+        "level": 4,
+        "lowest": true,
+        "properties": {
+            "itemRegisterFlg": true
+        },
+        "ancestors": null,
+        "siblings": null,
+        "children": null,
+        "attributes": [
+            {
+                "id": 1,
+                "nameJa": "ブランド名",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 10709,
+                        "nameJa": "アスワン"
+                    },
+                    {
+                        "id": 10710,
+                        "nameJa": "川島織物セルコン"
+                    },
+                    {
+                        "id": 196414,
+                        "nameJa": "ファイヤーサイド"
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "nameJa": "メーカー型番",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 298,
+                "nameJa": "原産国／製造国",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 1321,
+                        "nameJa": "アイスランド共和国（アイスランド/氷洲）"
+                    },
+                    {
+                        "id": 1322,
+                        "nameJa": "アイルランド"
+                    },
+                    {
+                        "id": 182663,
+                        "nameJa": "レユニオン"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "nameJa": "代表カラー",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 196301,
+                        "nameJa": "-"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "イエロー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "オレンジ"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "カーキグリーン"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "グリーン"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "グレー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ゴールド"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "シルバー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ネイビー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "パープル"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ピンク"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ブラウン"
+                    },
+                    {
+                        "id": "1",
+                        "nameJa": "ブラック"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ブルー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ベージュ"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "ホワイト"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "マルチカラー"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "レッド"
+                    },
+                    {
+                        "id": "17",
+                        "nameJa": "ワインレッド"
+                    },
+                    {
+                        "id": "?",
+                        "nameJa": "透明"
+                    }
+                ]
+            },
+            {
+                "id": 1058,
+                "nameJa": "インテリアのテイスト",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 9993,
+                        "nameJa": "アジアン・エスニック・モロッコ風"
+                    },
+                    {
+                        "id": 9995,
+                        "nameJa": "クラシック・アンティーク風"
+                    },
+                    {
+                        "id": 10011,
+                        "nameJa": "和風"
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "nameJa": "シリーズ名",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 190710,
+                        "nameJa": "エコハイルクス（アイリスオーヤマ）"
+                    },
+                    {
+                        "id": 190711,
+                        "nameJa": "エアーパネルLED（パナソニック）"
+                    },
+                    {
+                        "id": 192662,
+                        "nameJa": "ルドゥーテ（るいす）"
+                    }
+                ]
+            },
+            {
+                "id": 1057,
+                "nameJa": "金属の種類",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 33918,
+                        "nameJa": "ゴールド"
+                    },
+                    {
+                        "id": 33919,
+                        "nameJa": "シルバー"
+                    },
+                    {
+                        "id": 33923,
+                        "nameJa": "プラチナ"
+                    }
+                ]
+            },
+            {
+                "id": 1054,
+                "nameJa": "組立状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 10195,
+                        "nameJa": "完成品"
+                    },
+                    {
+                        "id": 10196,
+                        "nameJa": "要組立品"
+                    }
+                ]
+            },
+            {
+                "id": 22,
+                "nameJa": "本体奥行",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 20,
+                "nameJa": "本体横幅",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 21,
+                "nameJa": "本体高さ",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "cm",
+                "subUnits": [
+                    "mm",
+                    "m"
+                ],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 1932,
+                "nameJa": "素材",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 9940,
+                        "nameJa": "アクリル"
+                    },
+                    {
+                        "id": 9944,
+                        "nameJa": "い草"
+                    },
+                    {
+                        "id": 10671,
+                        "nameJa": "貝殻（シェル）"
+                    }
+                ]
+            },
+            {
+                "id": 4828,
+                "nameJa": "状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 194992,
+                        "nameJa": "中古"
+                    }
+                ]
+            },
+            {
+                "id": 4829,
+                "nameJa": "中古状態",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 194993,
+                        "nameJa": "新古品・未使用品"
+                    },
+                    {
+                        "id": 194994,
+                        "nameJa": "中古品-ほぼ新品"
+                    },
+                    {
+                        "id": 194995,
+                        "nameJa": "中古品-非常に良い"
+                    },
+                    {
+                        "id": 194996,
+                        "nameJa": "中古品-良い"
+                    },
+                    {
+                        "id": 194997,
+                        "nameJa": "中古品-可"
+                    },
+                    {
+                        "id": 194998,
+                        "nameJa": "中古品-難あり"
+                    }
+                ]
+            },
+            {
+                "id": 4830,
+                "nameJa": "販売形態（並行輸入品）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 194999,
+                        "nameJa": "並行輸入品"
+                    }
+                ]
+            },
+            {
+                "id": 4831,
+                "nameJa": "販売形態（訳あり）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "SELECTIVE",
+                    "rmsSkuUnifyFlg": true,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 195000,
+                        "nameJa": "訳あり"
+                    }
+                ]
+            },
+            {
+                "id": 36,
+                "nameJa": "カラー",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 5,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 2,
+                "nameJa": "ブランド名（カナ）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 1056,
+                "nameJa": "樹種",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 10013,
+                        "nameJa": "アカシア"
+                    },
+                    {
+                        "id": 10014,
+                        "nameJa": "アルダー"
+                    },
+                    {
+                        "id": 10038,
+                        "nameJa": "ビーチ"
+                    }
+                ]
+            },
+            {
+                "id": 4879,
+                "nameJa": "重量",
+                "dataType": "NUMBER",
+                "minLength": null,
+                "maxLength": null,
+                "minValue": null,
+                "maxValue": 999999999,
+                "dateFormat": null,
+                "unit": "kg",
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 4576,
+                "nameJa": "耐荷重（各部位）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 4571,
+                "nameJa": "必要工具",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 4,
+                "nameJa": "シリーズ名（カナ）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 100,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 3844,
+                "nameJa": "配送サービス",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 50,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 3,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 35897,
+                        "nameJa": "設置対応可"
+                    },
+                    {
+                        "id": 35898,
+                        "nameJa": "取付工事可"
+                    },
+                    {
+                        "id": 35899,
+                        "nameJa": "組立対応可"
+                    }
+                ]
+            },
+            {
+                "id": 5207,
+                "nameJa": "サイズ情報",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 500,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": false,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": false
+                },
+                "dictionaryValues": []
+            },
+            {
+                "id": 981,
+                "nameJa": "素材（生地・毛糸）",
+                "dataType": "STRING",
+                "minLength": null,
+                "maxLength": 250,
+                "minValue": null,
+                "maxValue": null,
+                "dateFormat": null,
+                "unit": null,
+                "subUnits": [],
+                "properties": {
+                    "rmsMandatoryFlg": true,
+                    "rmsMultiValueLimit": 1,
+                    "rmsInputMethod": "DESCRIPTIVE",
+                    "rmsSkuUnifyFlg": false,
+                    "rmsRecommend": true
+                },
+                "dictionaryValues": [
+                    {
+                        "id": 6382,
+                        "nameJa": "アクリル"
+                    },
+                    {
+                        "id": 6416,
+                        "nameJa": "アルパカ"
+                    },
+                    {
+                        "id": 6417,
+                        "nameJa": "アンゴラ"
+                    },
+                    {
+                        "id": 6379,
+                        "nameJa": "ウール"
+                    },
+                    {
+                        "id": 6411,
+                        "nameJa": "エナメル"
+                    },
+                    {
+                        "id": 6384,
+                        "nameJa": "ガーゼ"
+                    },
+                    {
+                        "id": 6380,
+                        "nameJa": "カシミヤ"
+                    },
+                    {
+                        "id": 6381,
+                        "nameJa": "キャメル"
+                    },
+                    {
+                        "id": 6386,
+                        "nameJa": "キルト"
+                    },
+                    {
+                        "id": 6388,
+                        "nameJa": "コーデュロイ"
+                    },
+                    {
+                        "id": 6378,
+                        "nameJa": "綿・コットン"
+                    },
+                    {
+                        "id": 6403,
+                        "nameJa": "サテン"
+                    },
+                    {
+                        "id": 6404,
+                        "nameJa": "ジャージー"
+                    },
+                    {
+                        "id": 6376,
+                        "nameJa": "シルク"
+                    },
+                    {
+                        "id": 6389,
+                        "nameJa": "スウェット"
+                    },
+                    {
+                        "id": 6396,
+                        "nameJa": "スパンコール"
+                    },
+                    {
+                        "id": 6387,
+                        "nameJa": "パイル・タオル"
+                    },
+                    {
+                        "id": 6390,
+                        "nameJa": "チノ"
+                    },
+                    {
+                        "id": 6405,
+                        "nameJa": "ちりめん"
+                    },
+                    {
+                        "id": 6406,
+                        "nameJa": "ツイード"
+                    },
+                    {
+                        "id": 6407,
+                        "nameJa": "ツイル"
+                    },
+                    {
+                        "id": 6391,
+                        "nameJa": "デニム"
+                    },
+                    {
+                        "id": 6397,
+                        "nameJa": "ナイロン"
+                    },
+                    {
+                        "id": 6392,
+                        "nameJa": "ニット"
+                    },
+                    {
+                        "id": 6398,
+                        "nameJa": "パシュミナ"
+                    },
+                    {
+                        "id": 6399,
+                        "nameJa": "ビーズ"
+                    },
+                    {
+                        "id": 6400,
+                        "nameJa": "ファー"
+                    },
+                    {
+                        "id": 6413,
+                        "nameJa": "フェイクファー"
+                    },
+                    {
+                        "id": 6415,
+                        "nameJa": "フェルト"
+                    },
+                    {
+                        "id": 6393,
+                        "nameJa": "フリース"
+                    },
+                    {
+                        "id": 6408,
+                        "nameJa": "ブロード"
+                    },
+                    {
+                        "id": 6409,
+                        "nameJa": "ベルベット"
+                    },
+                    {
+                        "id": 6394,
+                        "nameJa": "ベロア"
+                    },
+                    {
+                        "id": 6414,
+                        "nameJa": "ボア"
+                    },
+                    {
+                        "id": 6385,
+                        "nameJa": "ポリエステル"
+                    },
+                    {
+                        "id": 6377,
+                        "nameJa": "マイクロファイバー"
+                    },
+                    {
+                        "id": 6412,
+                        "nameJa": "ムートン"
+                    },
+                    {
+                        "id": 6401,
+                        "nameJa": "レース"
+                    },
+                    {
+                        "id": 6410,
+                        "nameJa": "レーヨン"
+                    },
+                    {
+                        "id": 6402,
+                        "nameJa": "合皮・フェイクレザー"
+                    },
+                    {
+                        "id": 6395,
+                        "nameJa": "本革"
+                    },
+                    {
+                        "id": 6383,
+                        "nameJa": "麻・リネン"
+                    },
+                    {
+                        "id": 6418,
+                        "nameJa": "タイベック"
+                    },
+                    {
+                        "id": 6419,
+                        "nameJa": "シーチング"
+                    },
+                    {
+                        "id": 6420,
+                        "nameJa": "不織布"
+                    },
+                    {
+                        "id": 6421,
+                        "nameJa": "チュール"
+                    },
+                    {
+                        "id": 6422,
+                        "nameJa": "ジョーゼット"
+                    },
+                    {
+                        "id": 6423,
+                        "nameJa": "ジャガード"
+                    },
+                    {
+                        "id": 6424,
+                        "nameJa": "ローン"
+                    },
+                    {
+                        "id": 6425,
+                        "nameJa": "シフォン"
+                    },
+                    {
+                        "id": 6426,
+                        "nameJa": "オーガンジー"
+                    },
+                    {
+                        "id": 6427,
+                        "nameJa": "アムンゼン"
+                    },
+                    {
+                        "id": 6428,
+                        "nameJa": "西陣織"
+                    },
+                    {
+                        "id": 6429,
+                        "nameJa": "カツラギ"
+                    },
+                    {
+                        "id": 6430,
+                        "nameJa": "シャンブレー"
+                    },
+                    {
+                        "id": 36860,
+                        "nameJa": "ゴアテックス"
+                    },
+                    {
+                        "id": 17127,
+                        "nameJa": "オムニテック"
+                    },
+                    {
+                        "id": 84599,
+                        "nameJa": "帆布・キャンバス"
+                    },
+                    {
+                        "id": 191053,
+                        "nameJa": "ドビー織"
+                    },
+                    {
+                        "id": 194131,
+                        "nameJa": "ステンレス繊維布"
+                    },
+                    {
+                        "id": 10278,
+                        "nameJa": "オーガニックコットン"
+                    },
+                    {
+                        "id": 10279,
+                        "nameJa": "カシミア混"
+                    },
+                    {
+                        "id": 10280,
+                        "nameJa": "羽根、フェザー"
+                    },
+                    {
+                        "id": 10281,
+                        "nameJa": "羽毛、ダウン"
+                    },
+                    {
+                        "id": 10282,
+                        "nameJa": "合成繊維"
+                    },
+                    {
+                        "id": 10283,
+                        "nameJa": "真綿"
+                    },
+                    {
+                        "id": 10284,
+                        "nameJa": "綿混"
+                    },
+                    {
+                        "id": 11813,
+                        "nameJa": "クロコダイル"
+                    },
+                    {
+                        "id": 11814,
+                        "nameJa": "オーストリッチ"
+                    },
+                    {
+                        "id": 11829,
+                        "nameJa": "木製"
+                    },
+                    {
+                        "id": 11853,
+                        "nameJa": "麦わら・ストロー"
+                    },
+                    {
+                        "id": 11817,
+                        "nameJa": "ビニール"
+                    },
+                    {
+                        "id": 11818,
+                        "nameJa": "スエード"
+                    },
+                    {
+                        "id": 11815,
+                        "nameJa": "ファブリック、布"
+                    },
+                    {
+                        "id": 11816,
+                        "nameJa": "メタル、チェーン"
+                    },
+                    {
+                        "id": 23239,
+                        "nameJa": "カイデックス"
+                    },
+                    {
+                        "id": 10165,
+                        "nameJa": "キリム"
+                    }
+                ]
+            }
+        ]
+    }
+}

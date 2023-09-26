@@ -1,0 +1,69 @@
+MiscBundle\Entity\TbShippingVoucherPacking:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbShippingVoucherPackingRepository
+    table: tb_shipping_voucher_packing
+    indexes:
+        index_voucher_id:
+            columns:
+                - voucher_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        voucherId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "出荷伝票グループID\ntb_shipping_voucher.id"
+            default: '0'
+            column: voucher_id
+        voucherNumber:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 伝票番号
+            default: '0'
+            column: voucher_number
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n0:未着手 1:進行中 2:OK 3:商品不足 4:保留 5:出荷STOP待ち 6:出荷STOP\n2, 3, 6になった伝票はそこで終了\n（3, 6を再発送する場合は納品書CSV再登録からやりなおし）"
+            default: '0'
+        labelReissueFlg:
+            type: integer
+            nullable: false
+            comment: "配送ラベル再発行フラグ\n0:再発行無し 1:再発行有り"
+            default: '0'
+            column: label_reissue_flg
+        latestDeliveryMethodId:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "発送方法（最新）\ntb_delivery_method.delivery_id\n登録時など、特定出来ない場合null"
+            column: latest_delivery_method_id
+        validInquiryNumberStatus:
+            type: integer
+            nullable: false
+            comment: "有効なお問い合わせ番号ステータス\n0:有効なお問い合わせ番号がない 1: ラベル再発行待ち 2: 有効なお問い合わせ番号がある"
+            default: '0'
+            column: valid_inquiry_number_status
+        updateAccountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\nバッチ登録は0"
+            default: '0'
+            column: update_account_id
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日時
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps

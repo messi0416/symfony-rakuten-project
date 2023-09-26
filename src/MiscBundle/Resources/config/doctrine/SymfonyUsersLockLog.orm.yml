@@ -1,0 +1,38 @@
+MiscBundle\Entity\SymfonyUsersLockLog:
+    type: entity
+    table: symfony_users_lock_log
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        accountId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ユーザID
+            column: account_id
+        accessIp:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "IPアドレス\nINET_ATON/INET_NTOAで変換"
+            column: access_ip
+        agent:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: ユーザエージェント
+            default: ''
+        lockedDatetime:
+            type: datetime
+            nullable: false
+            comment: ロック日時
+            column: locked_datetime
+    lifecycleCallbacks: {  }

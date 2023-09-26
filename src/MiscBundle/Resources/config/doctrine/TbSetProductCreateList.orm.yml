@@ -1,0 +1,60 @@
+MiscBundle\Entity\TbSetProductCreateList:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbSetProductCreateListRepository
+  table: tb_set_product_create_list
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      id: true
+      generator:
+        strategy: AUTO
+
+  fields:
+    date:
+      type: date
+      nullable: false
+    number:
+      type: integer
+      nullable: false
+
+    set_sku:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+
+    required_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    creatable_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    create_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps

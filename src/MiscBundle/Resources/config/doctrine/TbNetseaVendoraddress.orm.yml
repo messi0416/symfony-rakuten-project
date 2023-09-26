@@ -1,0 +1,75 @@
+MiscBundle\Entity\TbNetseaVendoraddress:
+    type: entity
+    table: tb_netsea_vendoraddress
+    id:
+        netseaVendoraddress:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            id: true
+            column: netsea_vendoraddress
+            generator:
+                strategy: IDENTITY
+    fields:
+        netseaVendorCode:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: netsea_vendor_code
+        netseaTitle:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: netsea_title
+        netseaPrice:
+            type: integer
+            nullable: false
+            options:
+                unsigned: true
+            column: netsea_price
+        netseaSetCount:
+            type: integer
+            nullable: true
+            options:
+                unsigned: true
+            column: netsea_set_count
+        netseaPass:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: netsea_pass
+        lastCheck:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: last_check
+        ranking:
+            type: integer
+            nullable: true
+            options:
+                unsigned: true
+                default: '0'
+        displayOrder:
+            type: integer
+            nullable: true
+            options:
+                unsigned: true
+                default: '0'
+            column: display_order
+        sireCode:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+                comment: 仕入先コード
+            column: sire_code
+    lifecycleCallbacks: {  }

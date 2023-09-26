@@ -1,0 +1,61 @@
+MiscBundle\Entity\JobRequest:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\JobRequestRepository
+    table: job_request
+    # indexes:
+    id:
+        job_key:
+            type: string
+            length: 64
+            nullable: false
+            default: ''
+    fields:
+        process:
+            type: string
+            length: 50
+            nullable: false
+            default: ''
+        options:
+            type: string
+            nullable: true
+        expired_at:
+            type: datetime
+            nullable: false
+        status:
+            type: string
+            length: 20
+            nullable: false
+            default: 'NEW'
+        queued:
+            type: datetime
+            nullable: false
+        started:
+            type: datetime
+            nullable: false
+        finished:
+            type: datetime
+            nullable: false
+        operator:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+        message:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+        info:
+            type: string
+            nullable: true
+        created:
+            type: datetime
+            nullable: false
+        updated:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

@@ -1,0 +1,135 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{#{% block javascripts %}#}
+  {#{{ parent() }}#}
+{#{% endblock %}#}
+
+{% block body %}
+
+  <div id="stockList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品倉庫在庫一覧</h2>
+        </div>
+
+        <div class="pull-right mt20">
+          {#<a class="btn btn-default" href="#">全削除</a>#}
+        </div>
+      </div>
+
+      {#&#123;&#35; global-message コンポーネント &#35;&#125;#}
+      {#<div is="parts-global-message" :state="messageState"></div>#}
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="stockListTable">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline inlineBlock" role="form" action="{{ path('goods_warehouse_stock_list') }}" method="get">
+            <div class="form-group mr5">
+              <label for="syohinCode" class="mr5 inputHeight">商品コード</label>
+              <input type="text" name="c" id="syohinCode" class="form-control inlineBlock allowSubmit" value="{{ conditions.c }}">
+            </div>
+
+            <div class="form-group mr5">
+              <label for="minStock" class="mr5 inputHeight">在庫数下限</label>
+              <input type="text" name="m" id="minStock" class="form-control inlineBlock allowSubmit w60 text-right" value="{{ conditions.m }}">
+            </div>
+
+            <div class="form-group mr10">
+              <input type="hidden" name="s" value="1">
+              <button type="submit" class="btn btn-primary">絞込</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {% if pagination and pagination.count() > 0 %}
+
+        <div class="navigation clearfix">
+          <div class="pull-left">
+            <a href="{{ path('goods_warehouse_stock_download_csv', conditions) }}"
+               download="warehouse_stock_list_{{ "now"|date('YmdHis') }}.csv"
+               class="btn btn-default mb10"
+              >
+              <i class="fa fa-download text-success"></i> ダウンロード
+            </a>
+          </div>
+
+          <div class="pull-right text-right">
+            <p class="paginationInfo mb0">
+              {{ pagination.getPaginationData().firstItemNumber | number_format }} - {{ pagination.getPaginationData().lastItemNumber | number_format }}
+              /
+              {{ pagination.getPaginationData().totalCount | number_format }}
+            </p>
+            {{ knp_pagination_render(pagination) }}
+          </div>
+        </div>
+
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th>商品コード</th>
+
+            {% for warehouse in warehouses %}
+                <th class="info">{{ warehouse.getName() }}</th>
+            {% endfor %}
+
+            <th>在庫数</th>
+            <th>フリー在庫数</th>
+            <th>発注残数</th>
+            <th>受注数</th>
+            <th>引当数</th>
+            <th>ピッキング引当数</th>
+            <th>出荷予定取置数</th>
+            <th>移動中在庫数</th>
+            <th>販売不可在庫数</th>
+            <th>総在庫数</th>
+          </tr>
+
+          {% for row in pagination.getItems() %}
+          <tr>
+            <td>{{ row['ne_syohin_syohin_code'] }}</td>
+            {% for key in stockKeys %}
+                <td class="text-right{{ row[key] ? '' : ' gray' }}">{{ row[key]|number_format }}</td>
+            {% endfor %}
+
+            <td class="text-right">{{ row['在庫数']|number_format }}</td>
+            <td class="text-right">{{ row['フリー在庫数']|number_format }}</td>
+            <td class="text-right">{{ row['発注残数']|number_format }}</td>
+
+            <td class="text-right">{{ row['受注数']|number_format }}</td>
+            <td class="text-right">{{ row['引当数']|number_format }}</td>
+            <td class="text-right">{{ row['ピッキング引当数']|number_format }}</td>
+            <td class="text-right">{{ row['出荷予定取置数']|number_format }}</td>
+            <td class="text-right">{{ row['移動中在庫数']|number_format }}</td>
+            <td class="text-right">{{ row['販売不可在庫数']|number_format }}</td>
+            <td class="text-right">{{ row['総在庫数']|number_format }}</td>
+          </tr>
+          {% endfor %}
+
+        </table>
+
+      {% else %}
+        データがありません。
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}

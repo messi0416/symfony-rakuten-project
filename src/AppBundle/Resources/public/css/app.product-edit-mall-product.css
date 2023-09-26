@@ -1,0 +1,21 @@
+.fz18 {
+  font-size: 18px;
+}
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+.bg-w-smoke {
+  background-color: WhiteSmoke;
+}
+.b0 {
+  border: 0 !important;
+}
+.px6 {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+.py2 {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}

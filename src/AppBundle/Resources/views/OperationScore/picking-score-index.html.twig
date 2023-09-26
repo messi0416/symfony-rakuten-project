@@ -1,0 +1,153 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block meta %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.operation-score-picking-score-user.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body -%}
+
+<div class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>ピッキングスコア</h2>
+        </div>
+
+        <div class="pull-right">
+          <h4 class="text-right">
+            <a class="btn btn-danger mb10 inlineBlock" onClick="window.close();">
+              閉じる
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  <div id="pickingScoreUserLogListTable" data-url="{{ path('picking_score_logs') }}">
+    <div class="col-sm-12" style="font-size: large;">
+    ユーザー名：　<span style="margin-left: 40px;">{{ account.getUsername() }}</span>
+    </div>
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th class="col-xs-3">レコード数</th>
+              <th class="col-xs-3">SC箱</th>
+              <th class="col-xs-3">V箱</th>
+              <th class="col-xs-3">その他の箱</th>
+            </tr>
+            <tbody>
+            <tr>
+              <td v-text="firstColumnRecords"></td>
+              <td v-text="firstColumnMyAveragePickingTimeSC"></td>
+              <td v-text="firstColumnMyAveragePickingTimeV"></td>
+              <td v-text="firstColumnMyAveragePickingTimeOTHERS"></td>
+            </tr>
+            <tr>
+              <td v-text="secondColumnRecords"></td>
+              <td v-text="secondColumnMyAveragePickingTimeSC"></td>
+              <td v-text="secondColumnMyAveragePickingTimeV"></td>
+              <td v-text="secondColumnMyAveragePickingTimeOTHERS"></td>
+            </tr>
+            <tr>
+              <td v-text="thirdColumnRecords"></td>
+              <td v-text="thirdColumnMyAveragePickingTimeSC"></td>
+              <td v-text="thirdColumnMyAveragePickingTimeV"></td>
+              <td v-text="thirdColumnMyAveragePickingTimeOTHERS"></td>
+            </tr>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12" style="font-size: large;">
+      全体平均
+    </div>
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th class="col-xs-3">レコード数</th>
+              <th class="col-xs-3">SC箱</th>
+              <th class="col-xs-3">V箱</th>
+              <th class="col-xs-3">その他の箱</th>
+            </tr>
+            <tbody>
+            <tr>
+              <td v-text="thirdColumnRecords"></td>
+              <td v-text="overallAveragePickingTimeSC"></td>
+              <td v-text="overallAveragePickingTimeV"></td>
+              <td v-text="overallAveragePickingTimeOTHERS"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-sm-12" style="font-size: large;">
+      トップレコード
+    </div>
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <tr >
+              <th class="col-xs-3">レコード数</th>
+              <th class="col-xs-3">SC箱</th>
+              <th class="col-xs-3">V箱</th>
+              <th class="col-xs-3">その他の箱</th>
+            </tr>
+            <tbody>
+            <tr>
+              <td v-text="thirdColumnRecords"></td>
+              <td v-text="fastestAveragePickingTimeSC"></td>
+              <td v-text="fastestAveragePickingTimeV"></td>
+              <td v-text="fastestAveragePickingTimeOTHERS"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

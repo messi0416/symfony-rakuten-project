@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style type="text/css">
+    * { margin: 0; padding: 0 }
+    *, *:before, *:after {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -o-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    body{
+      /* font-family: "IPAMincho", "IPAexMincho", serif;*/ /*"IPA 明朝",*/
+      font-family: "Source Code Pro", "IPA Gothic", serif; /*"IPA GOTHIC",*/
+      font-size: 8pt;
+      width:  190mm;
+    }
+
+    /* テーブル改ページずれ防止 */
+    tr {
+      page-break-inside: avoid;
+    }
+
+    .clearfix:after {
+      content: "";
+      clear: both;
+      display: block;
+    }
+    .br::after {
+      content: "\A" ;
+      white-space: pre ;
+    }
+
+    .page {
+      /*page-break-after: always;*/
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+    th {
+      font-weight: normal;
+      text-align: left;
+    }
+    td {
+      text-align: left;
+    }
+
+    .head-pad {
+      height: 15mm;
+      width: 100%;
+    }
+
+    .header {
+      /* border: solid 1px #000000; */
+      /*height: 20mm;*/
+      position: relative;
+
+      margin-top: 10mm;
+      margin-bottom: 5mm;
+    }
+    .header .title {
+      font-size: 22pt;
+      font-weight: normal;
+      height: 20mm;
+      width: 190mm;
+
+      text-align: center;
+      line-height: 20mm;
+    }
+
+    .label-simple {
+      /*border: solid 1px #666;*/
+      /*border-radius: 3mm;*/
+      /*padding: 2mm 6mm;*/
+      /*background-color: #fff;*/
+
+      margin-top: 10mm;
+      display: block;
+      font-size: 48pt;
+    }
+
+    .body {
+      /* border: solid 1px #000000; */
+      /*height: 20mm;*/
+      position: relative;
+
+      margin-top: 15mm;
+      margin-bottom: 5mm;
+    }
+    table.shippingMethodTable {
+      width: 100%;
+    }
+
+    table.shippingMethodTable td,
+    table.shippingMethodTable th {
+      border: solid 1px #303030;
+      padding: 6pt 10pt;
+    }
+    table.shippingMethodTable th {
+      font-size: 18pt;
+    }
+    table.shippingMethodTable td {
+      font-size: 14pt;
+    }
+
+
+  </style>
+</head>
+<body>
+
+{% if voucher|length == 0 %}
+納品書データが取得できませんでした。
+{% else  %}
+
+  <div class="page">
+
+    <div class="head-pad">&nbsp;</div>
+
+    <div class="header">
+      <div class="title">
+        納品書 取込日時： {{ voucher.getImported().format('Y-m-d H:i:s') }}
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="title">
+        ピッキングリストNo.
+      </div>
+      <div class="title">
+        <span class="label-simple">
+          {{ warehouseSerialNumber.symbol }}-{{ warehouseSerialNumber.warehouse_daily_number }} [{{ voucher.getPickingListNumber() }}]
+        </span>
+      </div>
+    </div>
+
+    <div class="body">
+      {% if shippingMethods|length > 0 %}
+      <table class="shippingMethodTable">
+        {% for method, voucherNumbers in shippingMethods %}
+        <tr>
+          <th class="shippingMethod" width="35%">
+            {{ method }}
+          </th>
+          <td class="voucherNumbers" width="65%">
+            {{ voucherNumbers|join(', ') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+      {% if patterns != "" %}
+      <br>
+      <table class="shippingMethodTable">
+        <tr>
+          <th class="shippingMethod" width="35%">
+            ブロック
+          </th>
+          <td class="voucherNumbers" width="65%">
+            {{ patterns }}
+          </td>
+        </tr>
+      </table>
+      {% endif %}
+    </div>
+
+
+  </div>
+
+{% endif %}
+
+</body>
+</html>

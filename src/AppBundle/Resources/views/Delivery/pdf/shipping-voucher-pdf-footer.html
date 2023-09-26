@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <script>
+  function substitute() {
+    var vars = {};
+    var i;
+    var queries = document.location.search.substring(1).split('&');
+    for(i = 0; i < queries.length; i++) { var z = queries[i].split('=',2); vars[z[0]] = decodeURIComponent(z[1]); }
+    var keys = ['frompage', 'topage', 'page', 'webpage', 'section', 'subsection', 'subsubsection'];
+    // custom variables
+    keys.push('voucher_number');
+
+    for(i = 0; i < keys.length; i++) {
+      var elements = document.getElementsByClassName(keys[i]);
+      for(var j = 0; j < elements.length; j++) { elements[j].textContent = vars[keys[i]]; }
+    }
+  }
+</script>
+  <style type="text/css">
+    * { margin: 0; padding: 0 }
+    body{
+      font-family: "IPAMincho", "IPAexMincho", serif; /*"IPA 明朝",*/
+      font-size: 8pt;
+    }
+
+    .footer {
+      width: 100%;
+      padding-top: 2mm;
+      text-align: center;
+    }
+  </style>
+</head>
+<body onload="substitute()">
+
+<div class="footer">
+  [<span class="voucher_number"></span>] [<span class="page"></span>/<span class="topage"></span>]
+</div>
+
+</body>
+</html>

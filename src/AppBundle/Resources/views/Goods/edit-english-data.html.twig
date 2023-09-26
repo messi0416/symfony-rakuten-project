@@ -1,0 +1,311 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+  'bundles/app/css/app.goods.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {#&#123;&#35; pagination コンポーネント&#35;&#125;#}
+  {#{% include 'AppBundle::parts/pagination.html.twig' %}#}
+
+  {#{% javascripts#}
+  {#'@AppBundle/Resources/public/js/app.concierge-unpaid-list.js'#}
+  {#%}#}
+  {#<script src="{{ asset_url }}"></script>#}
+  {#{% endjavascripts %}#}
+{% endblock %}
+
+{% block body %}
+
+  <div id="goodsEditEnglishData" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品 英語情報編集</h2>
+        </div>
+
+        <div class="pull-right mt20">
+          <a class="btn btn-default" href="{{ path('goods_list_english') }}">一覧</a>
+        </div>
+
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="goodsEditEnglishDataTable">
+
+      {% if product %}
+      <form role="form" action="{{ path('goods_edit_english') }}" method="post">
+
+        <div class="panel panel-default">
+          <div class="panel-body clearfix">
+
+            <div class="pull-left">
+              <div class="form-inline">
+                <div class="inlineBlock mr10">
+                  <input type="checkbox" class="checkbox checkboxLarge" name="manual_input" value="1" id="checkboxManualInput"
+                        {% if english.isManualInput() %}checked="checked"{% endif %}
+                    >
+                  <label for="checkboxManualInput">手入力</label>
+                </div>
+
+                <div class="inlineBlock mr10">
+                  <input type="checkbox" class="checkbox checkboxLarge" name="check_flg" value="1" id="checkboxCheckFlg"
+                        {% if english.isChecked() %}checked="checked"{% endif %}
+                    >
+                  <label for="checkboxCheckFlg">チェック済み</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="pull-right">
+              <input type="submit"class="btn btn-lg btn-primary" value="保存する">
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            商品タイトル
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                <div class="well well-sm originalText">
+                  {{ product.getDaihyoSyohinName() }}
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <textarea name="title" class="form-control inputTitle">{{ english.getTitle() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            説明文(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getDescription() %}
+                <div class="well well-sm originalText">
+                  {{ product.getDescription() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea name="description" class="form-control inputDescription">{{ english.getDescription() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            サイズ(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getAboutSize() %}
+                <div class="well well-sm originalText">
+                  {{ product.getAboutSize() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="about_size" class="form-control inputDescription">{{ english.getAboutSize() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            素材(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getAboutMaterial() %}
+                <div class="well well-sm originalText">
+                  {{ product.getAboutMaterial() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="about_material" class="form-control inputDescription">{{ english.getAboutMaterial() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            カラー(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getAboutColor() %}
+                <div class="well well-sm originalText">
+                  {{ product.getAboutColor() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="about_color" class="form-control inputDescription">{{ english.getAboutColor() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            ブランド(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getAboutBrand() %}
+                <div class="well well-sm originalText">
+                  {{ product.getAboutBrand() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="about_brand" class="form-control inputDescription">{{ english.getAboutBrand() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            使用上の注意(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getUsageNote() %}
+                <div class="well well-sm originalText">
+                  {{ product.getUsageNote() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="usage_note" class="form-control inputDescription">{{ english.getUsageNote() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            補足説明(PC)
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getSupplementalExplanation() %}
+                <div class="well well-sm originalText">
+                  {{ product.getSupplementalExplanation() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="supplemental_explanation" class="form-control inputDescription">{{ english.getSupplementalExplanation() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            モバイル用説明文
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getShortDescription() %}
+                <div class="well well-sm originalText">
+                  {{ product.getShortDescription() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="short_description" class="form-control inputDescription">{{ english.getShortDescription() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            モバイル用補足説明
+          </div>
+          <div class="panel-body">
+            <div class="row row10">
+              <div class="col-sm-6">
+                {% if product.getShortSupplementalExplanation() %}
+                <div class="well well-sm originalText">
+                  {{ product.getShortSupplementalExplanation() | nl2br }}
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="col-sm-6">
+                <textarea  name="short_supplemental_explanation" class="form-control inputDescription">{{ english.getShortSupplementalExplanation() }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clearfix mb20">
+          <div class="pull-right">
+            <input type="submit"class="btn btn-lg btn-primary" value="保存する">
+
+            <input type="hidden" name="code" value="{{ product.getDaihyoSyohinCode() }}">
+          </div>
+        </div>
+
+      </form>
+      {% endif %}
+
+    </div>
+  </div>
+
+{% endblock %}

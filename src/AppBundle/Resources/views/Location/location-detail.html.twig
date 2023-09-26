@@ -1,0 +1,182 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-location-detail.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}ロケーション詳細{% endblock %}
+
+{% block headerButtons %}
+{% endblock %}
+
+{% block contents %}
+
+{% if data %}
+<div id="locationDetail"
+     data-update-url="{{ path('location_location_update', { 'locationId': data.location.id }) }}"
+     data-delete-all-url="{{ path('location_location_delete', { 'locationId': data.location.id }) }}"
+     data-product-detail-url="{{ path('location_product_detail', { 'syohinCode' : 'DUMMY' }) }}"
+  >
+
+  <script type="text/javascript">
+    var LOCATION_DATA = {{ jsonData | raw }};
+  </script>
+
+  <div class="row locationBlock">
+    <div class="col-xs-12 locationCode">
+      <span class="label label-symbol" v-text="warehouse.symbol"></span>
+      <span class="label label-info" v-text="location.locationCode"></span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <button class="btn btn-default pull-left mr10 mb10" v-on:click="checkAll">
+        <i class="fa fa-check-square-o"></i>
+        全て選択
+      </button>
+      <button class="btn btn-default pull-left mr10 mb10" v-on:click="unCheckAll">
+        <i class="fa fa-square-o"></i>
+        選択解除
+      </button>
+
+      {% if data and data.location and 'NE_K_' in data.location.locationCode %}
+      <button type="button" class="btn btn-danger pull-left mb10" v-on:click="onStockChangeConfirm">
+        削除
+      </button>
+      {% endif %}
+
+      <a class="btn btn-default pull-right" href="{{ path('location_location_detail', { 'locationId' : data.location.id }) }}">
+        <i class="fa fa-repeat"></i>
+      </a>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-xs-12">
+      <table class="table mb10" id="locationList">
+        <tr is="result-item"
+            v-for="productLocation in productLocations"
+            :item="productLocation"
+          >
+      </table>
+    </div>
+  </div>
+
+  <div class="row" v-show="hasError" style="display:none">
+    <div class="col-xs-12">
+      <div class="alert alert-danger">
+        <button type="button" class="close" v-on:click="clearError">&times;</button>
+        <p class="multiLineWrap" v-text="errorMessage"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <span v-text="productsNum"></span> 件中 <span class="bold" v-text="checkedProductsNum"></span> 商品 ( <span v-text="checkedStockTotal"></span> 個 ) を
+    </div>
+    <div class="panel-body">
+
+      <div class="row row10">
+        <div class="col-xs-8">
+          <input type="text" class="form-control" v-model="newLocationCode">
+        </div>
+
+        <div class="col-xs-4">
+          <button class="btn btn-warning fullWidth"
+                  v-bind:class="{ 'disabled' : checkedProductsNum == 0 }"
+                  v-on:click="submitForm"
+            >へ移動</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {# コメント入力モーダル #}
+  <div class="modal"
+       id="modalStockChangeConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            在庫数合計 変更確認
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert alert-info" v-text="stockChangeConfirmMessage"></div>
+          <div class="alert alert-danger" v-show="commentErrorMessage" v-text="commentErrorMessage"></div>
+
+          <div>
+            <form role="form">
+              <div class="form-group" v-show="commentChoiceOptions.length > 0">
+                <select class="form-control" v-model="stockChangeComment">
+                  <option value=""></option>
+                  <option v-for="option in commentChoiceOptions" v-bind:value="option" v-text="option"></option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <textarea class="form-control h150" v-model="stockChangeComment"></textarea>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-warning fullWidth" v-on:click="onStockChangeSubmit">確定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr class="text-center" v-bind:class="rowCss">
+    <td class="col-xs-3">
+      <a v-bind:href="productDetailUrl">
+        <img class="img-responsive" v-bind:src="image" />
+      </a>
+    </td>
+    <td class="col-xs-2" v-on:click="toggleCheck">
+      <span class="label label-default stock" v-text="stock"></span>
+    </td>
+    <td class="col-xs-2" v-on:click="toggleCheck">
+      ( <span class="stock" v-text="moveNum"></span> )
+    </td>
+    <td class="col-xs-5" v-on:click="toggleCheck">
+      <span v-text="neSyohinSyohinCode"></span>
+    </td>
+  </tr>
+</script>
+
+
+{% endif %}
+
+{% endblock %}

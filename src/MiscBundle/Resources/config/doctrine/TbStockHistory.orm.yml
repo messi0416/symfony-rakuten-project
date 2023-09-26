@@ -1,0 +1,12 @@
+MiscBundle\Entity\TbStockHistory:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbStockHistoryRepository
+  table: tb_stock_history
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      unsigned: false
+      column: ID
+      id: true

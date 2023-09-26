@@ -1,0 +1,357 @@
+MiscBundle\Entity\TbSalesDetailAnalyze:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbSalesDetailAnalyzeRepository
+    table: tb_sales_detail_analyze
+
+    id:
+        # 伝票番号:
+        voucher_number:
+            column: 伝票番号
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+        line_number:
+            column: 明細行
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+
+    fields:
+        order_number:
+            column: 受注番号
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        order_date:
+            column: 受注日
+            type: datetime
+            nullable: true
+        shipping_date:
+            column: 出荷確定日
+            type: datetime
+            nullable: true
+        import_date:
+            column: 取込日
+            type: datetime
+            nullable: true
+#        入金日:
+#            type: datetime
+#            nullable: true
+#        配達希望日:
+#            type: datetime
+#            nullable: true
+#        出荷予定日:
+#            type: datetime
+#            nullable: true
+#        納品書印刷指示日:
+#            type: datetime
+#            nullable: true
+#        キャンセル日:
+#            type: datetime
+#            nullable: true
+        canceled:
+            column: キャンセル区分
+            type: string
+            nullable: false
+            length: 2
+            options:
+                fixed: false
+                default: '0'
+#        入金額:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        発送伝票番号:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+        shop_name:
+            column: 店舗名
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        ne_mall_id:
+            column: 店舗コード
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        shipping_method_name:
+            column: 発送方法
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        shipping_method_code:
+            column: 配送方法コード
+            type: string
+            nullable: true
+            length: 4
+            options:
+                fixed: false
+#        支払方法:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        支払方法コード:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        総合計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        商品計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        税金:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        発送代:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        手数料:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        他費用:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        ポイント数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+        order_status:
+            column: 受注状態
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+#        受注分類タグ:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        確認チェック:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        発送伝票備考欄:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        ピッキング指示:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+        special_note:
+            column: 納品書特記事項
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+#        顧客cd:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        顧客区分:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        入金状況:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        名義人:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        承認状況:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        承認額:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        納品書発行日:
+#            type: datetime
+#            nullable: true
+#        重要チェック:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        重要チェック者:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+        detail_canceled:
+            column: 明細行キャンセル
+            type: string
+            nullable: true
+            length: 2
+            options:
+                fixed: false
+                default: ''
+        ne_syohin_syohin_code:
+            column: 商品コード（伝票）
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+                default: ''
+
+        daihyo_syohin_code:
+            column: daihyo_syohin_code
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+                default: ''
+
+#        商品名（伝票）:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+#        商品オプション:
+#            type: string
+#            nullable: true
+#            length: 255
+#            options:
+#                fixed: false
+        ordered_num:
+            column: 受注数
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 0
+        assigned_num:
+            column: 引当数
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 0
+        assigned_date:
+            column: 引当日
+            type: datetime
+            nullable: true
+#        売単価:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        小計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        元単価:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        掛率:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#        受注年:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#        受注月:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+        customer_name:
+            column: 購入者名
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+                default: ''
+#        購入者電話番号:
+#            type: string
+#            nullable: false
+#            length: 30
+#            options:
+#                fixed: false
+        shipping_planed_date:
+            column: 出荷予定年月日
+            type: date
+            nullable: false
+#        出荷予定月日:
+#            type: string
+#            nullable: false
+#            length: 10
+#            options:
+#                fixed: false
+#        出荷予定月:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+    lifecycleCallbacks: {  }

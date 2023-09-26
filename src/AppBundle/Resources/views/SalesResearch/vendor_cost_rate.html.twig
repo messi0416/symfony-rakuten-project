@@ -1,0 +1,313 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.sales-research.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container container-large">
+
+  <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+    <div class="pull-left">
+      <h2>仕入先一覧</h2>
+    </div>
+
+    <div class="pull-left">
+        <div class="(% messageCssClass %)" v-text="message"></div>
+    </div>
+    {#<div class="pull-right">#}
+        {#<button class="btn btn-lg btn-danger" v-on="click: closeWindow()">閉じる</button>#}
+    {#</div>#}
+  </div>
+
+  {% for type, flashMessages in app.session.flashbag.all() %}
+    {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+    <div>
+    {% for flashMessage in flashMessages %}
+      <div class="alert alert-{{ type }}">
+        {{ flashMessage }}
+      </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <div class="row" id="functionBlock"
+      data-url-save-setting="{{ path('api_save_cost_rate_vendors_setting') }}"
+    >
+    <form role="form" action="{{ path('sales_research_cost_rate_list') }}" method="post" id="termForm">
+
+      <div class="col-sm-6">
+        <div class="row">
+          <div class="col-sm-10">
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                {{ form_row(termForm.dateAStart, {'attr': {'class': 'form-control', 'v-model': 'dateAStart'} }) }}
+              </div>
+              <div class="col-sm-6 form-group">
+                {{ form_row(termForm.dateAEnd, {'attr': {'class': 'form-control', 'v-model': 'dateAEnd'} }) }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                {{ form_row(termForm.dateBStart, {'attr': {'class': 'form-control', 'v-model': 'dateBStart'} }) }}
+              </div>
+              <div class="col-sm-6 form-group">
+                {{ form_row(termForm.dateBEnd, {'attr': {'class': 'form-control', 'v-model': 'dateBEnd'} }) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-2 text-center">
+            <label class="btn btn-sm btn-default mb5 mr5" v-on:click="selectOneDay">日</label>
+            <label class="btn btn-sm btn-default mb5 mr5" v-on:click="selectOneWeek">週</label>
+            <label class="btn btn-sm btn-default mb5 mr5" v-on:click="selectOneMonth">月</label>
+            <label class="btn btn-sm btn-default mb5 mr5" v-on:click="selectOneYear">年</label>
+          </div>
+        </div>
+
+        <div class="row text-center">
+          <div class="col-sm-12">
+            <div class="form-group pull-left">
+              <label class="btn btn-default inlineBlock mr5" v-on:click="moveDayRange('backward', -365)"><i class="fa fa-angle-double-left"></i></label>
+
+              <label class="btn btn-default inlineBlock mr5" v-on:click="moveDayRange('backward')"><i class="fa fa-angle-left"></i></label>
+              {{  form_widget(termForm.moveDays, {'attr': {'class': 'form-control inlineBlock midSmallInt', 'v-model': 'moveDays', 'number': true}}) }} 日
+              <label class="btn btn-default inlineBlock mr5" v-on:click="moveDayRange('forward')"><i class="fa fa-angle-right"></i></label>
+
+              <label class="btn btn-default inlineBlock mr5" v-on:click="moveDayRange('forward', 365)"><i class="fa fa-angle-double-right"></i></label>
+            </div>
+
+            <div class="text-center pull-right">
+              <a class="btn btn-success" v-on:click="submitTermForm">期間を集計</a>
+            </div>
+          </div>
+        </div>
+        {{ form_rest(termForm) }}
+
+      </div>
+
+      <div class="col-sm-6" v-show="isModeCostRate">
+
+        <div>
+          <div class="row">
+            <div class="col-sm-12 text-left clearfix">
+
+              <div class="form-group pull-right mr5">
+                <label for="minimum_voucher">伝票数</label><br>
+                <input type="text" class="form-control smallInt inlineBlock" id="minimum_voucher"
+                       value="{{ setting.getMinimumVoucher() }}"
+                       v-model="minimum_voucher" number
+                       v-on:keyup.enter="updateRates"
+                  />
+              </div>
+
+              <div class="form-group pull-right mr5">
+                <label for="change_threshold">変動閾値</label><br>
+                <input type="text" class="form-control smallInt inlineBlock" id="change_threshold"
+                       value="{{ setting.getChangeThreshold() }}"
+                       v-model="change_threshold" number
+                       v-on:keyup.enter="updateRates"
+                  /> %
+              </div>
+
+              <div class="form-group pull-right mr5">
+                <label for="rate_change_amount_down">変更値(下)</label><br>
+                <input type="text" class="form-control smallInt inlineBlock" id="rate_change_amount_down"
+                       value="{{ setting.getChangeAmountDown() }}"
+                       v-model="rate_change_amount_down" number
+                       v-on:keyup.enter="updateRates"
+                  />
+              </div>
+
+              <div class="form-group pull-right mr5">
+                <label for="rate_change_amount_up">変更値(上)</label><br>
+                <input type="text" class="form-control smallInt inlineBlock" id="rate_change_amount_up"
+                       value="{{ setting.getChangeAmountUp() }}"
+                       v-model="rate_change_amount_up" number
+                       v-on:keyup.enter="updateRates"
+                  />
+              </div>
+
+              <div class="form-group pull-right mr5">
+                <label for="rate_change_amount_additional">固定変更値</label><br>
+                <input type="text" class="form-control midSmallInt inlineBlock" id="rate_change_amount_additional"
+                       value="{{ setting.getChangeAmountAdditional() }}"
+                       v-model="rate_change_amount_additional" number
+                       v-on:keyup.enter="updateRates"
+                  />
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 text-left clearfix">
+              {#<div class="form-group pull-right text-left mr5" style="font-size: 0.8rem">#}
+                {#<br>#}
+                {#<br>#}
+                {#A期間 最大：{{ costRateChanges.a.max }} / 平均: {{ costRateChanges.a.average }} <br>#}
+                {#B期間 最大：{{ costRateChanges.b.max }} / 平均: {{ costRateChanges.b.average }}#}
+              {#</div>#}
+
+              <div class="form-group pull-right text-right mr5">
+                <label for="settled_threshold">揺さぶり対象累積値</label><br>
+                <input type="text" class="form-control midSmallInt inlineBlock" id="settled_threshold"
+                       value="{{ setting.getSettledThreshold() }}"
+                       v-model="settled_threshold" number
+                  />
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 text-right">
+              <span class="btn btn-primary mb5" v-on:click="updateRates">再計算</span>
+              <span class="btn btn-pink mb5" v-on:click="unsettleRates" v-bind:disabled="isUnsettled == true">揺さぶり </span>
+              <span class="btn btn-info mb5" v-on:click="resetUpdateRatesForm">リセット</span>
+              <span class="btn btn-warning mb5" v-on:click="saveRates" v-bind:disabled="!isSaveEnabled">保存</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+
+
+  <div id="costRatesTable"
+       data-url="{{ path('api_home') }}"
+       data-url-load-data-cost-rate="{{ path('sales_research_cost_rate_load_data', { mode: 'costRate' }) }}"
+       data-url-load-data-all-products="{{ path('sales_research_cost_rate_load_data', { mode: 'allProducts' }) }}"
+      >
+
+    <ul class="nav nav-tabs mb10">
+      <li v-bind:class="{ 'active' : currentMode == 'costRate' }" v-on:click="changeMode('costRate')"><a>原価率設定</a></li>
+      <li v-bind:class="{ 'active' : currentMode == 'allProducts' }" v-on:click="changeMode('allProducts')"><a>全商品</a></li>
+
+      <li class="comment" v-show="tableComment.length > 0">
+        <span v-text="tableComment"></span>
+      </li>
+    </ul>
+
+    <div v-show="nowLoading" class="row" style="margin-top: 60px;">
+      <div class="col-sm-12 text-center">
+        <img src="/img/loading-large.gif" />
+      </div>
+    </div>
+
+    <form role="form" action="{{ path('sales_research_cost_rate_list_update') }}" method="post" id="updateForm" v-show="dataLoaded[currentMode]">
+      <table class="table table-bordered" >
+        <thead>
+        <tr>
+          <th rowspan="2" class="text-center sortable" v-on:click="switchSort('sireCode')">
+            コード
+            <i v-bind:class="sortMarks.sireCode.cssClass" v-show="sortMarks.sireCode.show"></i>
+          </th>
+          <th rowspan="2" class="text-center sortable" v-on:click="switchSort('sireName')">
+            仕入先名
+            <i v-bind:class="sortMarks.sireName.cssClass" v-show="sortMarks.sireName.show"></i>
+          </th>
+          <th rowspan="2" class="text-center sortable" v-on:click="switchSort('itemCount')">
+            商品数
+            <i v-bind:class="sortMarks.itemCount.cssClass" v-show="sortMarks.itemCount.show"></i>
+          </th>
+          <th rowspan="2" class="text-center sortable" v-on:click="switchSort('stockAmount')">
+            在庫金額
+            <i v-bind:class="sortMarks.stockAmount.cssClass" v-show="sortMarks.stockAmount.show"></i>
+          </th>
+          <th colspan="2" class="text-center">原価率</th>
+          <th colspan="3" class="text-center">B期間</th>
+          <th colspan="3" class="text-center">A期間</th>
+        </tr>
+        <tr>
+          <th class="text-center sortable" v-on:click="switchSort('costRate')">
+            現設定
+            <i v-bind:class="sortMarks.costRate.cssClass" v-show="sortMarks.costRate.show"></i>
+          </th>
+          <th class="text-center sortable costRateFormCol" v-on:click="switchSort('costRateForm')">
+            更新値
+            <i v-bind:class="sortMarks.costRateForm.cssClass" v-show="sortMarks.costRateForm.show"></i>
+          </th>
+
+          <th class="text-center sortable" v-on:click="switchSort('dataB.costRateAverage')">
+            平均
+            <i v-bind:class="sortMarks['dataB.costRateAverage'].cssClass" v-show="sortMarks['dataB.costRateAverage'].show"></i>
+          </th>
+          <th class="text-center sortable" v-on:click="switchSort('dataB.profit')">
+            粗利額
+            <i v-bind:class="sortMarks['dataB.profit'].cssClass" v-show="sortMarks['dataB.profit'].show"></i>
+          </th>
+          <th class="text-center sortable" v-on:click="switchSort('dataB.amount')">
+            伝票金額 / 数
+            <i v-bind:class="sortMarks['dataB.amount'].cssClass" v-show="sortMarks['dataB.amount'].show"></i>
+          </th>
+
+          <th class="text-center sortable" v-on:click="switchSort('dataA.costRateAverage')">
+            平均
+            <i v-bind:class="sortMarks['dataA.costRateAverage'].cssClass" v-show="sortMarks['dataA.costRateAverage'].show"></i>
+          </th>
+          <th class="text-center sortable" v-on:click="switchSort('dataA.profit')">
+            粗利額
+            <i v-bind:class="sortMarks['dataA.profit'].cssClass" v-show="sortMarks['dataA.profit'].show"></i>
+          </th>
+          <th class="text-center sortable" v-on:click="switchSort('dataA.amount')">
+            伝票金額 / 数
+            <i v-bind:class="sortMarks['dataA.amount'].cssClass" v-show="sortMarks['dataA.amount'].show"></i>
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr is="result-item"
+            v-for="item in currentData | orderBy sortField sortReverse"
+            :item="item"
+            :current-mode="currentMode"
+            >
+        </tr>
+        </tbody>
+      </table>
+
+    </form>
+  </div>
+
+</div>
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr v-bind:class="{ shadow: !item.isTarget, unsettled: item.isUnsettledTarget }">
+    <td class="text-center">(% item.sireCode %)</td>
+    <td>(% item.sireName %)</td>
+    <td class="text-right">(% displayItemCount %)</td>
+    <td class="text-right">(% displayStockAmount %)</td>
+    <td class="text-center costRate">(% item.costRate %)</td>
+    <td class="text-center">
+      <template v-if="isModeCostRate" >
+        <i v-bind:class="costRateMove"></i>
+        <input type="text" name="app_sales_research_cost_rate_update[(% item.sireCode %)]" v-model="item.costRateForm" class="miniInt" />
+        <i class="fa fa-arrow-up text-success" v-show="item.arrowShowUp"></i>
+        <i class="fa fa-arrow-down text-danger" v-show="item.arrowShowDown"></i>
+      </template>
+      <input v-else type="text" class="miniInt" value="-" readonly />
+    </td>
+
+    <td class="text-center costRate">(% item.dataB.costRateAverage %)</td>
+    <td class="text-right"><i v-bind:class="profitMove"></i> (% displayProfitB %)</td>
+    <td class="text-right">(% displayAmountB %) / (% displayVoucherNumB %)</td>
+
+    <td class="text-center costRate">(% item.dataA.costRateAverage %)</td>
+    <td class="text-right">(% displayProfitA %)</td>
+    <td class="text-right">(% displayAmountA %) / (% displayVoucherNumA %)</td>
+  </tr>
+</script>
+
+{% endblock %}
+

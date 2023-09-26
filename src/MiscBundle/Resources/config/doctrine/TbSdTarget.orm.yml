@@ -1,0 +1,15 @@
+MiscBundle\Entity\TbSdTarget:
+    type: entity
+    table: tb_sd_target
+    fields:
+        genreName:
+            type: string
+            length: '100'
+            column: genre_name
+        target:
+            type: string
+            length: '100'
+        code:
+            id: true
+            type: integer
+    lifecycleCallbacks: {  }

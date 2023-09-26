@@ -1,0 +1,202 @@
+MiscBundle\Entity\TbSalesDetailVoucher:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\AnalyzedSalesDetailRepository
+    table: tb_sales_detail_voucher
+    id:
+        # 伝票番号:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+         orderDate:
+            type: date
+            nullable: true
+            column: 受注年月日
+#        受注年月:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#        受注年:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        受注月:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        出荷年月日:
+#            type: date
+#            nullable: false
+#        出荷年月:
+#            type: string
+#            nullable: false
+#            length: 6
+#            options:
+#                fixed: false
+#        出荷年:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        出荷月:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数を含む総合計:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        明細数:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        総合計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        商品計:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        税金:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        発送代:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        手数料:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        他費用:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        ポイント数:
+#            type: integer
+#            nullable: true
+#            options:
+#                unsigned: false
+#                default: '0'
+#        店舗コード:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        支払方法コード:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        配送方法コード:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        配送料額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        代引手数料額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        モールシステム料率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        モールシステム料額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        モール別支払方法別手数料率:
+#            type: float
+#            nullable: false
+#            precision: 10
+#            scale: 0
+#            options:
+#                default: '0'
+#        モール別支払方法別手数料額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        仕入原価:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        仕入原価の消費税:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        粗利額:
+#            type: integer
+#            nullable: false
+#            options:
+#                unsigned: false
+#                default: '0'
+#        購入者名:
+#            type: string
+#            nullable: false
+#            length: 50
+#            options:
+#                fixed: false
+#        購入者電話番号:
+#            type: string
+#            nullable: false
+#            length: 30
+#            options:
+#                fixed: false
+#        出荷予定年月日:
+#            type: date
+#            nullable: false
+    lifecycleCallbacks: {  }

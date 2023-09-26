@@ -1,0 +1,34 @@
+MiscBundle\Entity\TbTeam:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbTeamRepository
+    table: tb_team
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: チームID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        teamName:
+            type: string
+            nullable: false
+            length: 24
+            fixed: false
+            comment: チーム名
+            column: team_name
+        comment:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: コメント
+        deleteFlg:
+            type: boolean
+            nullable: false
+            comment: "削除フラグ\n0:未削除, 1:削除済み"
+            default: '0'
+            column: delete_flg
+    lifecycleCallbacks: {  }

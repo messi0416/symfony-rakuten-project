@@ -1,0 +1,128 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.goods-info.js' %}
+  <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
+{% endblock %}
+
+
+{% block body %}
+  <script type="text/javascript">
+    const SEARCH_CODE = "{{ code }}";
+  </script>
+
+  <div id="goodsInfo" class="container"
+    data-search-url="{{ path('goods_info_search') }}"
+    data-update-url="{{ path('goods_info_update') }}"
+  >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品情報・仕入備考編集</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    <div class="form-inline clearfix mb10 mt10">
+      <div class="form-group pull-left mr10">
+        <span class="mr10">代表商品コード：</span>
+        <input type="text" class="form-control w300" v-model="daihyoSyohinCode"/>
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-success" @click="search">検索</button>
+      </div>
+    </div>
+
+    <div class="panel panel-default" v-if="product !== null">
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="row row10 mb10">
+            <h2 class="col-xs-4 text-left"><span v-text="product.daihyoSyohinCode"></span></h2>
+            <div class="col-xs-8 text-left"><span v-text="product.daihyoSyohinName"></span></div>
+          </div>
+          <div class="row row10 mb10">
+            <button type="button" class="btn btn-primary" @click="update" v-if="isUpdatable">保存</button>
+          </div>
+          
+          <div class="clearfix">
+            <h2>商品情報</h2>
+
+            <div class="mb10 mt10">
+              <div class="form-group">
+                <span class="mr10">商品説明（大）</span>
+                <textarea class="form-control h120" v-model="product.description"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">サイズ詳細</span>
+                <textarea class="form-control h100" v-model="product.aboutSize"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">素材詳細</span>
+                <textarea class="form-control h100" v-model="product.aboutMaterial"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">カラー詳細</span>
+                <textarea class="form-control h100" v-model="product.aboutColor"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">ブランド詳細</span>
+                <textarea class="form-control h100" v-model="product.aboutBrand"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">使用上詳細</span>
+                <textarea class="form-control h100" v-model="product.usageNote"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">補足詳細</span>
+                <textarea class="form-control h100" v-model="product.supplementalExplanation"></textarea>
+              </div>
+              <div class="form-group">
+                <span class="mr10">商品説明（小）</span>
+                <input class="form-control" v-model="product.shortDescription">
+              </div>
+              <div class="form-group">
+                <span class="mr10">共通補足</span>
+                <textarea class="form-control h100" v-model="product.shortSupplementalExplanation"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="clearfix bg-danger">
+            <h2>仕入れ担当情報</h2>
+            
+            <div class="mb10 mt10">
+              <div class="form-group">
+                <span class="mr10">仕入備考</span>
+                <textarea class="form-control h120" v-model="product.sireDescription"></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="clearfix bg-danger">
+            <h2>memo</h2>
+            
+            <div class="mb10 mt10">
+              <div class="form-group">
+                <span class="mr10">memo</span>
+                <textarea class="form-control h120" v-model="product.memo"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

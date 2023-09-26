@@ -1,0 +1,136 @@
+{
+  "result": {
+    "total": 163113056,
+    "toReturn": [
+      {
+        "isShowWindow": false,
+        "priceRanges": [
+          {
+            "price": "1.10",
+            "range": "50-999"
+          },
+          {
+            "price": "0.85",
+            "range": "1000-5449999"
+          },
+          {
+            "price": "0.50",
+            "range": "5450000-5450000"
+          },
+          {
+            "price": "1.10",
+            "range": "50-999"
+          },
+          {
+            "price": "0.85",
+            "range": "1000-5449999"
+          },
+          {
+            "price": "0.50",
+            "range": "5450000-5450000"
+          }
+        ],
+        "customizedFeatureList": [],
+        "unitPrice": {
+          "amount": 0.5,
+          "cent": 50,
+          "centFactor": 100,
+          "currency": {
+            "defaultFractionDigits": 2,
+            "currencyCode": "CNY",
+            "symbol": "￥"
+          }
+        },
+        "priceUnit": "元",
+        "city": "徐水县",
+        "amount": 7459683,
+        "retailPrice": {
+          "amount": 5,
+          "cent": 500,
+          "centFactor": 100,
+          "currency": {
+            "defaultFractionDigits": 2,
+            "currencyCode": "CNY",
+            "symbol": "￥"
+          }
+        },
+        "qualityLevel": 5,
+        "isPrivateOffer": false,
+        "trustScore": "0",
+        "province": "河北",
+        "sendGoodsAddress": [],
+        "offerId": 521053382889,
+        "detailsUrl": "https://detail.1688.com/offer/521053382889.html",
+        "price": 0.5,
+        "imageList": [
+          {
+            "size310x310URL": "img/ibank/2016/134/890/3145098431_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/134/890/3145098431_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/134/890/3145098431_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/134/890/3145098431_349115949.jpg"
+          },
+          {
+            "size310x310URL": "img/ibank/2016/606/010/3443010606_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/606/010/3443010606_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/606/010/3443010606_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/606/010/3443010606_349115949.jpg"
+          },
+          {
+            "size310x310URL": "img/ibank/2016/899/653/3441356998_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/899/653/3441356998_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/899/653/3441356998_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/899/653/3441356998_349115949.jpg"
+          },
+          {
+            "size310x310URL": "img/ibank/2016/134/890/3145098431_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/134/890/3145098431_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/134/890/3145098431_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/134/890/3145098431_349115949.jpg"
+          },
+          {
+            "size310x310URL": "img/ibank/2016/606/010/3443010606_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/606/010/3443010606_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/606/010/3443010606_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/606/010/3443010606_349115949.jpg"
+          },
+          {
+            "size310x310URL": "img/ibank/2016/899/653/3441356998_349115949.310x310.jpg",
+            "summURL": "img/ibank/2016/899/653/3441356998_349115949.summ.jpg",
+            "size64x64URL": "https://cbu01.alicdn.com/img/ibank/2016/899/653/3441356998_349115949.64x64.jpg",
+            "imageURI": "img/ibank/2016/899/653/3441356998_349115949.jpg"
+          }
+        ],
+        "isSupportMix": true,
+        "company": "徐水县新农村成文鞋垫厂",
+        "memberId": "b2b-258480841251e2e",
+        "gmtModified": "20161125095300000+0800",
+        "tradeType": "1",
+        "skuArray": [],
+        "isOfferSupportOnlineTrade": true,
+        "productFeatureList": [],
+        "subject": "皮毛一体鞋垫冬季加绒保暖舒适淘宝爆款地摊暴力产品厂家直销",
+        "imageInfo": [],
+        "quantityBegin": 50,
+        "creditBalance": "0.0",
+        "amountOnSale": 0,
+        "gmtLastRepost": "20161125095300000+0800",
+        "isPriceAuthOffer": false,
+        "isGroupOffer": false,
+        "gmtExpire": "20170524095300000+0800",
+        "isProcessingOffer": false,
+        "gmtCreate": "20150804112900000+0800",
+        "isPicAuthOffer": false,
+        "gmtApproved": "20161125095300000+0800",
+        "saledCount": 2148171,
+        "isTpMember": true,
+        "unit": "双",
+        "skuPics": {},
+        "tpYear": "2",
+        "address": "瀑河乡新农村",
+        "postCategryId": 125754001,
+        "tradeFeatureList": []
+      }
+    ],
+    "success": false
+  }
+}

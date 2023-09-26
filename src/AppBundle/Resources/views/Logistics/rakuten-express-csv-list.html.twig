@@ -1,0 +1,144 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+    'bundles/app/css/app.logistics-rakuten-express-csv-list.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  '@AppBundle/Resources/public/js/app.logistics-rakuten-express-csv-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const LIST_DATA = {{ listData | raw }};
+    const BASE_URL = {{ baseUrl | raw }};
+  </script>
+
+  <div id="rakutenExpressCsvList"
+    data-convert-csv-url="{{ path('logistics_rakuten_express_convert_csv') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>楽天Express CSVファイル変換</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="form pull-left" style="height: 140px;">
+      <p class="function-message">CSVファイル変換</p>
+      <form id="convert-csv-form" enctype="multipart/form-data"> 
+        <div class="form-inline">
+          <div class="input-group date w200 pull-left">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            <input type="text" class="form-control" id="expectedShippingDate" name="expectedShippingDate" placeholder="出荷予定日">
+          </div>
+        </div>
+        <div class="pull-right">
+          <p class="function-message">変換するCSVファイルを選択してください</p>
+            <input type="file" accept=".csv" name="addrfile" style="display: inline-flex">
+            <button type="button" class="btn btn-success pull-right" v-on:click="convertCSV">変換</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="form pull-left" style="height: 140px;">
+      <div class="form-inline">
+        <div class="input-group date w200 pull-left mr5 mb5">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input type="text" class="form-control" id="conversionDateFrom" placeholder="FROM">
+        </div>
+        <div class="inputHeight text-center pull-left mr5 mb5">
+          ～
+        </div>
+        <div class="input-group date w200 pull-left mb5">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input type="text" class="form-control" id="conversionDateTo" placeholder="TO">
+        </div>
+      </div>
+      <div class="pull-right">
+        <button type="button" class="btn btn-success" v-on:click="fetchListByDate">取得</button>
+      </div>
+    </div>
+    <div v-show="message" class="form pull-left" id="messageBox">
+      <div v-bind:class="messageCssClass" v-text="message"></div>
+    </div>
+    <div style="clear:both;">
+      <table class="table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th class="w100">
+              <p class="text-center">
+                作成日
+              </p>
+            </th>
+            <th class="w300">
+              <p class="text-center">
+                変換後ファイル
+              </p>
+            </th>
+            <th class="w100">
+              <p class="text-center">
+                DL回数
+              </p>
+            </th>
+            <th class="w500">
+              <p>
+                エラーの伝票番号
+              </p>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr is="list-body"
+              v-for="row in list"
+              v-bind:row="row"
+          >
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# Vue.js コンポーネントテンプレート #}
+  <script id="list-body" type="x-template">
+    <tr id="row">
+      <td class="date">
+        <p class="mb0 mr10" v-text="conversionDate"></p>
+      </td>
+      <td class="csvName">
+        <a class="mb0 mr10" v-bind:href="convertedCSVPath" v-text="convertedCSVName" v-on:click="download">></a>
+      </td>
+      <td>
+        <p class="mb0 mr10" v-text="downloadCount"></p>
+      </td>
+      <td>
+        <p class="mb0 mr10 multiLineWrap w500" v-text="errorVoucherNumbers"></p>
+      </td>
+    </tr>
+  </script>
+{% endblock %}

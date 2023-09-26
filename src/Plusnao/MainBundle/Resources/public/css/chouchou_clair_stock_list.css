@@ -1,0 +1,81 @@
+/** 取引先様システム 売れ筋ランキング CSS */
+
+#chouchouClairStockList {
+}
+
+#chouchouClairStockList #header {
+  border-bottom: 1px solid #d9edf7;
+  margin-bottom: 20px;
+}
+
+/**
+ * 検索フォーム
+ */
+#functionBlock .formLabel {
+  text-align: right;
+  vertical-align: bottom;
+}
+#functionBlock .midSmallInt {
+  width: 50px;
+}
+#functionBlock .formError li {
+  margin-left: 0;
+  list-style-type: none;
+
+}
+
+#searchForm .searchKeyword label {
+  line-height: 2em;
+}
+
+/**
+ * 一覧表テーブル
+ */
+#chouchouClairStockListTable thead tr th {
+  font-weight: normal;
+  text-align: center;
+}
+#chouchouClairStockListTable thead tr th.sortable {
+  cursor: pointer;
+}
+
+/* 修正済み 在庫数表示 */
+#chouchouClairStockListTable td.modifiedStock {
+  background-color: #ffff89;
+  font-weight: bold;
+}
+
+/* 在庫修正ボタン */
+#chouchouClairStockListTable td.button {
+  width: 100px;
+  vertical-align: middle;
+}
+
+
+/*
+#chouchouClairStockListTable img.salesRankingThumbnail {
+  width: 80px;
+}
+#chouchouClairStockListTable .listCategory {
+  color: #909090;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+#chouchouClairStockListTable .listCategory a         { color: #333333; }
+#chouchouClairStockListTable .listCategory a:link    { color: #999999; }
+#chouchouClairStockListTable .listCategory a:hover   { color: #666666; }
+#chouchouClairStockListTable .listCategory a:visited { color: #999999; }
+#chouchouClairStockListTable .listCategory a:active  { color: #000000; }
+
+#chouchouClairStockListTable .sire {
+  color: #a0a0a0;
+  font-size: 0.8rem;
+  text-align: right;
+  width: 100%;
+  padding-top: 10px;
+}
+
+#chouchouClairStockListTable .reviewButton { min-width: 68px; }
+
+*/
+

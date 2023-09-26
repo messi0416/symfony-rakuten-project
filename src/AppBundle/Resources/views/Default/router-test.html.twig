@@ -1,0 +1,26 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.test-vue-router.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="mainBlock">
+
+    <ul class="nav nav-tabs nav-tabs-justified">
+      <li v-link-active><a v-link="{ path: '/costRateTable', activeClass: 'active' }">原価率設定</a></li>
+      <li v-link-active><a v-link="{ path: '/allProducts', activeClass: 'active' }">全商品</a></li>
+    </ul>
+
+    <div class="tab-content tab-content-bordered">
+      <router-view></router-view>
+    </div>
+  </div>
+
+{% endblock %}
+

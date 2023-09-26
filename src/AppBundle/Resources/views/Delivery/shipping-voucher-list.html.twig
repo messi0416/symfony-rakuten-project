@@ -1,0 +1,271 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/css/app.delivery.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+
+  '@AppBundle/Resources/public/js/app.delivery-shipping-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <script type="text/javascript">
+    const WAREHOUSE_ID = '{{ conditions.warehouseId }}';
+    const PAGING_LIMIT = '{{ conditions.pagingLimit }}';
+  </script>
+
+  <div id="deliveryShippingVoucherList" class="container"
+    data-list-url="{{ path('delivery_shipping_voucher_shipping_voucher_list_initial_data') }}"
+    data-url-recreate-picking-list="{{ path('delivery_shipping_voucher_recreate_picking_list') }}"
+    data-url-edit-comment="{{ path('delivery_shipping_voucher_edit_comment') }}"
+    data-url-merge-packing-group="{{ path('delivery_shipping_voucher_merge_packing_group') }}"
+    data-url-download-label-pdf="{{ path('delivery_shipping_voucher_download_label_pdf') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>出荷リスト</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="deliveryShippingVoucherListTable">
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline" action="{{ path('delivery_shipping_voucher_list') }}" method="get" id="shippingListSearch">
+            <div class="clearfix">
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="import_date_from" class="form-control" id="importDateFrom"
+                       value="{{ conditions.dateFrom ?  conditions.dateFrom.format('Y-m-d') : '' }}"
+                       placeholder="取込日 FROM"
+                  />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="import_date_to" class="form-control" id="importDateTo"
+                       value="{{ conditions.dateTo ?  conditions.dateTo.format('Y-m-d') : '' }}"
+                       placeholder="取込日 TO"
+                  />
+              </div>
+              <div class="input-group pull-left mr10 mb5">
+                <button type="button" class="btn btn-default" v-on:click="selectToday">今日</button>
+              </div>
+              <div class="form-group pull-left mr10 mb5">
+                <label for="warehouse">倉庫: </label>
+                <select name="import_warehouse_id" class="form-control" id="warehouse"
+                        v-model="searchConditions.warehouseId"
+                  >
+                  <option value="0">全て</option>
+                  <option v-for="warehouse in warehouseList" v-bind:value="warehouse.id" v-text="warehouse.name"></option>
+                </select>
+              </div>
+              <div class="form-group pull-left mr10 mb5">
+                <input type="text" name="import_account_name" class="form-control" id="account_name"
+                      value="{{ conditions.accountName ?  conditions.accountName : '' }}"
+                      placeholder="作成者"
+                  />
+              </div>
+              <div class="input-group pull-left mr10 mb5">
+                <button type="submit" class="btn btn-success">取得</button>
+              </div>
+            </div>
+            <input type="hidden" name="page_limit" value="{{ conditions.pagingLimit }}">
+          </form>
+        </div>
+      </div>
+
+      {% if pagination.count() > 0 %}
+
+        <div class="navigation text-right">
+          <p class="paginationInfo forceInlineBlock vMiddle mb0">
+            {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+            /
+            {{ paginationInfo.totalCount | number_format }}
+          </p>
+          {{ knp_pagination_render(pagination) }}
+          <div class="forceInlineBlock">
+            <select class="form-control forceInlineBlock vMiddle" id="pageLimit"
+                v-model="searchConditions.pagingLimit"
+                v-on:change="changePageLimit()"
+            >
+              <option v-for="limit in pagingLimitList" v-bind:value="limit" v-text="limit"></option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-success  mt10 mb10"  v-on:click="mergePackingGroup()">
+            マージ
+          </button>
+        </div>
+
+        <table class="table table-border table-condensed">
+          <tr>
+            <th class="text-center vMiddle" rowspan="2">取込日時</th>
+            <th class="text-center vMiddle" rowspan="2">倉庫</th>
+            <th class="text-center vMiddle" rowspan="2">作成者</th>
+            <th class="text-center" colspan="5">ピッキングリスト</th>
+            <th class="text-center" colspan="3">梱包グループ</th>
+            <th class="text-center" rowspan="2">納品書PDF</th>
+          </tr>
+          <tr>
+            <th class="text-center">日付</th>
+            <th class="text-center">No.</th>
+            {# 倉庫No.行を追加 #}
+            <th class="text-center">倉庫No.</th>
+            <th class="text-center">件数</th>
+            <th class="text-center">&nbsp;</th>
+            <th class="text-center">マージ</th>
+            <th class="text-center">配送方法</th>
+            <th class="text-center">グループ名</th>
+          </tr>
+
+          {% for row in pagination.getItems() %}
+            {% if row.packing_id == false  %}
+              {% set rowspan = 1 %}
+            {% elseif loop.first %}
+              {% set rowspan = row.packing_num %}
+            {% elseif pagination.getItems()[loop.index0-1].packing_id != row.packing_id  %}
+              {% set rowspan = row.packing_num %}
+            {% else %}
+              {% set rowspan = 0 %}
+            {% endif %}
+            <tr>
+              <td class="text-center vMiddle">{{ row.imported.format('Y-m-d H:i:s') }}</td>
+              <td class="text-center vMiddle">{{ row.warehouse_name }}</td>
+              <td class="text-center vMiddle">{{ row.account_name }}</td>
+              <td class="text-center vMiddle">
+                {%  if row.picking_list_date %}
+                  <span>
+                  {{ row.picking_list_date.format('Y-m-d') }}
+                  </span>
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td class="text-center vMiddle">
+                {%  if row.picking_list_date %}
+                <a class="btn btn-default" href="{{ path('picking_product_list', { date: row.picking_list_date.format('Y-m-d'), number: row.picking_list_number }) }}" target="_blank">
+                  <strong>{{ row.picking_list_number }}</strong>
+                </a>
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              {# 倉庫略号-日別倉庫別連番を表示 #}
+              <td class="text-center vMiddle">
+                {%  if row.picking_list_date %}
+                  {{ row.warehouse_symbol }} - {{ row.warehouse_daily_number }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td class="text-center vMiddle">
+                {{ row.picking_syohin_num }}
+              </td>
+              <td class="text-center vMiddle">
+                {% if row.picking_status and row.picking_status != '未処理' %}
+                  <button type="button" class="btn btn-default" disabled>
+                    再作成
+                  </button>
+                {% else %}
+                  <button type="button" class="btn btn-warning" v-on:click="recreatePickingList({{ row.id }})">
+                    再作成
+                  </button>
+                {% endif %}
+              </td>
+              {# 全倉庫検索でなければ、梱包関連項目を表示 #}
+              {% if conditions.warehouseId != null and conditions.warehouseId != 0 %}
+                {% if rowspan != 0  %}
+                <td class="text-center vMiddle" rowspan="{{ rowspan }}">
+                  {% if row.packing_id  %}
+                  <input type="checkbox" class="" v-model="mergePackingList" value="{{ row.packing_id }}"/>
+                  {% endif %}
+                </td>
+                <td class="text-center vMiddle" rowspan="{{ rowspan }}" colspan="2">
+                  <div class="row10">
+                    <div class="col-xs-6">
+                      {% if row.delivery_method_id != 0 %}
+                        <a
+                          href="{{ path('delivery_shipping_voucher_download_label_csv', { 'packing_id' : row.packing_id, 'delivery_method_id' : row.delivery_method_id })}}"
+                          download="shipping_label_{{ "%s_%06d"|format(row.imported.format('Ymd'), row.packing_id) }}.csv"
+                        >
+                          {{ row.delivery_name }}
+                        </a>
+                        {% if row.delivery_name == '定形外郵便' or row.delivery_name == '定形郵便' %}
+                        <button type="button" class="btn btn-success  mt10 mb10 p0 pl5 pr5"  v-on:click="createLabelPdf({{ row.packing_id }}, {{ row.delivery_method_id }})">PDF</button>
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                    <div
+                      class="col-xs-6" 
+                      {% if row.delivery_name == '定形外郵便' or row.delivery_name == '定形郵便' %}
+                        style="transform: translateY(40%);"
+                      {% endif %}
+                    >
+                      <a href="{{ path('packing_packing_group_index', { id: row.packing_id }) }}">
+                        {{ row.packing_name }}
+                      </a>
+                    </div>
+                  </div>
+                  {%  if row.packing_id %}
+                    <input type="text" class="form-control"value="{{ row.packing_comment }}" id="comment_{{ row.packing_id }}" v-on:change="editComment({{ row.packing_id }})">
+                  {% endif %}
+                </td>
+              {% endif %}
+              {# 全倉庫検索の時は梱包関連の項目は非表示（マージされていると崩れるため） #}
+              {% else %}
+                <td class="text-center vMiddle">-</td>
+                <td class="text-center vMiddle">-</td>
+                <td class="text-center vMiddle">-</td>
+                <td class="text-center vMiddle">-</td>
+              {% endif %}
+              <td class="text-center vMiddle">
+                <a href="{{ path('delivery_shipping_voucher_download_pdf', { 'id' : row.id })}}" target="_blank">
+                   納品書PDF表示
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+
+      {% else %}
+        <div class="panel panel-default">
+          <div class="panel-body">
+            データがありません。
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+{% endblock %}

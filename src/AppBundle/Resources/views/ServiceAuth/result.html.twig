@@ -1,0 +1,44 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.service-auth.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+  <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+    <div class="pull-left">
+      <h2>Plusnao Web System (Service Auth)</h2>
+    </div>
+
+    <div class="pull-left">
+        <div class="(% messageCssClass %)" v-text="message"></div>
+    </div>
+
+    <div class="pull-right">
+        <button class="btn btn-lg btn-danger" v-on="click: closeWindow()">閉じる</button>
+    </div>
+  </div>
+
+  <div>
+  {% if successMessage %}
+    <div class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  {% else %}
+    <div class="alert alert-danger">
+      {% if errorMessage  %}
+        {{ errorMessage }}
+      {% else %}
+        認証に失敗しました。
+      {% endif %}
+    </div>
+  {% endif %}
+  </div>
+
+</div>
+{% endblock %}

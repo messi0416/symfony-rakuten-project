@@ -1,0 +1,64 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block title %}スーパーデリバリー商品情報管理画面{% endblock %}
+ 
+{% block stylesheets %}
+  {{ parent() }}
+{% stylesheets
+    'bundles/app/css/app.admin.css' filter='cssrewrite'
+    'bundles/app/css/app.sdmanage.css' filter='cssrewrite'
+ %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+{% endstylesheets %}
+{% endblock %}
+ 
+{% block body %}
+{% include 'AppBundle:SdManage:_navbar.html.twig' %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+      {% include 'AppBundle:SdManage:_sidebar.html.twig' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">スーパーデリバリー商品情報管理手順</h1>
+           <h2 class="header">商品を新規登録する</h4>
+           <div>以下の手順に従って操作してください。</div>
+            <ol>
+                <li><a href="{{ path('pltosd') }}" class="btn btn-success">商品データCSV出力</a>
+                    <div>プラスナオ登録商品より、スーパーデリバリーに登録する商品情報を取得します。<br>
+                    出力後、CSVにてジャンル・ターゲット・商品属性を入力してください。</div>
+                </li>
+                <li><a href="{{ path('pltosd_impcsv') }}" class="btn btn-success">登録用ファイル出力</a>
+                    <div>CSVファイルの取込、スーパーデリバリー用管理データの作成後、<br>
+                    スーパーデリバリーにアップロードするためのCSVファイルと、画像ファイル(ZIP圧縮したもの)を出力します。</div>
+                </li>
+                <li><a href="https://www.superdelivery.com/i/merchandise/csv" target="_blank" class="btn btn-info">スーパーデリバリー管理画面-CSVアップロード <i class="fa fa-external-link"></i></a>
+                    <div>スーパーデリバリーの管理画面でCSVおよび画像ZIPファイルをアップロードします。<br>
+                    アップロード後、新規登録データのCSVをダウンロードしてください。</div>
+                </li>
+                <li><a href="{{ path('sddat_impcsv') }}" class="btn btn-success">出品状況変更CSV出力</a>
+                    <div>上記CSVファイルをアップロードし、管理データに反映します。<br>
+                    その後、出品状況を『出品中』にするためのCSVファイルを出力します。</div>
+                </li>
+                <li><a href="https://www.superdelivery.com/i/merchandise/csv" target="_blank" class="btn btn-info">スーパーデリバリー管理画面-CSVアップロード <i class="fa fa-external-link"></i></a>
+                    <div>スーパーデリバリーの管理画面でCSVファイルをアップロードします。</div>
+                </li>
+            </ol>
+            <div><a href="{{ path('code_view') }}" target="_blank">ジャンル・ターゲット・商品属性コード確認ページ</a></div>
+        <h2 class="header">商品情報を更新する</h4>
+            <ul>
+                <li>商品更新データ一覧表示</li>
+                <li>商品画像更新データ一覧表示</li>
+            </ul>
+        <h2 class="header">商品情報を削除する</h4>
+            <ul>
+                <li>商品削除データ一覧表示</li>
+                <li>商品画像削除データ一覧表示</li>
+            </ul>
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

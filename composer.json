@@ -1,0 +1,103 @@
+{
+    "name": "symfony/framework-standard-edition",
+    "license": "MIT",
+    "type": "project",
+    "description": "The \"Symfony Standard Edition\" distribution",
+    "autoload": {
+        "psr-4":{
+            "": "src/",
+            "SymfonyStandard\\": "app/SymfonyStandard/",
+            "forestlib\\" : "vendor/forestlib/"
+        },
+        "classmap": [
+              "vendor/forestlib/ne_api_sdk_php",
+              "vendor/forestlib/yconnect-php-sdk-master/lib",
+              "vendor/forestlib/MWSProductsPHPClientLibrary-2011-10-01/src",
+              "vendor/forestlib/AlibabaCheck/AlibabaCheckStatuses.php",
+              "vendor/forestlib/TaobaoCheck/TaobaoCheckStatuses.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.6.0",
+        "symfony/symfony": "2.7.4",
+        "twig/twig": "~1.5",
+        "twig/extensions": "^1.3",
+        "doctrine/common": "2.7.3",
+        "doctrine/inflector": "1.1.0",
+        "doctrine/orm": "2.4.8",
+        "doctrine/doctrine-bundle": "1.5.2",
+        "symfony/assetic-bundle": "~2.3",
+        "symfony/swiftmailer-bundle": "~2.3",
+        "symfony/monolog-bundle": "3.0.3",
+        "sensio/distribution-bundle": "~4.0",
+        "sensio/framework-extra-bundle": "3.0.16",
+        "incenteev/composer-parameter-handler": "~2.0",
+        "guzzlehttp/guzzle": "^6.0",
+        "fabpot/goutte": "^3.1",
+        "bcc/resque-bundle": "dev-master",
+        "ijanki/ftp-bundle": "dev-master",
+        "knplabs/knp-paginator-bundle": "^2.5",
+        "knplabs/knp-snappy-bundle": "~1.4",
+        "phpspec/php-diff": "dev-master",
+        "cweagans/composer-patches": "1.6.4",
+        "milon/barcode": "5.3.3",
+        "liuggio/excelbundle": "2.1.0",
+        "phpseclib/phpseclib": "^2.0"
+    },
+    "require-dev": {
+      "sensio/generator-bundle": "~2.3",
+      "doctrine/data-fixtures": "1.2.2",
+      "doctrine/doctrine-fixtures-bundle": "2.4.1"
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "SymfonyStandard\\Composer::hookRootPackageInstall"
+        ],
+        "pre-install-cmd": [
+        ],
+
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ]
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
+        "symfony-assets-install": "hard-copy",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml",
+            "env-map": {
+            }
+        },
+        "branch-alias": {
+            "dev-master": "2.7-dev"
+        },
+        "patches": {
+            "doctrine/orm": {
+                "Add read only field property TO doctrine/orm. ( https://github.com/doctrine/doctrine2/pull/5728 )": "data/dev_patch/doctrine-read-only-column.patch"
+            }
+           , "guzzlehttp/guzzle": {
+              "change default option 'verify' to FALSE. (for self signed SSL)": "data/dev_patch/guzzlehttp-change-default-option.patch"
+            }
+        }
+    }
+}

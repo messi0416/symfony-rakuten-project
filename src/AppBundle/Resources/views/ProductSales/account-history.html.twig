@@ -1,0 +1,145 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/css/select2.min.css' filter='cssrewrite'
+    'bundles/app/css/select2-bootstrap.min.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/select2.min.js'
+    '@AppBundle/Resources/public/js/select-custom-directive.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.product-sales-account-history.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const USERS_DATA = {{ users|raw }};
+  </script>
+  <div id="history" class="container"
+    data-search-url="{{ path('product_sales_account_history_find') }}"
+    data-list-url="{{ path('product_sales_account') }}"
+  >
+    {# header #}
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品売上担当者更新履歴画面</h2>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="form-group col-xs-4">
+            <label>更新日</label>
+            <div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+                <input
+                  v-model="searchItem.updatedFrom"
+                  name="updatedFrom"
+                  class="form-control datepicker"
+                  size="10"
+                  type="text"
+                  placeholder="対象日FROM"
+                >
+              </div>
+              <div class="inputHeight text-center pull-left mr10 mb5">～</div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+                <input
+                  v-model="searchItem.updatedTo"
+                  name="updatedTo"
+                  class="form-control datepicker"
+                  size="10"
+                  type="text"
+                  placeholder="対象日TO"
+                >
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-xs-3">
+            <label>代表商品コード</label>
+            <input type="text" class="form-control" v-model="searchItem.code" @keyup.enter="search"/>
+          </div>
+          <div class="form-group col-xs-3">
+            <label>担当者</label>
+            <select class="form-control" v-model="searchItem.userId" v-select>
+              <option value="">&nbsp;</option>
+              <option v-for="user in users" :value="user.id" v-text="user.userName"></option>
+            </select>
+          </div>
+          <div class="form-group col-xs-1">
+            <label class="fullWidth">&nbsp;</label>
+            <button type="button" class="btn btn-success" @click="search">検索</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 検索結果 #}
+    <div class="panel panel-default" v-if="list.length > 0">
+      <div class="panel-body">
+        {# pagination (Vue component) #}
+        <parts-table-pagination
+          v-bind="paginationInfo"
+          @change-page="changePage"
+        >
+        </parts-table-pagination>
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th>ID</th>
+            <th>更新日</th>
+            <th>代表商品コード</th>
+            <th>代表商品名</th>
+            <th>担当者</th>
+            <th>チーム名</th>
+            <th>タスク種別</th>
+            <th>処理</th>
+            <th>変更詳細</th>
+          </tr>
+          <tr v-for="item in pageData">
+            <td class="text-nowrap vMiddle" v-text="item.id"></td>
+            <td class="text-nowrap vMiddle" v-text="item.updated"></td>
+            <td class="text-nowrap vMiddle">
+              <div v-for="product in item.products">
+                <a :href="product.href" v-text="product.code"></a>
+              </div>
+            </td>
+            <td class="vMiddle">
+              <div class="more-line2-dot-notation" v-text="item.daihyoSyohinName" :title="item.daihyoSyohinName"></div>
+            </td>
+            <td class="minWidth100 vMiddle" v-text="item.userName"></td>
+            <td class="minWidth100 vMiddle" v-text="item.teamName"></td>
+            <td class="minWidth180 vMiddle" v-text="item.taskName"></td>
+            <td class="text-nowrap vMiddle" v-text="item.process"></td>
+            <td class="minWidth300 vMiddle" v-text="item.note"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

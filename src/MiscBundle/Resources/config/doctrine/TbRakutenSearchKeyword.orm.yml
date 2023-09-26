@@ -1,0 +1,24 @@
+MiscBundle\Entity\TbRakutenSearchKeyword:
+    type: entity
+    table: tb_rakuten_search_keyword
+    uniqueConstraints:
+        unique_:
+            columns:
+                - keyword
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        keyword:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: キーワード
+    lifecycleCallbacks: {  }

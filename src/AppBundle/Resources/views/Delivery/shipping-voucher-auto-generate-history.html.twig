@@ -1,0 +1,118 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.delivery-shipping-voucher-auto-generate-history.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="deliveryShippingVoucherAutoGenerateHistory" class="container"
+      data-search-url="{{ path('delivery_shipping_voucher_auto_generate_history_find') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>出荷リスト自動生成履歴</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-inline">
+          <div class="form-group pull-left mr30">
+            <label for="warehouse">倉庫 </label>
+            <select id="warehouse" class="form-control" v-model="conditions.warehouseId">
+              <option value=''></option>
+              {% for warehouse in warehouses %}
+                <option value={{ warehouse.id }}>{{ warehouse.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group pull-left mr30">
+            <label for="status">ステータス </label>
+            <select id="status" class="form-control" v-model="conditions.status">
+              <option value=''></option>
+              {% for id, name in statuses %}
+                <option value={{ id }}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group pull-left">
+            <button type="button" class="btn btn-primary" @click="search">絞込</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# pagination (Vue component) #}
+    <parts-table-pagination
+        v-bind="paginationInfo"
+        @change-page="changePage">
+    </parts-table-pagination>
+
+    {# リスト #}
+    <table class="table table-bordered">
+      <tr>
+        <th class="vMiddle">No.</th>
+        <th class="vMiddle">会社</th>
+        <th class="vMiddle">倉庫</th>
+        <th class="vMiddle">配送方法</th>
+        <th class="vMiddle">ページ</th>
+        <th class="vMiddle">梱包<br>グループ</th>
+        <th class="vMiddle">ステータス</th>
+        <th class="vMiddle">対象伝票数</th>
+        <th class="vMiddle">出荷リスト<br>登録伝票数</th>
+        <th class="vMiddle">登録者</th>
+        <th class="vMiddle">登録日時</th>
+        <th class="vMiddle">更新日時</th>
+      </tr>
+      <tr v-for="item in pageData"
+          is="result-item"
+          :item="item"
+          @show-retry-result="showRetryResult">
+      </tr>
+    </table>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateDeliveryShippingVoucherAutoGenerateHistoryListTableRow">
+    <tr>
+      <td class="vMiddle" v-text="item.id"></td>
+      <td class="vMiddle" v-text="item.company"></td>
+      <td class="vMiddle" v-text="item.warehouse"></td>
+      <td class="vMiddle" v-text="item.deliveryMethod"></td>
+      <td class="vMiddle" v-text="item.page"></td>
+      <td class="vMiddle" v-text="item.packingGroupId"></td>
+      <td class="vMiddle">
+        <span class="mr10" v-text="item.status"></span>
+        <button
+            v-if="item.status === 'エラー'"
+            class="btn btn-primary btn-sm"
+            @click="retry()">再実行</button>
+      </td>
+      <td class="vMiddle">
+        <span class="mr10" v-text="item.targetNum"></span>
+        <button class="btn btn-info btn-xs pull-right" @click="copy()">伝票番号コピー</button>
+      </td>
+      <td class="vMiddle" v-text="item.registNum"></td>
+      <td class="vMiddle" v-text="item.account"></td>
+      <td class="vMiddle" v-text="item.created"></td>
+      <td class="vMiddle" v-text="item.updated"></td>
+    </tr>
+  </script>
+{% endblock %}

@@ -1,0 +1,60 @@
+#daihyoSyohinName::placeholder {
+  font-size: 12px;
+}
+.row-eq-height {
+  display: flex;
+  flex-wrap: wrap;
+}
+.bottomRight {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.badge.badge-set {
+  background-color: #d9534f;
+}
+.asc::after {
+  content: "▲";
+}
+.desc::after {
+  content: "▼";
+}
+.w260 {
+  width: 260px !important;
+} 
+.listCategory {
+  color: #909090;
+  font-size: 0.8rem;
+}
+.sire {
+  color: #a0a0a0;
+  font-size: 0.8rem;
+  text-align: right;
+  width: 100%;
+  padding-top: 10px;
+}
+.flex1 {
+  flex: 1;
+}
+.flex2 {
+  flex: 2;
+}
+.flex3 {
+  flex: 3;
+}
+.flexEnd {
+  align-items: flex-end;
+}
+.mh80 {
+  max-height: 80px;
+}
+.m-auto {
+  margin: auto;
+}
+.scrollTop {
+  position: fixed;
+  right: 10px;
+  bottom: 100px;
+  opacity: 0.7;
+  transition: 0.5s;
+}

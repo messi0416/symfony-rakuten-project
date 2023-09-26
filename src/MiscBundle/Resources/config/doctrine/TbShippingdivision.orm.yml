@@ -1,0 +1,75 @@
+MiscBundle\Entity\TbShippingdivision:
+    type: entity
+    table: tb_shippingdivision
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 送料設定ID
+            id: true
+            column: id
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: 送料設定名
+            column: name
+        price:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 価格
+        maxThreeEdgeSum:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "使用可能サイズ3辺計上限。\n単位はセンチ。未指定の場合は制限なし。制限にかかった場合、同じグループで価格が高いものに切り替える"
+            column: max_three_edge_sum
+        maxThreeEdgeIndividual:
+            type: string
+            nullable: true
+            length: 20
+            fixed: false
+            comment: "使用可能サイズ3辺個別値（カンマ区切り）。\n単位はセンチ。未指定の場合は制限なし。制限にかかった場合、同じグループで価格が高いものに切り替える"
+            column: max_three_edge_individual
+        maxWeight:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "使用可能重量上限。\n単位はグラム。未指定の場合は制限なし。制限にかかった場合、同じグループで価格が高いものに切り替える"
+            column: max_weight
+        shippingGroupCode:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "送料グループ種別\n1:宅配便 2:メール便 3:定形外郵便 4:ゆうパケット 5:ねこポス 6:クリックポスト 7:個別送料"
+            column: shipping_group_code
+        note:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: 備考
+        terminateFlg:
+            type: boolean
+            nullable: false
+            comment: "使用終了フラグ\n0:無効 0以外(通常1):有効\n有効な場合、新規設定に使用しない。既に設定されている商品はそのまま維持"
+            column: terminate_flg
+        updSymfonyUsersId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "更新ユーザID\n初期データや不明な場合はnull"
+            default: '0'
+            column: upd_symfony_users_id
+        updDt:
+            type: datetime
+            nullable: true
+            default: CURRENT_TIMESTAMP
+            column: upd_dt
+    lifecycleCallbacks: {  }

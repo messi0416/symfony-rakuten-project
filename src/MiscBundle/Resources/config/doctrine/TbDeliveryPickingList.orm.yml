@@ -1,0 +1,209 @@
+MiscBundle\Entity\TbDeliveryPickingList:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbDeliveryPickingListRepository
+  table: tb_delivery_picking_list
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      column: id
+      generator:
+        strategy: IDENTITY
+
+  fields:
+    datetime:
+      type: datetime
+      nullable: true
+      column: 日時
+
+    syohin_code:
+      type: string
+      nullable: false
+      column: 商品コード
+
+    syohin_name:
+      type: string
+      nullable: true
+      column: 商品名
+
+    free_stock:
+      type: integer
+      nullable: false
+      column: フリー在庫数
+      options:
+        default: 0
+
+    stock:
+      type: integer
+      nullable: false
+      column: 在庫数
+      options:
+        default: 0
+
+    item_num:
+      type: integer
+      nullable: false
+      column: 総ピッキング数
+      options:
+        default: 0
+
+    location_code:
+      type: string
+      nullable: false
+      column: ロケーションコード
+      options:
+        default: 0
+
+    type_number:
+      type: string
+      nullable: false
+      column: 型番
+      options:
+        default: ''
+
+    jan:
+      type: string
+      nullable: false
+      column: janコード
+      options:
+        default: ''
+
+    sire_code:
+      type: string
+      nullable: false
+      column: 仕入先コード
+      options:
+        default: ''
+
+    sire_name:
+      type: string
+      nullable: false
+      column: 仕入先名
+      options:
+        default: ''
+
+    date:
+      type: datetime
+      nullable: false
+      column: date
+
+    file_hash:
+      type: string
+      nullable: false
+      column: file_hash
+      options:
+        default: ''
+
+    number:
+      type: integer
+      nullable: false
+      column: number
+      options:
+        default: 0
+
+    account:
+      type: string
+      nullable: false
+      column: account
+      options:
+        default: ''
+
+    picking_status:
+      type: integer
+      nullable: false
+      column: picking_status
+      options:
+        default: 0
+
+    picking_account_id:
+      type: integer
+      nullable: false
+      column: picking_account_id
+      options:
+        default: 0
+
+    picking_account_name:
+      type: string
+      nullable: false
+      column: picking_account_name
+      options:
+        default: ''
+
+    update_account_id:
+      type: integer
+      nullable: false
+      column: update_account_id
+      options:
+        default: 0
+
+    update_account_name:
+      type: string
+      nullable: false
+      column: update_account_name
+      options:
+        default: ''
+
+    picking_order:
+      type: integer
+      nullable: false
+      column: picking_order
+      options:
+        default: 0
+
+    current_location:
+      type: string
+      nullable: false
+      column: current_location
+      options:
+        default: ''
+
+    warehouse_id:
+      type: integer
+      nullable: false
+      column: warehouse_id
+      options:
+        default: '1'
+
+    created:
+      type: datetime
+      nullable: true
+
+    updated:
+      type: datetime
+      nullable: true
+
+    old_date:
+      type: datetime
+      nullable: true
+      column: old_date
+      
+    old_number:
+      type: integer
+      nullable: false
+      column: old_number
+      options:
+        default: 0
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps
+
+  manyToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: pickingList
+      joinColumn:
+        name: 商品コード
+        referencedColumnName: ne_syohin_syohin_code
+        nullable: true
+      fetch: EAGER
+
+    warehouse:
+      targetEntity: TbWarehouse
+      joinColumn:
+        name: warehouse_id
+        referencedColumnName: id
+        nullable: true
+      fetch: EAGER
+      

@@ -1,0 +1,416 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+  'bundles/app/css/app.goods.edit-image.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.goods-image-edit.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    var DAIHYO_SYOHIN_CODE = "{{ product ? product.getDaihyoSyohinCode() : ''  }}";
+    var IMAGE_URL_PARENT = "{{ imageUrlParent }}";
+    var IMAGE_EDIT_DATA = {{ dataJson|raw }};
+  </script>
+
+  <div id="productImageEdit" class="container"
+      data-save-url="{{ path('goods_image_save', { daihyoSyohinCode: product ? product.getDaihyoSyohinCode() : 'dummy'  }) }}"
+      data-touch-all-url="{{ path('goods_image_touch_all', { daihyoSyohinCode: product ? product.getDaihyoSyohinCode() : 'dummy'  }) }}"
+      data-edit-url-base="{{ path('goods_image_edit', { daihyoSyohinCode: '__DUMMY__' }) }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品画像 設定</h2>
+        </div>
+
+        <div class="pull-right mt20 mb10">
+          <button type="button" class="btn btn-warning" v-on:click="touchAll">全更新</button>
+        </div>
+
+        <div class="pull-right mt20 mb10">
+          <input type="text" class="form-control inlineBlock w150 mr5" placeholder="代表商品コード"
+                 v-model="changeDaihyoSyohinCode"
+                 v-on:click="selectAll($event)"
+                 v-on:keypress.enter="changeProduct"
+            >
+          <button type="button" class="btn btn-default mr20" v-on:click="changeProduct">移動</button>
+        </div>
+      </div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="productImageEditMain">
+
+      {% if product %}
+
+        <div class="row">
+          <div class="col-xs-4 col-sm-6 col-md-5 col-lg-4" style="height: 80vh; overflow-y: auto">
+
+            <div :is="editListComponent"
+                 :edit-list="editList"
+                 v-on:set-current-image="setCurrentImage"
+                 v-on:insert-row="insertRow"
+                 v-on:move-to-temporary="moveToTemporary"
+              >
+            </div>
+
+          </div>
+          <div class="col-xs-8 col-sm-6 col-md-7 col-lg-8">
+
+            <ul class="nav nav-tabs" id="imageEditTab">
+              <li class="active"><a href="#tabImageEditManip" data-toggle="tab">操作</a></li>
+              <li><a href="#tabImageEditDetail" data-toggle="tab">画像</a></li>
+            </ul>
+            <div id="imageEditTabBlock" class="tab-content" style="height: 75vh; overflow-y: auto; overflow-x:hidden; padding-top: 10px;">
+
+              {# 操作タブ #}
+              <div class="tab-pane active" id="tabImageEditManip">
+
+                {# global-message コンポーネント #}
+                <div is="parts-global-message" :state="messageState"></div>
+
+                <div class="row row10 mb20">
+                  <div class="col-sm-2">
+                    <button type="button" class="btn btn-default btn-lg fullWidth vMiddle mb10" v-on:click="toggleEditListComponent">
+                      切替
+                    </button>
+                  </div>
+                  <div class="col-sm-4">
+                    <button type="button" class="btn btn-default btn-lg fullWidth vMiddle mb10" v-on:click="reload">
+                      <i class="fa fa-repeat"></i> 再読込
+                    </button>
+                  </div>
+                  <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary btn-lg fullWidth vMiddle mb10" v-on:click="save">
+                      <i class="fa fa-floppy-o"></i> 保存する
+                    </button>
+                  </div>
+                </div>
+
+                <div class="row row10">
+                  <div class="col-sm-6 col-sm-push-6 col-xs-12">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <div class="clearfix">
+                          <span class="pull-left inputHeight">アップロード</span>
+                        </div>
+                      </div>
+                      <div id="uploadArea" class="panel-body text-center vMiddle" style="height: 200px;"
+                           v-bind:class="uploadAreaCss"
+                           v-on:dragover="uploadDragOver($event)"
+                           v-on:dragenter="uploadDragEnter($event)"
+                           v-on:dragleave="uploadDragLeave($event)"
+                           v-on:drop="uploadDrop($event)"
+                        >
+                        <i class="fa fa-3x fa-plus gray" style="line-height: 180px;"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-6 col-sm-pull-6 col-xs-12">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <div class="clearfix">
+                          <span class="pull-left inputHeight">一時置き場</span>
+                          <span class="pull-right">
+                            <button type="button" class="btn btn-sm btn-default" v-on:click="deleteFromTemporaryAll" mr5>
+                              <i class="fa fa-trash-o"></i>
+                              全削除
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" v-on:click="returnFromTemporaryAll" mr5>
+                              <i class="fa fa-angle-double-left"></i>
+                              全追加
+                            </button>
+                            <button type="button" class="btn btn-sm btn-default" v-on:click="moveTemporaryAll">
+                              <i class="fa fa-angle-double-right"></i>
+                              全待避
+                            </button>
+                          </span>
+                        </div>
+                      </div>
+                      <div id="depositArea" class="panel-body text-center vMiddle" style="min-height: 200px;"
+                           v-bind:class="temporaryAreaCss"
+                           v-on:dragover="temporaryDragOver($event)"
+                           v-on:dragenter="temporaryDragEnter($event)"
+                           v-on:dragleave="temporaryDragLeave($event)"
+                           v-on:drop="temporaryDrop($event)"
+                        >
+                        <img v-for="item in temporaryList"
+                             is="image-temporary-list"
+                             :item="item"
+                             v-on:move-to-edit="insertRow"
+                          >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel panel-default mb20">
+                  <div class="panel-heading">
+                    <div class="clearfix">
+                      <span class="pull-left inputHeight">削除</span>
+                      <span class="pull-right">
+                        <button type="button" class="btn btn-sm btn-default" v-on:click="deleteAll">
+                          <i class="fa fa-angle-double-right"></i>
+                          全画像削除
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="panel-body text-center vMiddle"
+                       v-bind:class="deleteAreaCss"
+                       v-on:dragover="deleteDragOver($event)"
+                       v-on:dragenter="deleteDragEnter($event)"
+                       v-on:dragleave="deleteDragLeave($event)"
+                       v-on:drop="deleteDrop($event)"
+                    >
+                    <i class="fa fa-3x fa-trash-o gray" v-show="deleteList.length == 0"></i>
+                    <img v-for="item in deleteList"
+                         is="image-delete-list"
+                         :item="item"
+                         v-on:move-to-edit="insertRow"
+                      >
+                  </div>
+                </div>
+
+              </div>
+
+              {# 画像表示タブ #}
+              <div class="tab-pane" id="tabImageEditDetail">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <img class="img-responsive" v-bind:src="currentImageUrl" v-show="currentImageUrl">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      {% else %}
+        データがありません。
+      {% endif %}
+
+    </div>
+  </div>
+
+  {# 画像リスト リスト版 #}
+  <script type="text/x-template" id="templateProductImageEditList">
+    <div>
+      <ul class="list-group">
+        <li v-for="item in editList"
+            is="image-list-item"
+            :item="item"
+            v-on:set-current-image="setCurrentImage"
+            v-on:insert-row="insertRow"
+            v-on:move-to-temporary="moveToTemporary"
+          >
+        </li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item" style="height: 124px;"
+            is="image-list-item"
+            :item="{}"
+            v-on:insert-row="insertRow"
+          ></li>
+      </ul>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="templateProductImageEditListItem">
+    <li class="list-group-item" draggable="true" 
+        v-on:dragstart="dragStart($event)"
+
+        v-bind:class="insertAreaCss"
+        v-on:dragover="insertDragOver($event)"
+        v-on:dragenter="insertDragEnter($event)"
+        v-on:dragleave="insertDragLeave($event)"
+        v-on:drop="insertDrop($event)"
+
+        v-on:click="setCurrentImage"
+        v-on:dblclick="moveToTemporaryList"
+      >
+      <div class="row row10 clearfix">
+        <div class="col-sm-6 hidden-xs">
+          <ul class="list-group mb0" v-show="item.code">
+            <li class="list-group-item narrow">
+              <span v-text="item.code"></span>
+              <span v-if="newCode">
+                =>
+                <span class="bold text-primary" v-text="newCode"></span>
+              </span>
+            </li>
+            <li class="list-group-item narrow text-right">
+              <small>
+                <span v-text="displayFileSize"></span>
+                /
+                <span v-text="displayImageDimensions"></span>
+              </small>
+            </li>
+            <li class="list-group-item narrow text-right"><small>登録：<span v-text="displayCreated"></span></small></li>
+            <li class="list-group-item narrow text-right"><small>更新：<span v-text="displayUpdated"></span></small></li>
+          </ul>
+        </div>
+        <div class="col-sm-6">
+          <img class="img-responsive inlineBlock"
+               style="max-height: 124px;"
+               v-bind:src="imageUrlWithRandom"
+               draggable="false"
+               v-show="item.imageUrl"
+            >
+        </div>
+      </div>
+    </li>
+  </script>
+
+  {# 画像リスト リスト版 #}
+  <script type="text/x-template" id="templateProductImageEditList">
+    <div>
+      <ul class="list-group">
+        <li v-for="item in editList"
+            is="image-list-item"
+            :item="item"
+            v-on:set-current-image="setCurrentImage"
+            v-on:insert-row="insertRow"
+            v-on:move-to-temporary="moveToTemporary"
+          >
+        </li>
+      </ul>
+      <ul class="list-group">
+        <li class="list-group-item" style="height: 124px;"
+            is="image-list-item"
+            :item="{}"
+            v-on:insert-row="insertRow"
+          ></li>
+      </ul>
+    </div>
+  </script>
+
+  <script type="text/x-template" id="templateProductImageEditListItem">
+    <li class="list-group-item" draggable="true"
+        v-on:dragstart="dragStart($event)"
+
+        v-bind:class="insertAreaCss"
+        v-on:dragover="insertDragOver($event)"
+        v-on:dragenter="insertDragEnter($event)"
+        v-on:dragleave="insertDragLeave($event)"
+        v-on:drop="insertDrop($event)"
+
+        v-on:click="setCurrentImage"
+        v-on:dblclick="moveToTemporaryList"
+      >
+      <div class="row row10 clearfix">
+        <div class="col-sm-6 hidden-xs">
+          <ul class="list-group mb0" v-show="item.code">
+            <li class="list-group-item">
+              <span v-text="item.code"></span>
+              <span v-if="newCode">
+                =>
+                <span class="bold text-primary" v-text="newCode"></span>
+              </span>
+            </li>
+            <li class="list-group-item text-right"><small>登録：<span v-text="displayCreated"></span></small></li>
+            <li class="list-group-item text-right"><small>更新：<span v-text="displayUpdated"></span></small></li>
+          </ul>
+        </div>
+        <div class="col-sm-6">
+          <img class="img-responsive inlineBlock"
+               style="max-height: 124px;"
+               v-bind:src="imageUrlWithRandom"
+               draggable="false"
+               v-show="item.imageUrl"
+            >
+        </div>
+      </div>
+    </li>
+  </script>
+
+  {# 画像リスト アイコン版 #}
+  <script type="text/x-template" id="templateProductImageEditIconList">
+    <div>
+      <div class="clearfix">
+        <div class="pull-right"><span v-text="editList.length"></span> 枚</div>
+      </div>
+
+      <div class="row row10 clearfix">
+        <div v-for="item in editList"
+             is="image-list-item"
+             :item="item"
+             v-on:set-current-image="setCurrentImage"
+             v-on:insert-row="insertRow"
+             v-on:move-to-temporary="moveToTemporary"
+        >
+        </div>
+        <div is="image-list-item"
+             :item="{}"
+             v-on:insert-row="insertRow"
+        >
+        </div>
+      </div>
+    </div>
+
+  </script>
+
+  <script type="text/x-template" id="templateProductImageEditIconListItem">
+    <div class="col-lg-1-5 col-md-3 col-sm-4 col-xs-12 mb10 grid-img" draggable="true"
+         v-on:dragstart="dragStart($event)"
+
+         v-bind:class="insertAreaCss"
+         v-on:dragover="insertDragOver($event)"
+         v-on:dragenter="insertDragEnter($event)"
+         v-on:dragleave="insertDragLeave($event)"
+         v-on:drop="insertDrop($event)"
+
+         v-on:click="setCurrentImage"
+         v-on:dblclick="moveToTemporaryList"
+      >
+      <img class="img-thumbnail mt0"
+           style="max-height: 124px;"
+           v-bind:src="imageUrlWithRandom"
+           draggable="false"
+           v-show="item.imageUrl"
+        >
+    </div>
+  </script>
+
+  {# 削除予定リスト #}
+  <script type="text/x-template" id="templateProductImageEditDeleteItem">
+    <img class="w80 img-thumbnail mr10 mb10"
+         v-bind:src="item.imageUrl"
+         draggable="true"
+         v-on:dragstart="dragStart($event)"
+         v-on:dblclick="moveToEditList"
+      >
+  </script>
+
+  {# 一時置き場リスト #}
+  <script type="text/x-template" id="templateProductImageEditTemporaryItem">
+    <img class="w80 img-thumbnail mr10 mb10"
+         v-bind:src="item.imageUrl"
+         draggable="true"
+         v-on:dragstart="dragStart($event)"
+         v-on:dblclick="moveToEditList"
+      >
+  </script>
+
+{% endblock %}

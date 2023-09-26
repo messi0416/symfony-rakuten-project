@@ -1,0 +1,42 @@
+{# PC商品説明文テンプレート #}
+{% if row['input_PC商品説明文']|length > 0 %}
+  {{ row['input_PC商品説明文']|raw }}
+{% else %}
+
+{# 商品コメントPC or 旧楽天P説明 #}
+{% if row['商品コメントPC']|length == 0 %}
+  {{ row['旧楽天P説明']|raw }}{# こちらはHTML #}
+{% else %}
+  {{ row['商品コメントPC']|nl2br }}
+{% endif %}
+{# 【サイズについて】 #}
+{% if row['サイズについて']|length > 0 %}
+  <br><br>【サイズについて】<br>{{ row['サイズについて']|nl2br }}
+{% endif %}
+{# 【カラーについて】 #}
+{% if row['カラーについて']|length > 0 %}
+  <br><br>【カラーについて】<br>{{ row['カラーについて']|nl2br }}
+{% endif %}
+{# 【素材について】 #}
+{% if row['素材について']|length > 0 %}
+  <br><br>【素材について】<br>{{ row['素材について']|nl2br }}
+{% endif %}
+{# 【ブランド】 #}
+{% if row['ブランドについて']|length > 0 %}
+  <br><br>【ブランド】<br>{{ row['ブランドについて']|nl2br }}
+{% endif %}
+{# 【使用上の注意】 #}
+{% if row['使用上の注意']|length > 0 %}
+  <br><br>【使用上の注意】<br>{{ row['使用上の注意']|nl2br }}
+{% endif %}
+{# 【補足説明PC】 #}
+{% if row['補足説明PC']|length > 0 %}
+  <br><br>【補足説明】<br>{{ row['補足説明PC']|nl2br }}
+{% endif %}
+
+{# 配送方法説明 画像 #}
+<a href="https://image.rakuten.co.jp/kobe-s/cabinet/08661832/concierge.jpg" target="_blank">
+  <img width="410" align="baseline" border="0" hspace="0" src="https://image.rakuten.co.jp/kobe-s/cabinet/08661832/concierge.jpg" alt="">
+</a>
+
+{% endif %}

@@ -1,0 +1,35 @@
+MiscBundle\Entity\TbConciergeOperationTask:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbConciergeOperationTaskRepository
+    table: tb_concierge_operation_task
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 32
+            fixed: false
+            comment: タスク名
+            default: ''
+        displayOrder:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 表示順
+            default: '999999'
+            column: display_order
+        deleteFlg:
+            type: boolean
+            nullable: false
+            comment: "削除フラグ\n0:未削除 1:削除"
+            default: '0'
+            column: delete_flg
+    lifecycleCallbacks: {  }

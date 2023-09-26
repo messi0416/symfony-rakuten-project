@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style type="text/css">
+    body{
+      font-family: "ＭＳ ゴシック";
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+    }
+    .page {
+      padding-top: 4mm; /* レーザープリンタ余白(4mm)調整 */
+      padding-bottom: 4mm; /* レーザープリンタ余白(4mm)調整 */
+      page-break-after: always;
+      display: table !important;
+      width: 210mm !important;
+    }
+    .table-cell {
+      display: table-cell !important;
+      width: 83.8mm;
+      height: 63.5mm;
+      margin-right: 5.1mm;
+      margin-bottom: 4.2mm;
+      padding-top : 1.0mm;
+      padding-bottom : 6mm;
+      padding-left : 10.5mm;
+      padding-right : 10.5mm;
+    }
+    .table-row {
+      height: 74mm;
+      display: table-row !important;
+    }
+    .row {
+      display: table !important;
+      width : 100%;
+    }
+    .cell {
+      display: table-cell !important;
+    }
+    .cell img {
+      width: 28mm;
+      height: 28mm;
+    }
+    .v-mid{
+      vertical-align: middle;
+    }
+    .v-top{
+      vertical-align: top;
+    }
+    .col-1 {
+      grid-column: 1 span;
+    }
+    .col-2 {
+      grid-column: 2 span;
+    }
+    .col-3 {
+      grid-column: 3 span;
+    }
+    .col-4 {
+      grid-column: 4 span;
+    }
+    .col-5 {
+      grid-column: 5 span;
+    }
+    .col-6 {
+      grid-column: 6 span;
+    }
+    .col-7 {
+      grid-column: 7 span;
+    }
+    .col-8 {
+      grid-column: 8 span;
+    }
+    .col-9 {
+      grid-column: 9 span;
+    }
+    .col-10 {
+      grid-column: 10 span;
+    }
+    .col-11 {
+      grid-column: 11 span;
+    }
+    .col-12 {
+      grid-column: 12 span;
+    }
+    .bb4 {
+      border-bottom: 4px solid;
+    }
+    .h49 {
+      height: 49px;
+    }
+    .mh62 {
+      max-height: 62px;
+    }
+    .hidden {
+      overflow: hidden;
+    }
+    .fz10 {
+      font-size: 10px;
+    }
+    .fz12 {
+      font-size: 12px;
+    }
+    .fz14 {
+      font-size: 14px;
+    }
+    .fz18 {
+      font-size: 18px;
+    }
+    .fz22 {
+      font-size: 22px;
+    }
+    .fz28 {
+      font-size: 28px;
+    }
+    .fz36 {
+      font-size: 36px;
+    }
+    .bold {
+      font-weight: bold;
+    }
+    .m0 {
+      margin: 0;
+    }
+    .my4 {
+      margin: 4px 0;
+    }
+    .pl6 {
+      padding-left: 6px;
+    }
+    .pl10 {
+      padding-left: 10px;
+    }
+    .tx-center {
+      text-align: center;
+    }
+    .tx-right {
+      text-align: right;
+    }
+    .break-all {
+      word-break: break-all;
+    }
+    .post-payment {
+      width: 80px;
+      height: 80px;
+    }
+    .barcode {
+    }
+  </style>
+</head>
+<body>
+  {% for page in data %}
+  <div class="page">
+    {% for pos, row in page %}
+    {% if pos % 2 == 0 %}
+    <div class="table-row">
+    {% endif %}
+      {% if row['伝票no'] != "" %}
+      <div class="table-cell">
+        <div class="row">
+          <div class="cell">
+            <img src="data:image/png;base64, {{ postpaidMailSymbolBase64 }}" alt="料金後納郵便">
+          </div>
+          <div class="cell v-mid">
+            <p class="fz14 bold my4">〒 {{ row['発送先郵便番号'] }}</p>
+            {% if row['発送先住所length'] <= 105 %}
+              <p class="fz14 bold my4 break-all mh62 hidden">{{ row['発送先住所'] }}</p>
+            {% else %}
+              <p class="fz12 my4 break-all mh62 hidden">{{ row['発送先住所'] }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="row bb4">
+          <div class="col-8">
+            <div class="tx-right h49 hidden">
+              {% if row['発送先名length'] <= 14 %}
+                <p class="m0 fz36">{{ row['発送先名'] }}様</p>
+              {% elseif row['発送先名length'] <= 18 %}
+                <p class="m0 fz28">{{ row['発送先名'] }}様</p>
+              {% elseif row['発送先名length'] <= 24 %}
+                <p class="m0 fz22">{{ row['発送先名'] }}様</p>
+              {% elseif row['発送先名length'] <= 58 %}
+                <p class="m0 fz18 break-all">{{ row['発送先名'] }}様</p>
+              {% else %}
+                <p class="m0 fz12 break-all">{{ row['発送先名'] }}様</p>
+              {% endif %}
+            </div>
+            <span class="fz10">{{ row['伝票no'] }}</span>
+          </div>
+        </div>
+        <div class="row">
+          <p class="fz10 my4 tx-center">〒630-8424 奈良県奈良市古市町789番地</p>
+          <p class="fz10 bold my4 pl10 tx-center">PlusNao プラスナオ おとりよせ.com ヴォーグ</p>
+        </div>
+        <div class="row pl6">
+          <div class="cell barcode v-top">
+            {{ row['barcode'] | raw }}
+            <span class="m0 fz10 v-top">株式会社フォレスト</span>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="table-cell">
+      </div>
+      {% endif %}
+    {% if pos % 2 == 1 %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</body>
+</html>

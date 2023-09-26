@@ -1,0 +1,23 @@
+  <ul class="nav nav-sidebar">
+    <li class="{% if app.request.attributes.get('_route') == 'sdmanage_index' %}active{% endif %}"><a href="{{ path('sdmanage_index') }}"><i class="glyphicon glyphicon-home"></i> 管理画面トップ</a></li>
+  </ul>
+  <dl>
+    <dt>新規登録</dt>
+    <dd>
+      <ul class="nav nav-sidebar">
+        <li class="{% if app.request.attributes.get('_route') == 'pltosd' %}active{% endif %}"><a href="{{ path('pltosd') }}"><i class="glyphicon glyphicon-download"></i> 商品データCSV出力</a></li>
+        <li class="{% if app.request.attributes.get('_route') == 'pltosd_impcsv' %}active{% endif %}"><a href="{{ path('pltosd_impcsv') }}"><i class="glyphicon glyphicon-download"></i> 登録用ファイル出力</a></li>
+        <li class="{% if app.request.attributes.get('_route') == 'sddat_impcsv' %}active{% endif %}"><a href="{{ path('sddat_impcsv') }}"><i class="glyphicon glyphicon-download"></i> 出品状況変更CSV出力</a></li>
+      </ul>
+    </dd>
+  </dl>
+  <dl>
+    <dt>更新</dt>
+    <dd>
+    </dd>
+  </dl>
+  <dl>
+    <dt>削除</dt>
+    <dd>
+    </dd>
+  </dl>

@@ -1,0 +1,309 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/vendor/datetimepicker/css/bootstrap-datetimepicker.min.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/moment/moment-with-locales.min.js'
+    '@AppBundle/Resources/public/vendor/datetimepicker/js/bootstrap-datetimepicker.min.js'
+    '@AppBundle/Resources/public/js/app.shipping-inquiry-number-used-report-csv-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const DELIVERY_METHODS = {{ deliveryMethods|raw }};
+  </script>
+
+  <div
+    id="shippingInquiryNumberUsedCsvList"
+    class="container"
+    data-search-url="{{ path('shipping_inquiry_number_used_report_csv_find') }}"
+    data-filter-url="{{ path('shipping_inquiry_number_used_report_csv_filter') }}"
+    data-generate-url="{{ path('shipping_inquiry_number_used_report_csv_generate') }}"
+    data-download-url="{{ path('shipping_inquiry_number_used_report_csv_download') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>使用済み発送伝票番号 報告CSVダウンロード</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="panel panel-default mb10">
+      <div class="panel-body">
+        <div class="form-inline">
+          {# 対象日時From #}
+          <div class="input-group date w200 pull-left mr10 mb5">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            <input
+              id="targetFrom"
+              v-model="conditions.targetFrom"
+              class="form-control datepicker"
+              type="text"
+              placeholder="対象日時From"
+            />
+          </div>
+          <div class="inputHeight text-center pull-left mr10 mb5">～</div>
+          {# 対象日時To #}
+          <div class="input-group date w200 pull-left mr10 mb5">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+            <input
+              id="targetTo"
+              v-model="conditions.targetTo"
+              class="form-control datepicker"
+              type="text"
+              placeholder="対象日時To"
+            />
+          </div>
+          {# 伝票番号 #}
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control w120 mr10"
+              v-model="conditions.voucherNumber"
+              placeholder="伝票番号"
+            />
+          </div>
+          {# 絞込ボタン #}
+          <div class="form-group mr10">
+            <button type="button" class="btn btn-success" @click="filter()">
+              絞込
+            </button>
+          </div>
+          {# 出荷破棄報告ボタン #}
+          <div class="form-group mr10">
+            <button type="button" class="btn btn-warning" @click="openCancelReportModal">
+              出荷破棄報告
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# 生成対象 絞込結果 #}
+    <div class="mb10">
+      <table class="ml5">
+        {# (A) 生成対象が有る場合の表示 #}
+        <tr
+          v-for="(trackingNumbers, deliveryId, index) in filterResults"
+          :key="deliveryId"
+          v-cloak
+        >
+          {# タイトル ※1行目に限り表示 #}
+          <th class="w170 text-center">
+            <span v-if="index === 0">報告CSV未生成伝票</span>
+            <span v-else></span>
+          </th>
+          {# 発送方法名 #}
+          <th class="w100 text-center" v-text="deliveryMethods[deliveryId]"></th>
+          <td class="w70 text-right">
+            <span v-text="trackingNumbers.length"></span>件
+          </td>
+          {# 生成ボタン #}
+          <td class="w100 text-center p6">
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              @click="generate(deliveryId)"
+            >
+              生成
+            </button>
+          </td>
+          <td>
+            <span
+              v-if="mismatchedDeliveryList[deliveryId].length > 0"
+              class="text-danger mr3"
+            >
+              ※NextEngineと発送方法が異なる可能性のある伝票が含まれています。
+              <button
+                class="btn btn-sm btn-info"
+                @click="openMismatchedModal(deliveryId)"
+              >
+                詳細
+              </button>
+            </span>
+          </td>
+        </tr>
+        {# (B) 生成対象が無い場合の表示 #}
+        <tr v-if="filterResults.length === 0">
+          <th class="w170 text-center">報告CSV未生成伝票</th>
+          <td>該当無し</td>
+        </tr>
+      </table>
+    </div>
+
+    {# リスト #}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-bordered odd-bg-smoke">
+          <thead>
+            <tr>
+              <th rowspan="2" class="text-center">作成日時</th>
+              <th rowspan="2" class="text-center">発送方法</th>
+              <th rowspan="2" class="text-center">件数</th>
+              <th colspan="2" class="text-center">WEB-EDI用</th>
+              <th colspan="2" class="text-center">NextEngine用</th>
+            </tr>
+            <tr>
+              <th class="text-center">CSVファイル名</th>
+              <th class="text-center">DL回数</th>
+              <th class="text-center">CSVファイル名</th>
+              <th class="text-center">DL回数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="report in reportList" :key="report.id" v-cloak>
+              {# 作成日時 #}
+              <td v-text="report.created"></td>
+              {# 発送方法 #}
+              <td v-text="deliveryMethods[report.deliveryId]"></td>
+              {# 件数 #}
+              <td class="text-right" v-text="report.trackingNumberCountStr"></td>
+              {# WEB-EDI CSVファイル名 #}
+              <td>
+                <a
+                  v-text="report.csvNameEdi"
+                  class="pointer"
+                  @click="download(report.id, 'edi', report.csvNameEdi)"
+                >
+                </a>
+              </td>
+              {# WEB-EDI DL回数 #}
+              <td class="text-right" v-text="report.downloadCountEdiStr"></td>
+              {# NextEngine CSVファイル名 #}
+              <td>
+                <a
+                  v-text="report.csvNameNe"
+                  class="pointer"
+                  @click="download(report.id, 'ne', report.csvNameNe)"
+                >
+                </a>
+              </td>
+              {# NextEngine DL回数 #}
+              <td class="text-right" v-text="report.downloadCountNeStr"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {# モーダル（出荷破棄伝票報告） #}
+  <div
+    id="modal-cancel-report"
+    data-cancel-report-url="{{ path('shipping_inquiry_number_used_report_csv_cancel_report') }}"
+    class="modal"
+    tabindex="-1"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">出荷破棄伝票報告</h4>
+        </div>
+        <div class="modal-body">
+          {# モーダル説明 #}
+          <div class="mb10">
+            <div class="alert alert-info">
+              ここで報告した伝票番号は、出荷破棄扱いとし、報告CSV生成対象から除外します。
+              </br>
+              ※受注状態を変更するものではありませんので、ご注意ください。
+            </div>
+          </div>
+          {# 処理結果メッセージ #}
+          <div class="mb10">
+            <div :class="messageClass">
+              <span v-text="message"></span>
+            </div>
+          </div>
+          {# 発送方法不一致可能性伝票一覧 #}
+          <div class="form-group">
+            <textarea
+              id="voucherNumber"
+              type="text"
+              v-model="voucherNumbersStr"
+              class="form-control w200 mx-auto"
+              rows="15"
+              placeholder="伝票番号（改行区切り）"
+            >
+            </textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">
+            閉じる
+          </button>
+          <button type="button" class="btn btn-lg btn-warning" @click="report">
+            報告
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# モーダル（発送方法差異） #}
+  <div class="modal" id="modal-mismatched-list" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label" v-text="caption"></h4>
+        </div>
+        <div class="modal-body">
+          {# 配送方法がNEと一致しない可能性がある一覧を表示する旨のアラート #}
+          <div class="mb10">
+            <div :class="messageClass">
+              <span v-text="message1"></span>
+              </br>
+              <span v-text="message2"></span>
+            </div>
+          </div>
+          {# 発送方法不一致可能性伝票一覧 #}
+          <div>
+            <table class="table table-bordered odd-bg-smoke">
+              <tr>
+                <th class="text-center">伝票番号</th>
+                <th class="text-center">NE側発送方法</th>
+              </tr>
+              <tr v-for="mismatch in mismatches" :key="mismatch.voucherNumber">
+                {# 伝票番号 #}
+                <td class="text-center" v-text="mismatch.voucherNumber"></td>
+                {# NE側発送方法 #}
+                <td class="text-center" v-text="mismatch.neDeliveryName"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">
+            閉じる
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,49 @@
+MiscBundle\Entity\ProductRegistrationLogs:
+    type: entity
+    table: product_registration_logs
+    indexes:
+        date_added:
+            columns:
+                - date_added
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        userId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: user_id
+        contents:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        mainId:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: main_id
+        dateAdded:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: date_added
+        created:
+            type: datetime
+            nullable: false
+        modified:
+            type: datetime
+            nullable: false
+    lifecycleCallbacks: {  }

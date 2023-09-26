@@ -1,0 +1,135 @@
+MiscBundle\Entity\SymfonyUsers:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\SymfonyUsersRepository
+  table: symfony_users
+  uniqueConstraints:
+    unique_username:
+      columns:
+        - username
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    username:
+      type: string
+      nullable: false
+      length: 24
+      options:
+        fixed: false
+    user_cd:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+    password:
+      type: string
+      nullable: false
+      length: 64
+      options:
+        fixed: false
+    email:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    is_active:
+      type: integer
+      nullable: false
+      options:
+        default: -1
+    last_login_datetime:
+      type: datetime
+      nullable: true
+      options:
+        default: null
+    login_error_count:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    password_change_datetime:
+      type: datetime
+      nullable: false
+    is_locked:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    locked_datetime:
+      type: datetime
+      nullable: true
+      options:
+        default: null
+    ne_account:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    ne_password:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    roles:
+      type: string
+      nullable: true
+
+    warehouse_id:
+      type: integer
+      nullable: false
+      options:
+        default: 1
+    company_id:
+      type: integer
+      nullable: false
+      options:
+        default: -1
+    buyer_order:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    created_at:
+      type: datetime
+      nullable: false
+    updated_at:
+      type: datetime
+      nullable: false
+
+  # see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/events.html#lifecycle-events
+  lifecycleCallbacks:
+    # 初回登録時 処理
+    prePersist:
+      - fillTimestamps
+    # postPersist: [ doStuffOnPostPersist ]
+    # 更新時 処理
+    preUpdate:
+      - preUpdate
+
+  manyToOne:
+    warehouse:
+      targetEntity: TbWarehouse
+      joinColumn:
+        name: warehouse_id
+        referencedColumnName: id
+
+    company:
+      targetEntity: TbCompany
+      joinColumn:
+        name: company_id
+        referencedColumnName: id
+

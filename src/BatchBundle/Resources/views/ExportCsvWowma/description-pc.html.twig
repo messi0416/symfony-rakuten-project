@@ -1,0 +1,16 @@
+{# PC用商品説明テンプレート #}
+{# 商品説明と同じ送料無料コメントがあったが省略 #}
+{# <br><br> #}
+<div>
+商品詳細
+{{ row['商品コメントPC']|nl2br }}
+{% if row['サイズについて']|length > 0 %}<br><br>【サイズについて】<br>{{ row['サイズについて']|nl2br }}{% endif %}
+{% if row['カラーについて']|length > 0 %}<br><br>【カラーについて】<br>{{ row['カラーについて']|nl2br }}{% endif %}
+{% if row['素材について']|length > 0 %}<br><br>【素材について】<br>{{ row['素材について']|nl2br }}{% endif %}
+{% if row['ブランドについて']|length > 0 %}<br><br>【ブランド】<br>{{ row['ブランドについて']|nl2br }}{% endif %}
+{% if row['使用上の注意']|length > 0 %}<br><br>【使用上の注意】<br>{{ row['使用上の注意']|nl2br }}{% endif %}
+{% if row['補足説明PC']|length > 0 %}<br><br>【補足説明】<br>{{ row['補足説明PC']|nl2br }}{% endif %}
+<br><br>【商品コード】<br>{{ row.itemCode }}
+</div>
+<br>
+{{ mallDesigns.wowma_pc_bottom |raw }}

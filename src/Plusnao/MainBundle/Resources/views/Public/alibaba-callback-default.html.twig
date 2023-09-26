@@ -1,0 +1,40 @@
+{% extends 'PlusnaoMainBundle::base-no-js.html.twig' %}
+
+{% block body %}
+  <div class="container">
+    <div>
+      code: {{ code }}
+    </div>
+
+    {% if (app.environment != 'prod') %}
+      {# テスト用フォーム #}
+    <form action="https://gw.open.1688.com/openapi/param2/1/system.oauth2/getToken/{{ config.app_key }}" method="post">
+
+      <div class="form-group">
+        <input type="text" name="grant_type" value="authorization_code" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" name="need_refresh_token" value="true" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" name="client_id" value="{{ config.app_key }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" name="client_secret" value="{{ config.sec_key }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" name="redirect_uri" value="https://forest.plusnao.co.jp/pub/alibaba/callback/default" class="form-control">
+      </div>
+      <div class="form-group">
+        <input type="text" name="code" value="{{ code }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <button class="btn btn-default">AccessToken ゲット！</button>
+      </div>
+
+    </form>
+
+    {% endif %}
+
+  </div>
+{% endblock %}

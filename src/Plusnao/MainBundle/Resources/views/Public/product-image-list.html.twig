@@ -1,0 +1,13 @@
+{% extends 'PlusnaoMainBundle::base-no-js.html.twig' %}
+
+{% block body %}
+  <div class="container">
+    <div class="row">
+      {% for image in images %}
+      <div class="col-xs-12">
+        <img src="{{ imageUrl }}/{{ image.getFileDirPath() }}" class="img-responsive">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block headerTitle %}重量・寸法未設定商品{% endblock %}
+
+{% block javascripts %}
+    {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+    {{ parent() }}
+
+    {% javascripts
+    '@AppBundle/Resources/public/js/app.location-missing-weight-product-list.js'
+    %}
+      <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+
+{% block contents %}
+<div id="locationMissingWeightProductList">
+
+  {% if pagination.count() > 0 %}
+    <div>
+
+      <div class="panel panel-default">
+        <div class="panel-body clearfix">
+          <form action="{{ path('location_missing_weight_product_list') }}" method="get" id="searchForm">
+            <div class="form-group pull-left mr10 mb5">
+              <select class="form-control" name="delivery_method" v-on:change="submitSearchForm">
+                <option value=""></option>
+                {% for code,name in searchDeliveryMethods %}
+                <option value="{{ code }}" {{ (conditions.delivery_method|length > 0 and conditions.delivery_method == code) ? 'selected' : '' }}>{{ name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group pull-left mr10 mb5">
+              <select class="form-control" name="stock_only" v-on:change="submitSearchForm">
+                <option value="" {{ conditions.stock_only == '' ? '' : 'selected' }}>全倉庫在庫</option>
+                <option value="{{ account.getWarehouseId() }}" {{ conditions.stock_only ? 'selected' : '' }}>現ロケ在庫</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+      <table class="table" id="warehouseList">
+        {% for product in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-3">
+              {% if images[product.daihyo_syohin_code] %}
+                <a href="{{ path('goods_weight_size_edit', { 'code' : product.ne_syohin_syohin_code }) }}" target="goodsSizeWeight">
+                  <img src="{{ images[product.daihyo_syohin_code] }}" class="img-responsive">
+                </a>
+              {% endif %}
+            </td>
+            <td class="col-xs-7">
+              <div class="mb5 bigger">
+                <a href="{{ path('goods_weight_size_edit', { 'code' : product.ne_syohin_syohin_code }) }}" target="goodsSizeWeight">
+                  {{ product.ne_syohin_syohin_code }}
+                </a>
+              </div>
+              <div class="dgray">
+                [{{ product.first_location }}]
+              </div>
+            </td>
+            <td class="col-xs-2 text-center">
+              <p class="bold bigger mb0">
+                {{ product.order_num }}
+              </p>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+    </div>
+  {% else %}
+    <div class="alert alert-warning">データがありません。</div>
+  {% endif %}
+
+</div>
+{% endblock %}

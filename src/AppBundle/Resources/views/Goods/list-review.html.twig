@@ -1,0 +1,298 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  '@AppBundle/Resources/public/js/app.goods-list-review.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <div id="reviewList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品レビュー 一覧</h2>
+        </div>
+        <div class="pull-right">
+          <button class="btn btn-default mt20 mb5" data-toggle="modal" data-target="#modalReviewCsvUpload">
+            <i class="fa fa-fw fa-upload"></i>レビューデータ　アップロード
+          </button>
+        </div>
+      </div>
+
+      <div id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}" v-show="message && message.length > 0">
+        <div class="alert" v-bind:class="messageCssClass" v-text="message"></div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div id="reviewListTable"
+         data-url="{{ path('goods_list_review_find') }}"
+      >
+
+      {# 絞込フォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="inlineBlock" role="form">
+            <div class="form-inline">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="importDateFrom">レビュー日</label>
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="import_date_from" class="form-control" id="importDateFrom"
+                       placeholder="レビュー日 FROM" v-model="conditions.importDateFrom"
+                  />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left mr10 mb5">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type="text" name="import_date_to" class="form-control" id="importDateTo"
+                       placeholder="レビュー日 TO" v-model="conditions.importDateTo"
+                  />
+              </div>
+              <div class="input-group w100 pull-left mr10 mb5">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  期間移動 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="pointer" v-on:click="selectOneWeek">週</a></li>
+                  <li><a class="pointer" v-on:click="selectOneMonth">月</a></li>
+                </ul>
+              </div>
+              <div class="form-group w300 pull-left mr10 mb5">
+                <label class="btn btn-default inlineBlock mb5 mr5" v-on:click="moveDayRange('backward')"><i class="fa fa-angle-left"></i></label>
+                <input type="text" class="form-control mb5 mr5 w50" id="moveDays" v-model="conditions.moveDays" name="days"/> 日
+                <label class="btn btn-default mb5 mr5" v-on:click="moveDayRange('forward')"><i class="fa fa-angle-right"></i></label>
+              </div>
+            </div>
+            <div class="form-inline">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="searchScoreFrom">スコア</label>
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <input type="number" name="search_score_from" v-model="conditions.scoreFrom" class="form-control mb5 mr5 w60" id="searchScoreFrom" min="1" max="5"/>
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                ～
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <input type="number" name="search_score_to" v-model="conditions.scoreTo" class="form-control mb5 mr5 w60" id="searchScoreTo"  min="1" max="5"/>
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="searchDaihyoSyohinCode">代表商品コード</label>
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <input type="text" name="search_daihyo_syohin_code" v-model="conditions.daihyoSyohinCode" class="form-control mb5 mr5 w150" id="searchDaihyoSyohinCode" />
+              </div>
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="searchDaihyoSyohinName">商品名</label>
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <input type="text" name="search_daihyo_syohin_name" v-model="conditions.daihyoSyohinName" class="form-control mb5 mr5 w400" id="searchDaihyoSyohinName" />
+              </div>
+            </div>
+            <div class="form-inline">
+              <div class="inputHeight text-center pull-left mr5 mb5">
+                <label for="searchNeMallId">投稿サイト</label>
+              </div>
+              <div class="date pull-left mr10 mb5">
+                <select class="form-control" name="search_ne_mall_id"  v-model="conditions.neMallId" id="searchNeMallId">
+                  <option value="1" >Plus Nao 楽天市場店</option>
+                  <option value="31" >MottoMotto 楽天市場店</option>
+                  <option value="32" >La Forest 楽天市場店</option>
+                  <option value="27" >dolcissimo 楽天市場店</option>
+                  <option value="35" >激安プラネット 楽天市場店</option>
+                  <option value="12" >Yahoo plusnao</option>
+                  <option value="14" >kawa-e-mon</option>
+                  <option value="20" >おとりよせ.com</option>
+                </select>
+              </div>
+              <div class="pull-right">
+                <button type="button" class="btn btn-success mb5 mr5" id="searchButton" v-on:click="search">検索</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div style="float: left; margin: 15px auto;" v-show="allAverage" v-text="allAverage"></div>
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th class="vMiddle w70">レビューID</th>
+          <th class="vMiddle w80">レビュー日</th>
+          <th class="vMiddle w80">スコア<BR>平均(総件数)</th>
+          <th class="vMiddle w80">画像</th>
+          <th class="vMiddle w100">商品コード</th>
+          <th class="vMiddle w150">商品名</th>
+          <th class="vMiddle w300">本文</th>
+          <th class="vMiddle w70">投稿サイト</th>
+        </tr>
+
+        <tr v-for="item in list"
+            is="result-item"
+            :item="item"
+          ></tr>
+      </table>
+
+      {# pagination (Vue component) #}
+      <div
+          is="parts-table-pagination"
+          :page="searchParams.page"
+          :init-page-item-num="searchParams.pageItemNum"
+          :init-page-item-num-list="pageItemNumList"
+          :item-num="totalItemNum"
+          :related-page-item-num="searchParams.pageItemNum"
+          v-on:change-page="showPage"
+      ></div>
+
+    </div>
+  </div>
+
+
+{# modals #}
+<div class="modal"
+     id="modalReviewCsvUpload"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('goods_list_yahoo_review_csv_upload') }}"
+     data-register-url="{{ path('goods_list_yahoo_review_csv_register') }}"
+  >
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" v-on:click="reset">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          レビューデータ アップロード
+        </h4>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="loading" v-show="nowLoading">
+          <img src="{{ asset('img/loading-large.gif') }}" />
+          <p class="notice">
+            現在データの更新中です。完了するまで画面を閉じないでください。
+          </p>
+        </div>
+
+        <div v-show="!nowLoading">
+          <div class="mt10">
+            <div v-bind:class="messageClass">
+              <div class="multiLineWrap" v-text="message"></div>
+              <div v-show="yahooSitesLastRegistrDateList != null">
+              <ul>
+                <li v-for="lastRegistrDate in yahooSitesLastRegistrDateList" v-text="lastRegistrDate"></li>
+              </ul>
+            </div>
+            </div>
+          </div>
+          <div v-bind:class="{ hidden: noticeHidden }">
+            <div v-bind:class="noticeClass">
+              <div v-for="notice in notices" v-text="notice"></div>
+            </div>
+          </div>
+
+          <form action="{{ path('goods_list_yahoo_review_csv_upload') }}" method="post" id="importForm" enctype="multipart/form-data" v-show="showFile">
+            <div class="row">
+              <div class="col-sm-12 form-group text-center mb20">
+                <span id="uploadFileSpan"><input type="file" name="upload" class=""></span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-lg btn-primary" v-on:click="onConfirm" v-show="showConfirm">確認</button>
+        <button class="btn btn-lg btn-primary" v-on:click="onRegister" v-show="showRegister">登録</button>
+        <button class="btn btn-lg btn-default" v-on:click="reset" data-dismiss="modal">閉じる</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateReviewListTableRow">
+    <tr class="text-center">
+      <td class="vMiddle" v-text="item.id"></td>
+      <td class="vMiddle" v-text="item.reviewDate"></td>
+      <td class="vMiddle">
+        <div v-text="item.score"></div>
+        <div v-text="item.scoreAverage"></div>
+      </td>
+      <td class="vMiddle">
+        <img class="img-responsive" v-bind:src="item.imageUrl" v-if="item.imageUrl">
+      </td>
+      <td class="vMiddle" v-if="item.skuCode != null" v-text="item.skuCode"></td>
+      <td class="vMiddle" v-if="item.skuCode == null" v-text="item.daihyoSyohinCode"></td>
+      <td class="vMiddle">
+        <div class="text-left wordBreakAll" v-text="item.daihyoSyohinName"></div>
+      </td>
+      <td class="vMiddle">
+        <div class="text-left bold wordBreakAll" v-text="item.title"></div>
+        <div class="text-left wordBreakAll" v-text="item.body" style="white-space: pre-line"></div>
+      </td>
+      <td class="vMiddle text-center" v-text="item.postingSite"></td>
+    </tr>
+  </script>
+
+{% endblock %}

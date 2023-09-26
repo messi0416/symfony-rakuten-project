@@ -1,0 +1,97 @@
+MiscBundle\Entity\TbShippingVoucher:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbShippingVoucherRepository
+  table: tb_shipping_voucher
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      column: id
+      generator:
+        strategy: IDENTITY
+
+  fields:
+    shippingVoucherPackingGroupId:
+      type: integer
+      nullable: true
+      unsigned: false
+      comment: "梱包グループID\n古いデータでは紐づく梱包グループがない場合がある"
+      column: shipping_voucher_packing_group_id
+
+    account:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    status:
+      type: integer
+      nullable: false
+      comment: "ステータス\n0:ピッキング待ち,1:梱包未処理,2:梱包中,3:完了"
+      options:
+        default: 0
+
+    imported:
+      type: datetime
+      nullable: false
+
+    warehouse_id:
+      type: integer
+      nullable: false
+      options:
+        default: 1
+
+    warehouse_daily_number:
+      type: integer
+      nullable: false
+      options:
+        default: NULL
+
+    picking_list_date:
+      type: date
+      nullable: false
+
+    picking_list_number:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    picking_block_pattern:
+      type: string
+      nullable: false
+      options:
+        default: ''
+
+    packingAccountId:
+      type: integer
+      nullable: true
+      comment: "梱包担当者ID\n梱包開始前はnull"
+      default: NULL
+      column: packing_account_id
+
+    statement_downloaded:
+      type: datetime
+      nullable: true
+    label_downloaded:
+      type: datetime
+      nullable: true
+
+    file_hash:
+      type: string
+      nullable: false
+      options:
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+
+    updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps

@@ -1,0 +1,10 @@
+@charset "utf-8";
+/**
+ * ログインなし 仕入れ先アドレス検索 画面
+ */
+
+body {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 5px 10px;
+}

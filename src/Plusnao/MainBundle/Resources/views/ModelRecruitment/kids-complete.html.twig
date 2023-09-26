@@ -1,0 +1,52 @@
+{% extends 'PlusnaoMainBundle::base-front.html.twig' %}
+
+{% block title %}キッズモデル応募 完了 | 株式会社フォレスト{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/plusnaomain/css/model-recruitment-kids-form.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+<div id="modelRecruitmentKidsForm" class="container">
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      株式会社フォレスト　キッズモデル募集フォーム
+    </div>
+
+    <div class="panel-body">
+
+      <div>
+        <p>
+          ご応募ありがとうございました。登録を完了しました。<br>
+          後日、弊社よりご連絡を差し上げます。
+        </p>
+
+        {#<p>#}
+          {#※※※ TODO 応募者向けメール送信 未実装！！ ※※※#}
+          {#メールアドレスをご入力いただいた方には、自動的に返信メールを送信しています。<br>#}
+          {#万一返信メールの届いていない方は、お手数ですが下記までお問い合わせください。#}
+        {#</p>#}
+
+        {#<p>#}
+          {#※※※ TODO このあたりに問い合わせ先？ ※※※#}
+        {#</p>#}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

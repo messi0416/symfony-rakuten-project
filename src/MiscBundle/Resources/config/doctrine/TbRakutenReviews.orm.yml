@@ -1,0 +1,94 @@
+MiscBundle\Entity\TbRakutenReviews:
+    type: entity
+    table: tb_rakuten_reviews
+    # repositoryClass: MiscBundle\Entity\Repository\TbRakutenReviewsRepository
+    indexes:
+        daihyo_syohin_code:
+            columns:
+                - daihyo_syohin_code
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: ID
+            generator:
+                strategy: IDENTITY
+    fields:
+        review_type:
+            column: レビュータイプ
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: ''
+        product_name:
+            column: 商品名
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        review_url:
+            column: レビュー詳細URL
+            type: string
+            nullable: false
+            options:
+                fixed: false
+        point:
+            column: 評価
+            type: integer
+            nullable: false
+            options:
+                default: 0
+        post_datetime:
+            column: 投稿時間
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        title:
+            column: タイトル
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        review:
+            column: レビュー本文
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        flag:
+            column: フラグ
+            type: integer
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        order_number:
+            column: 注文番号
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        daihyo_syohin_code:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: daihyo_syohin_code
+        order_datetime:
+            column: 購入日時
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks: {  }

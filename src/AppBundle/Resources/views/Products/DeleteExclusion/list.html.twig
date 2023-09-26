@@ -1,0 +1,55 @@
+{% extends 'AppBundle:Products:base.html.twig' %}
+
+{% block headerTitle %}
+削除対象外商品コード 一覧
+{% endblock %}
+
+{% block contents %}
+
+<div class="alert alert-info">
+  楽天, Yahoo (plusnao, kawa-e-mon, おとりよせ.com) および Amazon(JP, US) のみ反映されます。
+</div>
+
+<div class="buttonBand">
+  <a class="btn btn-primary" href="{{ path('products_delete_exclusion_create') }}">新規</a>
+</div>
+
+<div>
+  <table class="table table-bordered" id="deleteExcludedProductsList">
+    <thead>
+    <tr>
+      <th class="text-center">モール</th>
+      <th class="text-center">商品コード</th>
+      <th class="text-center">備考</th>
+      <th class="text-center">&nbsp;</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {%  if data|length > 0 %}
+      {% for row in data %}
+      <tr>
+        {#<td class="text-center tdId">{{ row.getId() }}</td>#}
+        <td>{{ mallList[row.getMallId()] ? mallList[row.getMallId()].getMallName() : '' }}</td>
+        <td>{{ row.getSyohinCode() }}</td>
+        <td class="tdComment">{{ row.getComment() }}</td>
+        <td class="text-center tdCommandButton">
+          <a class="btn btn-success" href="{{ path('products_delete_exclusion_edit', {'id': row.getId()}) }}">編集</a>
+          <a class="btn btn-danger" v-on="click: openDeleteConfirmModal('{{ path('products_delete_exclusion_delete', {'id': row.getId()}) }}', '{{ row.getSyohinCode }}')">削除</a>
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="4" class="text-center">データがありません</td>
+      </tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{# 削除確認モーダル #}
+{% include 'AppBundle::modal/common_modal.html.twig' with {'modalId' : 'modalDeleteExcludedProductsDeleteConfirm'} %}
+
+{% endblock %}
+

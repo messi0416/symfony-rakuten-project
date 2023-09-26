@@ -1,0 +1,178 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% stylesheets
+    'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+    'bundles/app/css/app.logistics-warehouse-result-history.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/moment/moment-with-locales.min.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/vendor/js/fixed_midashi.js'
+    '@AppBundle/Resources/public/js/app.logistics-warehouse-result-history-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const WAREHOUSES = {{ jsonWarehouses | raw }};
+    const COEFFICIENT_SHOPLIST = {{ coefficientShoplist }};
+    const COEFFICIENT_RSL_SAGAWA_YAMATO = {{ coefficientRslSagawaYamato }};
+  </script>
+
+  <div id="warehouseResultHistoryList" class="container"
+      data-list-url="{{ path('logistics_warehouse_result_history_list_find') }}"
+      data-update-url="{{ path('logistics_warehouse_result_history_list_update') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>出荷実績レビュー</h2>
+        </div>
+      </div>
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="warehouseResultHistoryList" class="container">
+      <div class="panel panel-default mb10">
+        <div class="panel-body">
+          <div class="form-inline">
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start_location" class="form-control" id="filterDateStartLocation"
+                        v-model="filterDateStart"
+                        placeholder="FROM" />
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end_location" class="form-control" id="filterDateEndLocation"
+                        v-model="filterDateEnd"
+                        placeholder="TO" />
+              </div>
+            </div>
+
+            <div class="form-group mr20 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" v-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+
+            <div class="clearfix form-group mr20 mb5">
+              <li>
+                SHOPLIST購入伝票の出荷には、
+                <input
+                    type="text"
+                    class="form-control text-right w60"
+                    v-model="coefficientShoplist"
+                  >
+                を掛ける
+              </li>
+              <li>
+                ゆうパック(RSL)と、佐川急便またはヤマト(発払い)B2v6での出荷（SHOPLIST除く）には、
+                <input
+                    type="text"
+                    class="form-control text-right w60"
+                    v-model="coefficientRslSagawaYamato"
+                  >
+                を掛ける
+              </li>
+            </div>
+
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group pull-left">
+                <button class="btn btn-success" v-on:click="loadListData">検索</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="clearfix form-group mr5 mb5">
+        <div class="input-group pull-right">
+          <button class="btn btn-primary" v-on:click="updateData">時間数を反映</button>
+        </div>
+      </div>
+
+      <div class="scrollTableDiv">
+        <table class="table table-bordered table-condensed" _fixedhead="rows:2; cols:1;">
+          <tr>
+            <th rowspan=2 class="mw90 w100">登録日時</th>
+            {% for warehouse in warehouses %}
+              <th class="" colspan=4>{{ warehouse.name }}</th>
+            {% endfor %}
+          </tr>
+
+          <tr>
+            {% for warehouse in warehouses %}
+              <th class="mw70 w70">ピッキング</th>
+              <th class="mw70 w70">倉庫在庫ピッキング</th>
+              <th class="mw70 w70">出荷　（調整）</th>
+              <th class="mw80 w80">稼働時間合計</th>
+            {% endfor %}
+          </tr>
+
+          <tr v-for="item in pageData"
+              is="result-item"
+              :item="item">
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateLogisticsWarehouseResultHistoryListTableRow">
+    <tr class="text-right">
+      <td class="vMiddle" v-text="item.targetDate"></td>
+        <template v-for="warehouseKey in item.warehouseKeyList">
+          <td class="vMiddle" v-text="item[warehouseKey].pickingSum"></td>
+          <td class="vMiddle" v-text="item[warehouseKey].warehousePickingSum"></td>
+          <td class="vMiddle" v-text="item[warehouseKey].shippingAdjustment"></td>
+          <td class="vMiddle">
+            <input
+                type="text"
+                class="form-control text-right"
+                v-bind:class="item[warehouseKey].cssClass"
+                v-bind:value="item[warehouseKey].operationTimeSum"
+                v-on:input="inputOperationTimeSum(warehouseKey, $event)"
+              >
+          </td>
+        </template>
+    </tr>
+  </script>
+
+{% include 'AppBundle::modal/change-current-company.html.twig' %}
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'PlusnaoMainBundle::base-no-js.html.twig' %}
+
+{% block body %}
+  <div class="container">
+
+    <div class="panel panel-default mt10 mb10">
+      <div class="panel-body">
+        <a href="zxing://scan/?ret=http%3A%2F%2Fforest.plusnao.co.jp%2Fpub%2Fbarcode%2Fimage%2F%7BCODE%7D" class="btn btn-default fullWidth">
+          <i class="fa fa-barcode"></i>
+        </a>
+      </div>
+    </div>
+
+    {% if choice %}
+
+    <div class="mb10">
+      <a class="btn btn-default fullWidth" href="{{ path('plusnao_redirect_product_location_detail', { syohinCode: choice.getNeSyohinSyohinCode() }) }}">
+        {{ choice.neSyohinSyohinCode }}
+      </a>
+    </div>
+
+    <div class="panel panel-default mb10">
+      <div class="panel-heading">カラー画像</div>
+      <div class="panel-body">
+        {% if variationImage %}
+          <img src="{{ variationImageUrl }}/{{ variationImage.getFileDirPath() }}" class="img-responsive">
+        {% else %}
+          なし
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      {% for image in images %}
+      <div class="col-xs-12 mb5">
+        <img src="{{ imageUrl }}/{{ image.getFileDirPath() }}" class="img-responsive">
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+      <div class="alert alert-info">no data</div>
+    {% endif %}
+
+  </div>
+{% endblock %}

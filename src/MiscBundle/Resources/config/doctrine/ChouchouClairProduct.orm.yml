@@ -1,0 +1,414 @@
+MiscBundle\Entity\ChouchouClairProduct:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\ChouchouClairProductRepository
+    table: chouchou_clair_product
+    # indexes:
+    id:
+        code:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 商品管理番号
+        branch_code:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 商品管理枝番号
+    fields:
+        name:
+            type: string
+            length: 255
+            nullable: false
+            default: ''
+            column: 商品名
+        catch_copy:
+            type: string
+            length: 100
+            nullable: false
+            default: ''
+            column: キャッチコピー
+        jan_code:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: JANコード
+        maker_code:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: メーカー品番
+        category:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: カテゴリ
+        start_date:
+            type: string
+            length: 10
+            nullable: false
+            default: ''
+            column: 掲載開始日
+        end_date:
+            type: string
+            length: 10
+            nullable: false
+            default: ''
+            column: 掲載終了日
+        shipping_condition:
+            type: string
+            length: 200
+            nullable: false
+            default: ''
+            column: 出荷条件
+        return_flag:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 良品返品
+        size:
+            type: string
+            column: サイズ・容量
+        standard:
+            type: string
+            column: 規格
+        comment:
+            type: string
+            column: コメント
+        notes:
+            type: string
+            length: 255
+            nullable: false
+            default: ''
+            column: 注意事項
+        stamp:
+            type: string
+            length: 200
+            nullable: false
+            default: ''
+            column: スタンプ
+        style:
+            type: string
+            length: 2
+            nullable: false
+            default: ''
+            column: スタイル
+        search_tag1:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 検索タグ1
+        search_tag2:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 検索タグ2
+        search_tag3:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 検索タグ3
+        search_tag4:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 検索タグ4
+        search_tag5:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 検索タグ5
+        image1:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像1
+        image1_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像1キャプション
+        image2:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像2
+        image2_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像2キャプション
+        image3:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像3
+        image3_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像3キャプション
+        image4:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像4
+        image4_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像4キャプション
+        image5:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像5
+        image5_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像5キャプション
+        image6:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像6
+        image6_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像6キャプション
+        image7:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像7
+        image7_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像7キャプション
+        image8:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像8
+        image8_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像8キャプション
+        image9:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像9
+        image9_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像9キャプション
+        image10:
+            type: string
+            length: 60
+            nullable: false
+            default: ''
+            column: 画像10
+        image10_caption:
+            type: string
+            length: 30
+            nullable: false
+            default: ''
+            column: 画像10キャプション
+        row_num:
+            type: integer
+            nullable: false
+            default: 0
+            column: 注文欄番号
+        detail:
+            type: string
+            length: 100
+            nullable: false
+            default: ''
+            column: 内訳
+        price_type:
+            type: string
+            length: 2
+            nullable: false
+            default: ''
+            column: 参考価格種別
+        retail_price:
+            type: string
+            length: 10
+            nullable: false
+            default: ''
+            column: 上代価格
+        wholesale_price:
+            type: integer
+            nullable: false
+            default: 0
+            column: 卸価格
+        set_num:
+            type: integer
+            nullable: false
+            default: 0
+            column: セット毎数量
+        stock:
+            type: integer
+            nullable: false
+            default: 0
+            column: 在庫数
+        branch_delete_flag:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 枝番号削除フラグ
+        hide_price_flag:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 価格非公開フラグ
+        available_flag:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 販売中
+        sales_method:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 販売方法
+        sales_site:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 販売サイト
+        keyword1:
+            type: string
+            length: 100
+            nullable: false
+            default: ''
+            column: 固定キーワード1
+        keyword2:
+            type: string
+            length: 100
+            nullable: false
+            default: ''
+            column: 固定キーワード2
+        keyword3:
+            type: string
+            length: 100
+            nullable: false
+            default: ''
+            column: 固定キーワード3
+        brand_id:
+            type: string
+            length: 2
+            nullable: false
+            default: ''
+            column: ブランド管理ID
+        discount_start_date:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 割引開始日時
+        discount_end_date:
+            type: string
+            length: 20
+            nullable: false
+            default: ''
+            column: 割引終了日時
+        discount_rate:
+            type: string
+            length: 6
+            nullable: false
+            default: ''
+            column: 割引率
+        postage_type:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 送料区分
+        postage:
+            type: string
+            length: 10
+            nullable: false
+            default: ''
+            column: 商品個別送料
+        bulk_sale_flag:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: まとめ買い割引対象商品フラグ
+        reprint_permittion:
+            type: string
+            length: 1
+            nullable: false
+            default: ''
+            column: 画像転載許可フラグ
+        pre_stock:
+            type: integer
+            nullable: false
+            default: 0
+            column: pre_stock
+        stock_modified:
+            type: datetime
+            column: stock_modified
+        modified_user_type:
+            type: string
+            length: 10
+            nullable: false
+            default: ''
+            column: modified_user_type
+        modified_user:
+            type: integer
+            nullable: false
+            default: 0
+            column: modified_user
+        created:
+            type: datetime
+            nullable: false
+        updated:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

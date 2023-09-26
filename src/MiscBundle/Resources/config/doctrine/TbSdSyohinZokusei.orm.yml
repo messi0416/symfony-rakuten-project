@@ -1,0 +1,28 @@
+MiscBundle\Entity\TbSdSyohinZokusei:
+    type: entity
+    table: tb_sd_syohin_zokusei
+    fields:
+        genreCode:
+            id: true
+            type: integer
+            column: genre_code
+        genreName:
+            type: string
+            length: '100'
+            column: genre_name
+        shiyo:
+            type: string
+            length: '30'
+        koumokuName:
+            type: string
+            length: '30'
+            column: koumoku_name
+        setteiNaiyo:
+            type: string
+            length: '40'
+            column: settei_naiyo
+        syohinZokusei:
+            id: true
+            type: integer
+            column: syohin_zokusei
+    lifecycleCallbacks: {  }

@@ -1,0 +1,14 @@
+{% extends 'AppBundle:Products:base.html.twig' %}
+
+{% block headerTitle %}
+  削除対象外商品コード 新規登録
+{% endblock %}
+
+{% block contents %}
+  <div id="deleteExcludedProductForm" data-back-url="{{ path('products_delete_exclusion') }}">
+
+    {% include 'AppBundle:Products:DeleteExclusion/form.html.twig' with {'actionUrl' : path('products_delete_exclusion_create')} %}
+
+  </div>
+
+{% endblock %}

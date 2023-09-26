@@ -1,0 +1,32 @@
+MiscBundle\Entity\TbQtenInformation:
+  type: entity
+  table: tb_qten_information
+  indexes:
+    q10_itemcode_index:
+      columns:
+        - q10_itemcode_index
+    q10_itemcode:
+      columns:
+        - q10_itemcode
+  fields:
+    title:
+      type: string
+      nullable: false
+      length: 255
+      fixed: false
+      comment: Q10タイトル
+      column: q10_title
+    q10Itemcode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: Q10付与の商品コード
+      column: q10_itemcode
+    freeExplanation:
+      type: text
+      nullable: false
+      length: 16777215
+      fixed: false
+      comment: 自由説明(HTML可)
+      column: free_explanation

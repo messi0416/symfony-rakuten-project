@@ -1,0 +1,30 @@
+/**
+ * 開発用上書き CSS
+ */
+body {
+  /* background-color: #ddffdd !important; */
+}
+
+#globalMessage h2::before {
+  content: "（開発）";
+}
+#globalMessage h2 {
+  background-color: #cc0000;
+  color: #fff;
+}
+
+#mobileHeader h2::before {
+  content: "（開発）";
+}
+#mobileHeader h2 {
+  background-color: #cc0000;
+  color: #fff;
+}
+
+#header h2::before {
+  content: "（開発）";
+}
+#header h2 {
+  background-color: #cc0000;
+  color: #fff;
+}

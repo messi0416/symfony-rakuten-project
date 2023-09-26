@@ -1,0 +1,17 @@
+<div style="text-align: center;">
+{% if images.p001 is defined and images.p001 %}
+<img src="{{ images.p001 }}"><br>
+{% endif %}
+<span style="color: #999999; font-size: 14px;"><p><strong>
+{{ row['商品コメントPC']|nl2br }}
+{% if row['サイズについて']|length > 0 %}<br><br>【サイズについて】<br>{{ row['サイズについて']|nl2br }}{% endif %}
+{% if row['カラーについて']|length > 0 %}<br><br>【カラーについて】<br>{{ row['カラーについて']|nl2br }}{% endif %}
+{% if row['素材について']|length > 0 %}<br><br>【素材について】<br>{{ row['素材について']|nl2br }}{% endif %}
+{% if row['ブランドについて']|length > 0 %}<br><br>【ブランド】<br>{{ row['ブランドについて']|nl2br }}{% endif %}
+{% if row['使用上の注意']|length > 0 %}<br><br>【使用上の注意】<br>{{ row['使用上の注意']|nl2br }}{% endif %}
+{% if row['補足説明PC']|length > 0 %}<br><br>【補足説明】<br>{{ row['補足説明PC']|nl2br }}{% endif %}
+</strong></p></span>
+{% for code, address in images %}
+{% if code == 'p001' %}{# do nothing #}{% else %}<img src="{{ address }}"><br>{% endif %}
+{% endfor %}
+</div>

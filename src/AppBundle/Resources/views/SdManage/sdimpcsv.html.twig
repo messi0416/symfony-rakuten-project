@@ -1,0 +1,91 @@
+{% extends 'AppBundle::base.html.twig' %}
+ 
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.sd-manage.js'
+
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}スーパーデリバリー商品情報管理画面-新規登録{% endblock %}
+
+{% block body %}
+<div class="container container-large">
+    <h3 class="header">商品を新規登録する</h3>
+    <div>
+        <h4>
+          <button class="btn btn-default" data-toggle="modal" data-target="#modalUploadCsv">
+            <i class="fa fa-upload"></i>  SD新規登録商品データ CSVアップロード
+          </button>
+        </h4>
+
+    </div>
+</div>
+
+{# modals #}
+<div class="modal"
+     id="modalUploadCsv"
+     tabindex="-1"
+     data-backdrop="static" data-keyboard="false"
+     data-upload-url="{{ path('sddat_impcsv', {'exe':'exe'}) }}"
+  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modal-label">
+          SD新規登録商品データ CSVアップロード
+        </h4>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div v-bind:class="messageClass" v-text="message"></div>
+        </div>
+
+        {# アップロード #}
+        <form action="{{ path('sddat_impcsv') }}" method="post" enctype="multipart/form-data">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="control-label">アップロードするファイルを選択してください</label>
+              <input id="impCsv" name="upload[]" type="file" class="file-loading" multiple>
+              {#<div id="errorBlock" class="help-block"></div>#}
+            </div>
+          </div>
+        </form>
+
+        <div v-show="result != null">
+          <h3>アップロード結果</h3>
+          <div v-text="result.message"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

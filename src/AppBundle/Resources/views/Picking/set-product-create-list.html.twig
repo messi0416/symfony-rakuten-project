@@ -1,0 +1,92 @@
+{% extends 'AppBundle:Picking:base.html.twig' %}
+
+{% block headerTitle %}セット商品作成リスト{% endblock %}
+
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+
+  '@AppBundle/Resources/public/js/app.picking-set-product-create-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block contents %}
+
+  <form id="setProductCreateListSearchForm" action="{{ path('picking_set_product_create_list') }}" method="get">
+    <div class="row row10 mb10">
+      <div class="col-xs-5">
+        <div class="input-group date">
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input type="text" name="date" class="form-control" id="searchDate" value="{{ conditions.date ? conditions.date.format('Y-m-d') : '' }}" />
+        </div>
+      </div>
+      <div class="col-xs-5">
+        <select class="form-control" id="pickingListSearchStatus" name="status" v-on:change="search">
+          <option value="incomplete"{% if conditions.status|default('') == 'incomplete' %} selected{% endif %}>未完了のみ</option>
+          <option value="all"{% if conditions.status|default('') == 'all' %} selected{% endif %}>すべて</option>
+        </select>
+      </div>
+
+      <div class="col-xs-2">
+        <span class="btn" v-bind:class="deleteButtonCss" v-on:click="toggleDeleteButtons">
+          <i class="fa fa-remove"></i>
+        </span>
+      </div>
+    </div>
+  </form>
+
+  <div class="list-group" id="setProductCreateList" data-delete-url="{{ path('picking_set_product_create_list_delete') }}">
+
+    {% if list | length > 0 %}
+
+      <table class="table narrow">
+        {% for item in list %}
+        <tr>
+          <td class="col-xs-5 vMiddle">
+            {{ item.date_short }} [ <strong>{{ item.number }}</strong> ]
+            <span class="badge">{{ item.syohin_num }}</span>
+          </td>
+          <td class="col-xs-3 text-center">
+            <a href="{{ path('picking_set_product_create_list_detail', { date: item.date, number: item.number }) }}" class="btn {{ item.css }} fullWidth">
+              作成詳細
+            </a>
+          </td>
+          <td class="col-xs-3 text-center">
+            <a href="{{ path('picking_set_product_picking_list', { date: item.date, number: item.number }) }}" class="btn {{ item.css }} fullWidth">ピッキング</a>
+          </td>
+          <td class="col-xs-1 text-center">
+            <span class="btn btn-sm btn-danger"
+                  v-on:click="deleteList('{{ item.date }}', '{{ item.number }}', $event)"
+                  v-show="showDeleteButtons"
+              >
+                <i class="fa fa-remove"></i>
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </table>
+
+    {% else %}
+      <div class="row row10">
+        <div class="col-xs-12">
+          <div class="alert alert-info">セット商品の作成リストはありません。</div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

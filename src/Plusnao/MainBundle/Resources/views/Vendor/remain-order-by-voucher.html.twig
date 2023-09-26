@@ -1,0 +1,277 @@
+{% extends 'PlusnaoMainBundle::base-vendor.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  %}
+
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.x 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@PlusnaoMainBundle/Resources/public/js/remain-order-by-voucher.js'
+  %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block title %}
+  {{ 'vendor.remain_order.title'|trans }} | {{ 'vendor.company_name'|trans }}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    const REMAIN_STATUS_LIST = {
+      UNTREATED : '{{ 'vendor.order_list.status_untreated'| trans }}',
+      ORDERED   : '{{ 'vendor.order_list.status_ordered'| trans }}',
+      ARRIVED   : '{{ 'vendor.order_list.status_arrived'| trans }}',
+      WAITED    : '{{ 'vendor.order_list.status_waited'| trans }}',
+      SHIPPED   : '{{ 'vendor.order_list.status_shipped'| trans }}',
+      SHORTAGE  : '{{ 'vendor.order_list.status_shortage'| trans }}'
+    };
+    const SHIPPING_TYPES = {
+      // 1はエア便、2はコンテナ便と定義されている
+      1 : '{{ 'vendor.order_list.change_shipping_type.shipping_type_air'| trans }}',
+      2 : '{{ 'vendor.order_list.change_shipping_type.shipping_type_container'| trans }}'
+    };
+    const REMAIN_ORDERS_JSON = {{ remainOrderJson | raw }};
+  </script>
+
+  <div class="container container-large">
+    <div class="clearfix">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="pull-left">
+            <h2>{{ 'vendor.remain_order.title'|trans }} （{{ agent.getLoginName() }}） </h2>
+          </div>
+
+          <div class="pull-right">
+            {% if locale == 'ja' %}
+              <a class="btn btn-default mb5 mt10"
+                 href="{{ path('plusnao_vendor_remain_order_by_voucher', { '_locale':'cn', 'agentName': agent.getLoginName()  }) }}"><i
+                  class="fa fa-language"></i> {{ 'vendor.language.chinese'|trans }}</a>
+            {% else %}
+              <a class="btn btn-default mb5 mt10"
+                 href="{{ path('plusnao_vendor_remain_order_by_voucher', { '_locale':'ja', 'agentName': agent.getLoginName()  }) }}"><i
+                  class="fa fa-language"></i> {{ 'vendor.language.japanese'|trans }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="main">
+        <div>
+          <div id="remain-order">
+            {# ページ送り #}
+            <div is="page-navigation"
+                 v-ref:page_navigation
+                 v-bind:row_count="rowCount"
+                 v-bind:start_row_count="startRowCount"
+                 v-bind:end_row_count="endRowCount"
+            ></div>
+
+            {# 注残テーブル #}
+            <table is="remain-order-table"
+                   v-ref:remain_order_table
+                   v-bind:list="visibleRemainOrderList"
+                   v-bind:remain_status_list="remainStatusList"
+                   v-bind:shipping_types="shippingTypes"
+            ></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {# ページ送り #}
+  <script id="page-navigation" type="x-template">
+    <div class="col-xs-12 mb10 p0">
+      <div class="pull-right">
+        <nav class="tablePagination inlineFlex">
+          <span class="mr10 mt10">
+            <span v-text="start_row_count"></span> - <span v-text="end_row_count"></span> / <span v-text="row_count"></span>
+          </span>
+
+          <ul class="pagination pagination-sm mb0 mt0 mr10">
+            <li v-bind:class="previousButtonClass">
+              <a href="#" aria-label="Previous" v-on:click="showPrevious">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+
+            <li is="page-navigation-index"
+                v-for="index in displayingIndexes"
+                v-bind:index="index.index"
+                v-bind:active="index.active"
+                v-on:show="showIndexPage"
+            ></li>
+
+            <li v-bind:class="nextButtonClass">
+              <a href="#" aria-label="Next" v-on:click="showNext">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+
+          <form class="inlineBlock">
+          {# v-on:changeを定義している理由 #}
+          {# セレクトボックスで表示行数を変更すれば1ページ目に移動する必要があるが #}
+          {# クエリパラメータで表示行数の変更もするので #}
+          {# watchのvoucherPerPageで1ページ目に戻るようにするとクエリパラメータの表示ページと噛み合わなくなってしまうため #}
+            <select v-model="voucherPerPage" class="form-control input-sm" v-on:change="showFirstPage">
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </form>
+        </nav>
+      </div>
+    </div>
+  </script>
+
+  {# ページ送り インデックス #}
+  <script id="page-navigation-index" type="x-template">
+    <li v-bind:class="activeClass" v-on:click="$emit('show',index)"><a class="page-link" href="#" v-text="index"></a></li>
+  </script>
+
+  {# 注残テーブル #}
+  <script id="remain-order-table" type="x-template">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>
+          <p class="text-center" v-on:click="switchSortOrder('voucherNumber')">
+            {{ 'vendor.remain_order.voucher_number'|trans }}
+            <i class="text-info" v-bind:class="sortMarks.voucherNumber"></i>
+          </p>
+        </th>
+        <th>
+          <p class="text-center">
+            {{ 'vendor.remain_order.shipping_type'|trans }}
+          </p>
+        </th>
+        <th>
+          <p class="text-center" v-on:click="switchSortOrder('agentCodes')">
+            {{ 'vendor.remain_order.agent_code'|trans }}
+            <i class="text-info" v-bind:class="sortMarks.agentCodes"></i>
+          </p>
+        </th>
+        <th>
+          <p class="text-center" v-on:click="switchSortOrder('orderDate')">
+            {{ 'vendor.remain_order.order_date'|trans }}
+            <i class="text-info" v-bind:class="sortMarks.orderDate"></i>
+          </p>
+        </th>
+        <th>
+          <p class="text-center">
+            {{ 'vendor.remain_order.min_remain_status'|trans }}
+          </p>
+        </th>
+        <th>
+          <p class="text-center" v-on:click="switchSortOrder('oldestUpdateDate')">
+            {{ 'vendor.remain_order.oldest_update_date'|trans }}
+            <i class="text-info" v-bind:class="sortMarks.oldestUpdateDate"></i>
+          </p>
+        </th>
+        <th id="ProductCode">
+          <p class="text-center">
+            {{ 'vendor.remain_order.product_code'|trans }}
+          </p>
+        </th>
+        <th id="image">
+          <p class="text-center">
+            {{ 'vendor.remain_order.image'|trans }}
+          </p>
+        </th>
+        <th>
+          <p class="text-center" v-on:click="switchSortOrder('totalRemainNum')">
+            {{ 'vendor.remain_order.total_remain_num'|trans }}
+            <i class="text-info" v-bind:class="sortMarks.totalRemainNum"></i>
+          </p>
+        </th>
+        <th id="Comment">
+          <p class="text-center">
+            {{ 'vendor.remain_order.comment'|trans }}
+          </p>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr is="remain-order-table-row"
+          v-for="row in list"
+          v-bind:row="row"
+          v-bind:remain_status_list="remain_status_list"
+          v-bind:shipping_types="shipping_types"
+          v-bind:key="row.voucherNumber"
+      >
+      </tr>
+      </tbody>
+    </table>
+  </script>
+
+  {# 注残テーブル 行 #}
+  <script id="remain-order-table-row" type="x-template">
+    <tr>
+      <td>
+        <p class="text-center" v-text="voucherNumber"></p>
+      </td>
+      <td>
+        <p class="text-center text-nowrap" v-text="shippingType"></p>
+      </td>
+      <td>
+        <p class="text-center text-pre-wrap" v-text="agentCodes"></p>
+      </td>
+      <td>
+        <p class="text-center text-nowrap" v-text="orderDate"></p>
+      </td>
+      <td>
+        <p class="text-center text-nowrap" v-text="minRemainStatus"></p>
+      </td>
+      <td>
+        <p class="text-center" v-text="oldestUpdateDate"></p>
+      </td>
+      <td>
+        <p class="text-center text-nowrap" v-text="productCode"></p>
+      </td>
+      <td class="thumb">
+        <a v-if="imageUrl" target="_blank">
+          <img class="w80" v-bind:src="imageUrl">
+        </a>
+      </td>
+      <td class="text-center">
+        <p v-text="totalRemainNum"></p>
+      </td>
+      <td class="p0 minWidth300">
+        <div is="remain-order-table-comment"
+             v-for="(agentCode, agent) in agents"
+             v-bind:agent_name="agent.loginName"
+             v-bind:agent_comment="agent.comment"
+             v-bind:agent_count="agentCount"
+             v-bind:key="agentCode"
+             v-bind:voucher_number="voucherNumber"
+             v-bind:index="index"
+        >
+        </div>
+      </td>
+    </tr>
+  </script>
+
+
+  {# 注残テーブル 行 コメント #}
+  <script id="remain-order-table-comment" type="x-template">
+    <div data-update-comment-url="{{ path('plusnao_vendor_remain_order_update_comment') }}">
+      <label class="mb0" for="comment-section" v-text="agent_name"></label>
+      <textarea id="comment-section" v-bind:rows="textareaRows" v-model="comment" class="fullWidth"
+                v-on:focus="setOriginComment"
+                v-on:blur="updateComment"
+      ></textarea>
+    </div>
+  </script>
+{% endblock %}

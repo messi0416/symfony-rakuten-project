@@ -1,0 +1,118 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{#{% block javascripts %}#}
+  {#{{ parent() }}#}
+{#{% endblock %}#}
+
+{% block body %}
+
+  <div id="stockList" class="container">
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>商品在庫確認 一覧</h2>
+        </div>
+
+        <div class="pull-right mt20">
+          {#<a class="btn btn-default" href="#">全削除</a>#}
+        </div>
+      </div>
+
+      {#&#123;&#35; global-message コンポーネント &#35;&#125;#}
+      {#<div is="parts-global-message" :state="messageState"></div>#}
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="stockListTable">
+      {# アップロードフォーム #}
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form class="form-inline inlineBlock" role="form" action="{{ path('goods_stock_list') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group mr5">
+              <label for="uploadStockCsv" class="mr5 inputHeight">商品コードCSV</label>
+              <input type="file" name="upload" id="uploadStockCsv" style="display: inline-block">
+            </div>
+
+            <div class="form-group mr10">
+              <button type="submit" class="btn btn-primary">アップロード</button>
+            </div>
+
+            <div class="form-group mr5 text-info small">※データはログインアカウント別に保存されます。</div>
+          </form>
+        </div>
+      </div>
+
+      {% if pagination.count() > 0 %}
+
+        <div class="navigation clearfix">
+          <div class="pull-left">
+            <a href="{{ path('goods_stock_download_csv') }}"
+               download="stock_list_{{ "now"|date('YmdHis') }}.csv"
+               class="btn btn-default mb10"
+              >
+              <i class="fa fa-download text-success"></i> ダウンロード
+            </a>
+          </div>
+
+          <div class="pull-right text-right">
+            <p class="paginationInfo mb0">
+              {{ pagination.getPaginationData().firstItemNumber | number_format }} - {{ pagination.getPaginationData().lastItemNumber | number_format }}
+              /
+              {{ pagination.getPaginationData().totalCount | number_format }}
+            </p>
+            {{ knp_pagination_render(pagination) }}
+          </div>
+        </div>
+
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th class="col-xs-4">商品コード</th>
+            <th class="col-xs-1">在庫数</th>
+            <th class="col-xs-1">受注数</th>
+            <th class="col-xs-1">引当数</th>
+            <th class="col-xs-1">未引当数</th>
+            <th class="col-xs-1">ピッキング引当数</th>
+            <th class="col-xs-1">出荷予定取置数</th>
+            <th class="col-xs-1">フリー在庫数</th>
+            <th class="col-xs-1">発注残数</th>
+          </tr>
+
+          {% for row in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-4">{{ row['ne_syohin_syohin_code'] }}</td>
+            <td class="col-xs-1 text-right">{{ row['在庫数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['受注数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['引当数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['未引当数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['ピッキング引当数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['出荷予定取置数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['フリー在庫数']|number_format }}</td>
+            <td class="col-xs-1 text-right">{{ row['発注残数']|number_format }}</td>
+          </tr>
+          {% endfor %}
+
+        </table>
+
+      {% else %}
+        データがありません。
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}

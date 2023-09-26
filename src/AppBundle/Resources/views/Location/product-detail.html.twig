@@ -1,0 +1,352 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-product-detail.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}商品ロケーション詳細{% endblock %}
+
+{% block headerButtons %}
+  {% if data.choiceItem %}
+    <a class="btn btn-sm btn-default mr10" href="{{ path('location_product_sku_list', { daihyoSyohinCode: data.choiceItem.daihyoSyohinCode }) }}">
+      商品
+    </a>
+    <a class="btn btn-sm btn-default" href="{{ path('location_import_products_store', { syohinCode: data.choiceItem.neSyohinSyohinCode }) }}">
+      箱振り
+    </a>
+  {% else %}
+    <a class="btn btn-sm btn-default" href="{{ path('location_product_list') }}">
+      検索
+    </a>
+  {% endif %}
+{% endblock %}
+
+
+{% block contents %}
+
+{% if data %}
+<div id="productLocationDetail"
+     class="mb50"
+     data-update-url="{{ path('location_product_update', { 'syohinCode': data.choiceItem.neSyohinSyohinCode }) }}"
+  >
+
+  <script type="text/javascript">
+    var PRODUCT_LOCATION_DATA = {{ jsonData | raw }};
+    var CURRENT_WAREHOUSE_ID = Number("{{ currentWarehouseId }}");
+  </script>
+
+  <div class="row productInfo">
+    <div class="col-xs-5 col-sm-3">
+      <a href="{{ path('plusnao_pub_product_color_image_list', { 'syohinCode': data.choiceItem.neSyohinSyohinCode }) }}" target="product_image">
+        <img class="img-responsive" v-bind:src="image">
+      </a>
+    </div>
+    <div class="col-xs-7 col-sm-9 productCode">
+      <div class="mb10">
+        <a href="{{ path('location_product_sku_list', { 'daihyoSyohinCode' : data.choiceItem.daihyoSyohinCode }) }}">
+          <span v-text="choiceItem.neSyohinSyohinCode" style="font-size: 1.4em"></span>
+        </a>
+      </div>
+      <div class="mb5">
+        <span>{{ data.choiceItem.colname }}</span>
+         /
+        <span>{{ data.choiceItem.rowname }}</span>
+      </div>
+      {% if data.choiceItem.supportColname|length > 0 and data.choiceItem.supportRowname|length > 0 %}
+      <div>
+        <span>{{ data.choiceItem.supportColname }}</span>
+        /
+        <span>{{ data.choiceItem.supportRowname }}</span>
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <table class="table mb10" id="locationList">
+        <tr is="result-item"
+            v-for="location in locations | orderBy 'position'"
+            :item="location"
+          >
+      </table>
+    </div>
+  </div>
+
+  <div class="mb20">
+    <div class="row">
+      <div class="col-xs-6 text-center">
+        入力数 / 在庫総数<br>
+        <span v-text="inputStockTotal" v-bind:class="inputStockCss"></span>
+        /
+        <span v-text="warehouseStockTotal"></span>
+      </div>
+      <div class="col-xs-6">
+        <button class="btn btn-success fullWidth" v-on:click="addLocation">ロケーション追加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6">
+          <a class="btn btn-default fullWidth" href="{{ path('location_product_detail', { 'syohinCode' : data.choiceItem.neSyohinSyohinCode }) }}">
+            <i class="fa fa-repeat"></i> 再読み込み
+          </a>
+        </div>
+
+        <div class="col-xs-6">
+          <button class="btn btn-primary fullWidth" v-on:click="submitForm(null)">確定する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# コメント入力モーダル #}
+  <div class="modal"
+       id="modalStockChangeConfirm"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            在庫数合計 変更確認
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="alert alert-info" v-text="stockChangeConfirmMessage"></div>
+          <div class="alert alert-danger" v-show="commentErrorMessage" v-text="commentErrorMessage"></div>
+
+          <div>
+            <form role="form" v-show="stockChanged">
+              <div class="form-group" v-show="commentChoiceOptions.length > 0">
+                <select class="form-control" v-model="stockChangeComment">
+                  <option value=""></option>
+                  <option v-for="option in commentChoiceOptions" v-bind:value="option" v-text="option"></option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <textarea class="form-control h150" v-model="stockChangeComment"></textarea>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="row row10">
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-default fullWidth" data-dismiss="modal">閉じる</button>
+            </div>
+            <div class="col-xs-6">
+              <button type="button" class="btn btn-lg btn-warning fullWidth" v-on:click="onStockChangeSubmit">確定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="panel panel-default" id="otherWarehouseLocations">
+  <div class="panel-heading text-center">
+    <button class="btn btn-default fullWidth" type="button" v-on:click="toggleShow">
+      別倉庫在庫
+      (
+      別倉庫: <span class="bold">{{ otherWarehouseData.otherStockTotal|number_format }}</span>
+      /
+      総在庫: <span class="bold">{{ otherWarehouseData.stockTotal|number_format }}</span>
+      )
+    </button>
+  </div>
+  <div class="panel-body" v-show="showList">
+    {% if otherWarehouseData.locations|length > 0 %}
+      <table class="table table-condensed">
+        {% for location in otherWarehouseData.locations %}
+          <tr>
+            <td class="col-xs-3 text-center">
+              <span class="label label-symbol">{{ warehouses[location.getLocation().getWarehouseId()].getSymbol() }}</span>
+            </td>
+            <td class="col-xs-6 text-left">
+              {{ location.getLocation().getLocationCode() }}
+            </td>
+            <td class="col-xs-3 text-right">
+              {{ location.getStock()|number_format }}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      （なし）
+    {% endif %}
+  </div>
+</div>
+
+{# 履歴 #}
+<div class="panel panel-default" id="productLocationLog">
+  <div class="panel-heading text-center">
+    履歴
+  </div>
+  <div class="panel-body">
+
+    {% for date, history in histories %}
+
+      {# header #}
+      <h4 class="mb10">{{ date }}</h4>
+
+      {% for action in history.actions|reverse(true) %}
+        <div class="row">
+          <div class="col-xs-7"><small>{{ action.time.format('Y/m/d H:i:s') }}</small></div>
+          <div class="col-xs-5 text-right"><small>{{ action.account }}</small></div>
+        </div>
+        <div class="row mb5">
+          <div class="col-xs-12 text-left">{{ action.operation }}</div>
+        </div>
+        {% if action.comment %}
+          <div class="panel panel-default">
+            <div class="panel-body text-left p10">{{ action.comment }}</div>
+          </div>
+        {% endif %}
+
+        {# 操作一覧 #}
+        <table class="table table-condensed mb5">
+          {% for locationKey, record in action.actions %}
+          <tr>
+            <td>
+              {% if
+                     (record.pre_location_code|length > 0 and record.pre_location_code != record.location_code)
+                  or (record.pre_warehouse_id > 0 and record.pre_warehouse_id != record.warehouse_id)
+              %}
+                ( <span class="label label-symbol mr5">{{ warehouses[record.pre_warehouse_id] is defined ? warehouses[record.pre_warehouse_id].getSymbol() : '-' }}</span> {{ record.pre_location_code }} → )
+              {% endif %}
+
+              <span class="label label-symbol mr5">
+                {{ warehouses[record.warehouse_id] is defined ? warehouses[record.warehouse_id].getSymbol() : '-' }}
+              </span>
+              {{ record.location_code }}
+            </td>
+            <td class="text-right">{% if record.move > 0 %}+ {% elseif record.move < 0 %}- {% endif %}{{ record.move | abs }}</td>
+            <td class="text-right">{{ record.stock }}</td>
+            <td class="text-right">
+              {% if record.stock <= 0 %}
+                (削)
+              {% elseif record.original_position < 0 %}
+                (新)
+              {% elseif record.position == record.original_position %}
+                -
+              {% else %}
+                (順:{{ record.original_position }}→{{ record.position }})
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <hr>
+      {% endfor %}
+
+      {# snapshot #}
+      <h5 class="mb10"><i class="fa fa-fw fa-moon-o"></i>前日終了時</h5>
+      {% if history.snapshot %}
+        <table class="table table-bordered {# table-condensed #} mb10">
+          {% for loc in history.snapshot %}
+            <tr>
+              <td>
+                <span class="label label-symbol mr5">
+                  {{ warehouses[loc.warehouse_id] is defined ? warehouses[loc.warehouse_id].getSymbol() : '-' }}
+                </span>
+                {{ loc.location_code }}
+              </td>
+              <td class="text-right">{{ loc.stock }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <div class="mb10">（なし）</div>
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+{# diff版履歴（旧版） #}
+<div class="panel panel-default" id="productLocationLogOld">
+  <div class="panel-heading text-center">
+    {#<button class="btn btn-default fullWidth">履歴</button>#}
+    履歴（旧版）
+  </div>
+
+  <div class="panel-body text-center">
+  {% if oldHistories is null %}
+    <a class="btn btn-default btn-bg fullWidth" href="{{ path('location_product_detail', { 'syohinCode' : data.choiceItem.neSyohinSyohinCode, history: 1 }) }}">
+      履歴（旧版）を取得
+    </a>
+  {% else %}
+    {% for history in oldHistories %}
+      <div class="row">
+        <div class="col-xs-7"><small>{{ history.log.created.format('Y/m/d H:i:s') }}</small></div>
+        <div class="col-xs-5 text-right"><small>{{ history.log.account }}</small></div>
+      </div>
+      <div class="row mb5">
+        <div class="col-xs-12 text-left">{{ history.log.operation }}</div>
+      </div>
+      {% if history.log.comment %}
+        <div class="panel panel-default">
+          <div class="panel-body text-left p10">{{ history.log.comment }}</div>
+        </div>
+      {% endif %}
+
+      {{ history.html | raw }}
+
+      <hr>
+    {% endfor %}
+  {% endif %}
+  </div>
+</div>
+
+
+{# Vue.js コンポーネントテンプレート #}
+<script id="result-item" type="x-template">
+  <tr class="text-center">
+    <td class="col-xs-6 form-group" v-bind:class="[locationCodeCss, errorCss]">
+      <input type="text" class="form-control" v-model="item.locationCode" v-on:focus="onInputFocus($event)" v-on:change="onLocationChange">
+    </td>
+    <td class="col-xs-2 form-group" v-bind:class="[stockCss, errorCss]">
+      <input type="number" class="form-control text-right" v-model="item.stock" number v-on:focus="onInputFocus($event)" v-on:change="onStockChange" />
+    </td>
+    <td class="col-xs-3">
+      <button class="btn btn-xs btn-default" v-on:click="onMoveUp"><i class="fa fa-arrow-up"></i></button>
+      <button class="btn btn-xs btn-default" v-on:click="onMoveDown"><i class="fa fa-arrow-down"></i></button>
+    </td>
+
+    <td class="col-xs-1">
+      <button class="btn btn-xs btn-warning" v-on:click="onAddToUpper">
+        <i class="fa fa-long-arrow-up"></i>
+        <i class="fa fa-plus"></i>
+      </button>
+    </td>
+  </tr>
+</script>
+
+{% endif %}
+
+{% endblock %}

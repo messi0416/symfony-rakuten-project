@@ -1,0 +1,474 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.products-discount-copy.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{# フォーム出力カスタマイズ #}
+{% form_theme settingForm _self %}
+{% block form_errors  %}
+{% spaceless %}
+    {% if errors|length > 0 %}
+      {% for error in errors %}
+        * {{ error.message }}<br>
+      {% endfor %}
+    {% endif %}
+{% endspaceless %}
+{% endblock form_errors %}
+
+{% block body %}
+
+  <div class="container container-large" id="productsDiscount"
+       data-url="{{ path('api_home') }}"
+       data-update-pricedown-flg-url="{{ path('products_update_pricedown_flg') }}"
+       data-image-url="{{ imageUrl }}"
+       data-rakuten-detail-url="{{ rakutenDetailUrl }}"
+       data-update-pricedown-settings-url="{{ path('products_update_pricedown_settings') }}"
+    >
+
+    <div class="clearfix" id="globalMessage" data-loading-image-url="{{ asset('img/loading.gif') }}">
+      <div class="pull-left">
+        <h2>Plusnao Web System (Products)</h2>
+      </div>
+
+      <div class="pull-left">
+        <div class="(% messageCssClass %)" v-text="message"></div>
+      </div>
+
+      <div class="pull-right">
+        <button class="btn btn-lg btn-danger" v-on:click="closeWindow()">閉じる</button>
+      </div>
+    </div>
+
+    <h2 class="page-header">値下げ 一覧表</h2>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <form role="form" action="#" method="post" id="functionForm" class="form-horizontal">
+
+      <div class="row" id="functionBlock">
+
+        <div class="col-xs-5">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="form-group mb5">
+                {# 絞込 #}
+                <label for="product-discount-keyword" class="col-xs-3">商品コード</label>
+                <div class="col-xs-9">
+                  <input type="text" class="form-control input-sm" id="product-discount-keyword" v-model="keyword" v-on:change="showPage(1, $event)" />
+                </div>
+              </div>
+
+              <div class="form-group mb5">
+                <label for="product-discount-keyword" class="col-xs-3">値下げ許可</label>
+                <div class="col-xs-9">
+                  <input type="radio" name="pricedown_flg" id="pricedown_flg_all" value="all" v-model="searchPriceDown" v-on:change="showPage(1, $event)" />
+                  <label for="pricedown_flg_all">全て</label>
+
+                  <input type="radio" name="pricedown_flg" id="pricedown_flg_permitted" value="permitted" v-model="searchPriceDown" v-on:change="showPage(1, $event)" />
+                  <label for="pricedown_flg_permitted">許可のみ</label>
+
+                  <input type="radio" name="pricedown_flg" id="pricedown_flg_not_permitted" value="not_permitted" v-model="searchPriceDown" v-on:change="showPage(1, $event)" />
+                  <label for="pricedown_flg_not_permitted">不許可のみ</label>
+                </div>
+              </div>
+
+              <div class="form-group mb5">
+                <div class="col-xs-12">
+                  <input type="checkbox" name="search_target_toggle" id="search_target_toggle" value="-1" v-model="searchTargetOnly" v-on:change="showPage(1, $event)" />
+                  <label for="search_target_toggle">今回改定価格/基準価格が　
+                    <input type="text" class="form-control input-sm smallInt inlineBlock" v-model="searchTargetDiscountRateMin"> % ～
+                    <input type="text" class="form-control input-sm smallInt inlineBlock" v-model="searchTargetDiscountRateMax"> %
+                    のみを表示
+                  </label>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-7">
+
+          <div class="row mb10">
+            <div class="col-xs-12">
+
+              <table class="table-condensed form-group settingForm pull-right" style="width: 500px;">
+                <tr>
+                  <th class="col-xs-3">
+                    <span title="１日の値下げ最大割合（基準売価に対する割合）">最大値下幅(%)</span>
+                  </th>
+                  {% set fieldError = form_errors(settingForm.max_discount_rate) %}
+                  <td class="col-xs-3 {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.max_discount_rate, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}
+                    <span class="hidden">
+                    {{ form_widget(settingForm.discount_excluded_days, {'attr': {'class': 'form-control input-sm', 'title': fieldError, 'v-model': 'discountExcludedDays'} }) }}
+                    {{ form_widget(settingForm.allowed_sell_out_over_days, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}
+                    </span>
+                  </td>
+                  <th>
+                    <span title="販売数を取得する最大範囲となる期間">販売数取得期間</span>
+                  </th>
+                  {% set fieldError = form_errors(settingForm.sales_term_days) %}
+                  <td class="col-xs-3 {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.sales_term_days, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>
+                    <span title="販売数の取得期間内で、実際に販売数を取得する上位の日数">販売数取得日数</span>
+                  </th>
+                  {% set fieldError = form_errors(settingForm.sales_sampling_days) %}
+                  <td class="col-xs-3 {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.sales_sampling_days, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}
+                  </td>
+                  <th>
+                    <span title="本日から、この期間に完売する見込みであれば値下げしない">消化日数</span>
+                  </th>
+                  {% set fieldError = form_errors(settingForm.sell_out_days) %}
+                  <td class="col-xs-3 {{ fieldError == '' ? '': 'has-error' }}">
+                    {{ form_widget(settingForm.sell_out_days, {'attr': {'class': 'form-control input-sm', 'title': fieldError, 'min': 1, 'max': 12 } }) }}
+                  </td>
+                </tr>
+              </table>
+
+            </div>
+          </div>
+          <div class="row mb10 pull-right">
+            <div class="col-xs-12 pl5 pr5"  style="width: 700px;">
+              <div class="pull-right mb5">
+                <div class="col-xs-2 pl5 pr5 bold">値下開始日から</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_within_days1, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-4 pl5 pr5 bold">日以内は、改定価格は 売価原価の</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_rate_for_cost1, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-2 pl5 pr5 bold">% 以上とする。</div>
+              </div>
+              <div class="pull-right mb5">
+                <div class="col-xs-2 pl5 pr5 bold">値下開始日から</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_within_days2, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-4 pl5 pr5 bold">日以内は、改定価格は 売価原価の</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_rate_for_cost2, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-2 pl5 pr5 bold">% 以上とする。</div>
+              </div>
+              <div class="pull-right mb5">
+                <div class="col-xs-2 pl5 pr5 bold">値下開始日から</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_within_days3, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-4 pl5 pr5 bold">日以内は、改定価格は 売価原価の</div>
+                <div class="col-xs-2 pl5 pr5">{{ form_widget(settingForm.limit_rate_for_cost3, {'attr': {'class': 'form-control input-sm', 'title': fieldError} }) }}</div>
+                <div class="col-xs-2 pl5 pr5 bold">% 以上とする。</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-xs-8 text-left">
+          <table class="table">
+            <caption>合計金額</caption>
+            <tr>
+              <th>基準価格</th>
+              <td>(% totalPrices.display.base %)</td>
+              <th>最終価格</th>
+              <td>(% totalPrices.display.destination %)</td>
+              <th>現価格</th>
+              <td>(% totalPrices.display.current %)</td>
+              <th>改価格</th>
+              <td>(% totalPrices.display.discount %)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="col-xs-4 text-right">
+          <label class="btn btn-info" v-bind:disabled="isApplyButtonDisabled" v-on:click="UpdateDiscountSeasonSetting">チェックボックスの反映</label>
+
+          <label class="btn btn-success" data-url="{{ path('products_discount_list_copy') }}" v-on:click="submitForm('recalc', $event)">再計算</label>
+
+          <label class="btn btn-warning" data-toggle="modal" data-target="#modalDiscountProcess">値下確定</label>
+        </div>
+      </div>
+
+      {{ form_rest(settingForm) }}
+    </form>
+
+
+    <script type="text/javascript">
+      var discountListTableData = {{ data | raw }};
+    </script>
+
+    {%  if data and (data | length) > 0 %}
+
+      <div id="discountListTable">
+
+        {# ページ送りリンク #}
+        <nav class="tablePagination">
+          <ul class="pagination pagination-sm">
+            <li v-bind:class="[isStartPage ? 'disabled' : '']">
+              <a href="#" aria-label="Previous" class="disabled" v-on:click="showPrev">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li v-for="pageIndex in pageList" track-by="$index" v-bind:class="[isPage(pageIndex) ? 'active' : '']">
+              <template v-if="isNaN(pageIndex)" >
+                <span>(% pageIndex %)</span>
+              </template>
+              <template v-else>
+                <a href="#" v-on:click="showPage(pageIndex, $event)">(% pageIndex %)</a>
+              </template>
+            </li>
+            <li v-bind:class="[isEndPage ? 'disabled' : '']">
+              <a href="#" aria-label="Next" v-on:click="showNext">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <table class="table table-bordered" >
+          <thead>
+          <tr>
+            <th class="text-center sortable" v-on:click="switchSort('daihyoSyohinCode')">
+              商品コード
+              <i class="text-info" v-bind:class="sortMarks.daihyoSyohinCode"></i>
+            </th>
+            <th class="text-center">
+              画像
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('inventoryCost')">
+              棚卸原価
+              <i class="text-info" v-bind:class="sortMarks.inventoryCost"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('stockAmount')">
+              在庫数
+              <i class="text-info" v-bind:class="sortMarks.stockAmount"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('defaultWarehouseStockAmount')">
+              古市在庫数
+              <i class="text-info" v-bind:class="sortMarks.defaultWarehouseStockAmount"></i>
+            </th>
+
+            <th class="text-center sortable" v-on:click="switchSort('expectedDailySalesAmount')">
+              一日当りの販売数
+              <i class="text-info" v-bind:class="sortMarks.expectedDailySalesAmount"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('lastOrderdate')">
+              最終仕入日
+              <i class="text-info" v-bind:class="sortMarks.lastOrderdate"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('discountBaseDate')">
+              値下開始日
+              <i class="text-info" v-bind:class="sortMarks.discountBaseDate"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('estimatedSalesDays')">
+              <span title="在庫数/一日当たりの販売数　販売数が0の場合は999,999">販売完了日数</span>
+              <i class="text-info" v-bind:class="sortMarks.estimatedSalesDays"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('salesRate')">
+              消化日数/販売完了日数
+              <i class="text-info" v-bind:class="sortMarks.salesRate"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('basePrice')">
+              通常売価
+              <i class="text-info" v-bind:class="sortMarks.basePrice"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('costTotal')">
+              売価原価
+              <i class="text-info" v-bind:class="sortMarks.cost_total"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('discountDestinationPrice')">
+              算出売価
+              <i class="text-info" v-bind:class="sortMarks.discountDestinationPrice"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('currentPrice')">
+              現在売価
+              <i class="text-info" v-bind:class="sortMarks.currentPrice"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('discountPrice')">
+              今回変更売価
+              <i class="text-info" v-bind:class="sortMarks.discountPrice"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('priceDiff')">
+              差額
+              <i class="text-info" v-bind:class="sortMarks.priceDiff"></i>
+            </th>
+            <th class="text-center sortable" v-on:click="switchSort('pricedownFlg')">
+              許可
+              <i class="text-info" v-bind:class="sortMarks.pricedownFlg"></i>
+            </th>
+
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr is="result-item"
+              v-for="item in pageData | orderBy sortField sortOrder"
+              :item="item"
+
+            ></tr>
+          </tbody>
+        </table>
+
+        <nav class="tablePagination">
+          <ul class="pagination pagination-sm">
+            <li v-bind:class="[isStartPage ? 'disabled' : '']">
+              <a href="#" aria-label="Previous" class="disabled" v-on:click="showPrev">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li v-for="pageIndex in pageList" track-by="$index" v-bind:class="[isPage(pageIndex) ? 'active' : '']">
+              <template v-if="isNaN(pageIndex)" >
+                <span>(% pageIndex %)</span>
+              </template>
+              <template v-else>
+                <a href="#" v-on:click="showPage(pageIndex, $event)">(% pageIndex %)</a>
+              </template>
+            </li>
+            <li v-bind:class="[isEndPage ? 'disabled' : '']">
+              <a href="#" aria-label="Next" v-on:click="showNext">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+    {% endif %}
+
+  </div>
+
+  {# Vue.js コンポーネントテンプレート #}
+  <script id="result-item" type="x-template">
+    <tr v-bind:class="rowCssClass">
+      <td class="text-center">
+        <a v-bind:href="rakutenDetailUrl" target="_blank">(% daihyoSyohinCode %)</a>
+      </td>
+      <td class="text-center">
+        <template v-if="imageUrl">
+          <a v-bind:href="rakutenDetailUrl" target="_blank">
+            <img v-bind:src="imageUrl" class="thumb">
+          </a>
+        </template>
+      </td>
+      <td class="text-right">(% displayInventoryCost %)</td>
+      <td class="text-right">(% displayStockAmount %)</td>
+      <td class="text-right">(% displayDefaultWarehouseStockAmount %)</td>
+      <td class="text-right">(% displayExpectedDailySalesAmount %)</td>
+      <td class="text-center">(% displayLastOrderdate %)  </td>
+      <td class="text-center">(% displayDiscountBaseDate %)  </td>
+      <td class="text-center">(% displayEstimatedSalesDays %)</td>
+      <td class="text-center">(% displaySalesRate %)</td>
+      <td class="text-right">(% displayBasePrice %)</td>
+      <td class="text-right">(% displayCostTotal %)</td>
+      <td class="text-right">(% displayDiscountDestinationPrice %)</td>
+      <td class="text-right">(% displayCurrentPrice %)</td>
+      <td class="text-center">(% displayDiscountPrice %)</td>
+      <td class="text-right">(% displayPriceDiff %)</td>
+      <td class="text-center">
+        <input type="checkbox" value="-1" v-model="pricedownFlg" v-on:change="changePricedownFlg" />
+      </td>
+    </tr>
+  </script>
+
+
+  {# modal #}
+  <div class="modal"
+       id="modalDiscountProcess"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-url="{{ path('products_price_down_process') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            (% caption %)
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div>
+            <div class="alert multiLine" v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          <div v-bind:class="{ 'hidden': noticeHidden }">
+            <div class="alert" v-bind:class="noticeClass">
+              <ul>
+                <li v-for="notice in notices">(% notice %)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="alert alert-info">
+            <h4>留意事項</h4>
+            <ul>
+            <li>赤字商品は、値下げ確定時に「受発注可能フラグ退避対象」となります。（毎回、退避フラグにチェックONで更新）</li>
+            <li>ここで表示されている赤字商品以外は、在庫のない商品も含め、全て「受発注可能フラグ退避対象」から外れます。</li>
+            <li>値下許可されていた商品の値下げ許可を外した場合、「価格非連動チェック」「手動ゲリラSALE」対象から外れます。</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+          <button type="button" class="btn btn-lg btn-primary" v-on:click="onSubmit()">はい</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal"
+       id="modalCompleteDialog"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            完了
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div>
+            チェックボックスの反映処理が正常に終了しました
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

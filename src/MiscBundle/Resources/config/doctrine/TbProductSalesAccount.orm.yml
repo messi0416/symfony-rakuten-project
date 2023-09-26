@@ -1,0 +1,121 @@
+MiscBundle\Entity\TbProductSalesAccount:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProductSalesAccountRepository
+    table: tb_product_sales_account
+    indexes:
+        index_daihyo_syohin_code:
+            columns:
+                - daihyo_syohin_code
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 商品売上担当者ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        daihyoSyohinCode:
+            type: string
+            nullable: false
+            length: 30
+            fixed: false
+            comment: 代表商品コード
+            column: daihyo_syohin_code
+        userId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ユーザID
+            column: user_id
+        teamId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: チームID
+            column: team_id
+        productSalesTaskId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: 商品売上タスクID
+            column: product_sales_task_id
+        status:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "ステータス\n1:登録, 2:削除"
+            default: '1'
+        workAmount:
+            type: decimal
+            nullable: false
+            precision: 4
+            scale: 2
+            comment: 仕事量
+            column: work_amount
+        detail:
+            type: string
+            nullable: true
+            length: 255
+            fixed: false
+            comment: 詳細
+        applyStartDate:
+            type: date
+            nullable: false
+            comment: 適用開始日
+            column: apply_start_date
+        applyEndDate:
+            type: date
+            nullable: true
+            comment: 適用終了日
+            column: apply_end_date
+        created:
+            type: datetime
+            nullable: false
+            comment: 登録日
+            default: CURRENT_TIMESTAMP
+        updated:
+            type: datetime
+            nullable: false
+            comment: 更新日
+            default: CURRENT_TIMESTAMP
+    lifecycleCallbacks:
+        prePersist:
+            - fillTimestamps
+    manyToOne:
+        team:
+            targetEntity: TbTeam
+            joinColumn:
+                name: team_id
+                referencedColumnName: id
+            fetch: EAGER
+        productSalesTask:
+            targetEntity: TbProductSalesTask
+            joinColumn:
+                name: product_sales_task_id
+                referencedColumnName: id
+            fetch: EAGER
+        user:
+            targetEntity: SymfonyUsers
+            joinColumn:
+                name: user_id
+                referencedColumnName: id
+            fetch: EAGER
+        product:
+            targetEntity: TbMainproducts
+            joinColumn:
+                name: daihyo_syohin_code
+                referencedColumnName: daihyo_syohin_code
+            fetch: EAGER
+    manyToMany:
+        productSalesAccountHistory:
+            targetEntity: TbProductSalesAccountHistory
+            joinTable:
+                name: tb_product_sales_account_history_mapping
+                joinColumns:
+                    product_sales_account_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    product_sales_account_history_id:
+                        referencedColumnName: id

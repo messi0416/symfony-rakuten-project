@@ -1,0 +1,16 @@
+{# 商品説明（共通）テンプレート #}
+{# ゲリラセール #}
+{#{% if '【ゲリラSALE】' in row.front_title %}#}
+{#<font size="2" color="#FF00FF">ゲリラSALE特別プライス</font><br>#}
+{#<font size="4" color="#FF0000">◆{{ row.itemPrice|number_format }}yen◆</font><br>#}
+{#{% endif %}#}
+{# アウトレット 省略 #}
+{# 一言ポイント（outlet = 0 のみだったが、条件省略） #}
+{{ row['一言ポイント'] }}
+<br><br><hr>
+<font color="#FF9966">&#xE741;このカテゴリの</font><br>
+┣<a href="/bep/m/klist2?sk=ory4txa222kwok4502k4s1&categ_id={{ row.categoryId }}&sort1=start%2CD&user=10402816&e_scope=O">&#xE6DD;新着はこちら</a><br>
+┗<a href="/bep/m/klist2?sk=ory4txa222kwok4502k4s1&categ_id={{ row.categoryId }}&sort1=pdeal%2CD&user=10402816&e_scope=O">&#xE71A;人気商品はこちら</a><br>
+<a href="/user/10402816/sp/00000116041"><font size=2>&#xE6DC;PlusNao 商品カテゴリー一覧</font></a>
+<br>
+{{ mallDesigns.wowma_tokusyu |raw }}

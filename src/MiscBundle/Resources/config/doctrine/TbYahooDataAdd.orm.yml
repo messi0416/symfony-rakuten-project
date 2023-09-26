@@ -1,0 +1,248 @@
+MiscBundle\Entity\TbYahooDataAdd:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbYahooDataAddRepository
+  table: tb_yahoo_data_add
+
+  id:
+    code:
+      type: string
+      nullable: false
+      length: 30
+      id: true
+
+  fields:
+    path:
+      type: string
+      nullable: true
+      length: 255
+    name:
+      type: string
+      nullable: true
+      length: 255
+    sub_code:
+      type: string
+      nullable: true
+      column: sub-code
+    original_price:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      default: 0
+      column: original-price
+    price:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      default: 0
+    price_add_10per:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      default: 0
+    sale_price:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      default: 0
+      column: sale-price
+    options:
+      type: string
+      nullable: true
+    headline:
+      type: string
+      nullable: true
+      length: 255
+    caption:
+      type: string
+      nullable: true
+    abstract:
+      type: string
+      nullable: true
+      length: 100
+    explanation:
+      type: string
+      nullable: true
+    additional1:
+      type: string
+      nullable: true
+    additional2:
+      type: string
+      nullable: true
+    additional3:
+      type: string
+      nullable: true
+    relevant_links:
+      type: string
+      nullable: true
+      length: 255
+      column: relevant-links
+    ship_weight:
+      type: string
+      nullable: true
+      length: 255
+      column: ship-weight
+      default: '1'
+    taxable:
+      type: string
+      nullable: true
+      length: 1
+    release_date:
+      type: string
+      nullable: true
+      length: 255
+      column: release-date
+    temporary_point_term:
+      type: string
+      nullable: true
+      length: 255
+      column: temporary-point-term
+    point_code:
+      type: string
+      nullable: true
+      length: 255
+      column: point-code
+    meta_key:
+      type: string
+      nullable: true
+      length: 255
+      column: meta-key
+    meta_desc:
+      type: string
+      nullable: true
+      length: 255
+      column: meta-desc
+    template:
+      type: string
+      nullable: true
+      length: 255
+    sale_period_start:
+      type: string
+      nullable: true
+      length: 255
+      column: sale-period-start
+    sale_period_end:
+      type: string
+      nullable: true
+      length: 255
+      column: sale-period-end
+    sale_limit:
+      type: string
+      nullable: true
+      length: 255
+      column: sale-limit
+    sp_code:
+      type: string
+      nullable: true
+      length: 255
+      column: sp-code
+    brand_code:
+      type: string
+      nullable: true
+      length: 255
+      column: brand-code
+    person_code:
+      type: string
+      nullable: true
+      length: 255
+      column: person-code
+    yahoo_product_code:
+      type: string
+      nullable: true
+      length: 255
+      column: yahoo-product-code
+    product_code:
+      type: string
+      nullable: true
+      length: 255
+      column: product-code
+    jan:
+      type: string
+      nullable: true
+      length: 255
+    isbn:
+      type: string
+      nullable: true
+      length: 255
+    delivery:
+      type: string
+      nullable: true
+      length: 255
+    astk_code:
+      type: string
+      nullable: true
+      length: 255
+      column: astk-code
+    condition:
+      type: string
+      nullable: true
+      length: 255
+    taojapan:
+      type: string
+      nullable: true
+      length: 255
+    product_category:
+      type: string
+      nullable: true
+      length: 10
+      column: product-category
+    spec1:
+      type: string
+      nullable: true
+      length: 255
+    spec2:
+      type: string
+      nullable: true
+      length: 255
+    spec3:
+      type: string
+      nullable: true
+      length: 255
+    spec4:
+      type: string
+      nullable: true
+      length: 255
+    spec5:
+      type: string
+      nullable: true
+      length: 255
+    display:
+      type: string
+      nullable: true
+      length: 1
+    sort:
+      type: string
+      nullable: true
+      length: 255
+    sp_additional:
+      type: string
+      nullable: true
+      column: sp-additional
+    lead_time_instock:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: lead-time-instock
+    lead_time_outstock:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: lead-time-outstock
+    pr_rate:
+      type: decimal
+      nullable: true
+      options:
+        unsigned: true
+      column: pr-rate
+    postage_set:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      default: 1
+      column: postage-set

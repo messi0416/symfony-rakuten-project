@@ -1,0 +1,37 @@
+MiscBundle\Entity\TbYahooOtoriyoseAccessLog:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbYahooOtoriyoseAccessLogRepository
+  table: tb_yahoo_otoriyose_access_log
+  id:
+    id:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+      id: true
+      generator:
+        strategy: AUTO
+  fields:
+    targetDate:
+      type: datetime
+      nullable: false
+      comment: 対象日
+      column: target_date
+    daihyoSyohinCode:
+      type: string
+      length: 30
+      nullable: false
+      comment: 代表商品コード
+      column: daihyo_syohin_code
+    pv:
+      type: integer
+      length: 11
+      nullable: false
+      comment: ページビュー
+      column: pv
+    uu:
+      type: integer
+      length: 11
+      nullable: false
+      comment: 訪問者数(ユニークユーザー数)
+      column: uu

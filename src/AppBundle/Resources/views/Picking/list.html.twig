@@ -1,0 +1,106 @@
+{% extends 'AppBundle:Picking:base.html.twig' %}
+
+{% block headerTitle %}ピッキングリスト{% endblock %}
+
+{% block contents %}
+
+  <form id="pickingListSearchForm" action="{{ path('picking_list') }}" method="get">
+    <div class="row row10 mb10">
+      <div class="col-xs-5">
+        <select class="form-control" id="pickingListSearchDate" name="search[date]" v-on:change="search">
+          <option value="today"{% if conditions.date|default('') == 'today' %} selected{% endif %}>本日分</option>
+          <option value="all"{% if conditions.date|default('') == 'all' %} selected{% endif %}>すべて</option>
+        </select>
+      </div>
+      <div class="col-xs-5">
+        <select class="form-control" id="pickingListSearchStatus" name="search[status]" v-on:change="search">
+          <option value="incomplete"{% if conditions.status|default('') == 'incomplete' %} selected{% endif %}>未完了のみ</option>
+          <option value="all"{% if conditions.status|default('') == 'all' %} selected{% endif %}>すべて</option>
+        </select>
+      </div>
+
+      <div class="col-xs-2">
+        <span class="btn" v-bind:class="deleteButtonCss" v-on:click="toggleDeleteButtons">
+          <i class="fa fa-remove"></i>
+        </span>
+        <span class="btn btn-sm btn-danger"
+           v-on:click="marge()">
+           統合
+        </span>
+      </div>
+    </div>
+  </form>
+
+  <div class="list-group" id="pickingList" data-delete-url="{{ path('picking_list_delete') }}">
+    {% if list | length > 0 %}
+    <form id="pickingListMargeForm" action="{{ path('picking_list_marge') }}" method="post">
+      {% for item in list %}
+        <a class="list-group-item inputHeight {{ item.css }}"
+           href="{{ path('picking_product_list', { date: item.date, number: item.number }) }}">
+
+          <table class="table layout">
+            <tr>
+              <td class="col-xs-4 text-center">
+                {% if item.status|default('') == '未処理' %}
+                  <a href="javascript:void(0)"><input type="checkbox" class="margeList" value="{{ item.date }}_{{ item.number }}" name="margeList[]"/></a>
+                {% endif %}
+                {{ item.date_short }} [ <strong>{{ item.symbol }}-{{ item.warehouse_daily_number }}</strong> ] [ <strong>{{ item.number }}</strong> ]
+                <br>
+                <span style="line-height: 1rem; font-size: 0.8rem; color: #999999">{{ item.picking_block }}</span>
+                {% if item.packing_comment %}
+                <br>
+                <span style="line-height: 1rem; font-size: 0.8rem;">{{ item.packing_comment }}</span>
+                {% endif %}
+              </td>
+              <td class="col-xs-3 text-left vMiddle">{{ item.status }}</td>
+              <td class="col-xs-3 text-left vMiddle">{{ item.picking_account_name ? item.picking_account_name : '-' }}</td>
+              <td class="col-xs-2 text-center vMiddle">
+                <span class="btn btn-sm btn-danger"
+                      v-on:click="deleteList('{{ item.date }}', '{{ item.number }}', $event)"
+                      v-if="showDeleteButtons"
+                  >
+                  <i class="fa fa-remove"></i>
+                </span>
+                <span class="badge" v-else>
+                  {{ item.syohin_num }}
+                </span>
+              </td>
+            </tr>
+
+          </table>
+          {##}
+          {#<div class="row row10">#}
+            {#<div class="col-xs-4">#}
+              {#<div class="row row10">#}
+                {#<div class="col-xs-12">{{ item.date_short }} [ <strong>{{ item.number }}</strong> ]</div>#}
+                {#<div class="col-xs-12">A,D,F</div>#}
+              {#</div>#}
+            {#</div>#}
+            {#<div class="col-xs-3">{{ item.status }}</div>#}
+            {#<div class="col-xs-3">{{ item.picking_account_name ? item.picking_account_name : '-' }}</div>#}
+            {#<div class="col-xs-2">#}
+              {#<span class="btn btn-sm btn-danger"#}
+                    {#v-on:click="deleteList('{{ item.date }}', '{{ item.number }}', $event)"#}
+                    {#v-if="showDeleteButtons"#}
+                {#>#}
+                {#<i class="fa fa-remove"></i>#}
+              {#</span>#}
+              {#<span class="badge" v-else>#}
+                {#{{ item.syohin_num }}#}
+              {#</span>#}
+            {#</div>#}
+          {#</div>#}
+        </a>
+      {% endfor %}
+    </form>
+    {% else %}
+      <div class="row row10">
+        <div class="col-xs-12">
+          <div class="alert alert-info">ピッキングリストはありません。</div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

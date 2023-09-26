@@ -1,0 +1,392 @@
+MiscBundle\Entity\TbProductchoiceitems:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductchoiceitemsRepository
+  table: tb_productchoiceitems
+#  indexes:
+#    Index_4:
+#      columns:
+#        - colcode
+#        - rowcode
+#        - colname
+#        - rowname
+#        - 並び順No
+#    Index_2:
+#      columns:
+#        - hachu_ten
+#        - zaiko_teisu
+#        - daihyo_syohin_code
+#    Index_1:
+#      columns:
+#        - location
+#        - フリー在庫数
+#    index_3:
+#      columns:
+#        - daihyo_syohin_code
+#        - 並び順No
+#    daihyo_syohin_code:
+#      columns:
+#        - daihyo_syohin_code
+#  uniqueConstraints:
+#    location:
+#      columns:
+#        - location
+#        - ne_syohin_syohin_code
+#        - 並び順No
+  id:
+    neSyohinSyohinCode:
+      type: string
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+        default: '-'
+      id: true
+      column: ne_syohin_syohin_code
+
+  fields:
+
+    displayOrder:
+      type: integer
+      nullable: true
+      options:
+        unsigned: true
+      column: 並び順No
+    colname:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+    colcode:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+    rowname:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+    rowcode:
+      type: string
+      nullable: true
+      length: 100
+      options:
+        fixed: false
+    orderEnabled:
+      type: boolean
+      nullable: true
+      options:
+        default: '0'
+      column: 受発注可能フラグ
+    shippingdivisionId:
+      type: integer
+      nullable: true
+      unsigned: false
+      comment: "送料設定"
+      column: shippingdivision_id
+
+#    toriatukaiKbn:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#        default: '0'
+#      column: toriatukai_kbn
+#    zaikoTeisu:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#      column: zaiko_teisu
+#    hachuTen:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#        default: '0'
+#      column: hachu_ten
+#    lot:
+#      type: string
+#      nullable: true
+#      length: 50
+#      options:
+#        fixed: false
+#        default: '0'
+
+    daihyoSyohinCode:
+      type: string
+      nullable: true
+      length: 30
+      options:
+        fixed: false
+      column: daihyo_syohin_code
+
+    support_colname:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        default: ''
+      column: support_colname
+
+    support_rowname:
+      type: string
+      nullable: false
+      length: 100
+      options:
+        default: ''
+      column: support_rowname
+
+#    tag:
+#      type: string
+#      nullable: true
+#      length: 100
+#      options:
+#        fixed: false
+#        default: empty
+
+    location:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: _new
+
+    free_stock:
+      type: integer
+      nullable: true
+      options:
+        unsigned: false
+        default: '0'
+      column: フリー在庫数
+      readOnly: true
+#    予約フリー在庫数:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#    予約在庫修正値:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+
+    stock:
+      type: integer
+      nullable: false
+      options:
+        unsigned: false
+        default: '0'
+      column: 在庫数
+
+    order_remain_num:
+      type: integer
+      nullable: false
+      options:
+        default: '0'
+      column: 発注残数
+
+#    最古発注伝票番号:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#    最古発注日:
+#      type: date
+#      nullable: true
+    previouslocation:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: _new
+#    予約引当数:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#    引当数:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#    予約在庫数:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#    不良在庫数:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: false
+#        default: '0'
+#    labelApplication:
+#      type: integer
+#      nullable: true
+#      options:
+#        unsigned: true
+#        default: '0'
+#      column: label_application
+#    checkWhy:
+#      type: string
+#      nullable: true
+#      length: 255
+#      options:
+#        fixed: false
+#      column: check_why
+#    gmarketCopyCheck:
+#      type: boolean
+#      nullable: false
+#      options:
+#        default: '0'
+#      column: gmarket_copy_check
+#    tempShortageDate:
+#      type: datetime
+#      nullable: false
+#      options:
+#        comment: 暫定欠品日時
+#      column: temp_shortage_date
+#    makerSyohinCode:
+#      type: string
+#      nullable: false
+#      length: 30
+#      options:
+#        fixed: false
+#        comment: メーカー商品コード
+#      column: maker_syohin_code
+#    在庫あり時納期管理番号:
+#      type: string
+#      nullable: false
+#      length: 4
+#      options:
+#        fixed: false
+
+    weight:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    depth:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    width:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    height:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    descriptionEn:
+      type: text
+      nullable: false
+      length: 65535
+      options:
+        fixed: false
+        default: ''
+      column: description_en
+    descriptionCn:
+      type: text
+      nullable: false
+      length: 65535
+      options:
+        fixed: false
+        default: ''
+      column: description_cn
+    hintJa:
+      type: text
+      nullable: false
+      length: 65535
+      options:
+        fixed: false
+        default: ''
+      column: hint_ja
+    hintCn:
+      type: text
+      nullable: false
+      length: 65535
+      options:
+        fixed: false
+        default: ''
+      column: hint_cn
+
+    color_image_id:
+      type: integer
+      nullable: true
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps
+
+  manyToOne:
+    product:
+      targetEntity: TbMainproducts
+      inversedBy: choiceItems
+      joinColumn:
+        name: daihyo_syohin_code
+        referencedColumnName: daihyo_syohin_code
+    
+    shippingdivision:
+      targetEntity: TbShippingdivision
+      joinColumn:
+        name: shippingdivision_id
+        referencedColumnName: id
+
+  oneToMany:
+    orderHistories:
+      targetEntity: TbIndividualorderhistory
+      mappedBy: choiceItem
+
+    locations:
+      targetEntity: TbProductLocation
+      mappedBy: choiceItem
+      orderBy:
+        position: ASC
+
+    pickingList:
+      targetEntity: TbDeliveryPickingList
+      mappedBy: choiceItem
+
+    setSkuDetails:
+      targetEntity: TbSetProductDetail
+      mappedBy: choiceItem
+      orderBy:
+        ne_syohin_syohin_code: ASC
+      featch: LAZY
+
+  oneToOne:
+
+    warehouseTo:
+      targetEntity: TbLocationWarehouseToList
+      mappedBy: choiceItem
+      fetch: LAZY
+
+    warehouseToPickingList:
+      targetEntity: TbLocationWarehouseToPickingList
+      mappedBy: choiceItem
+      fetch: LAZY

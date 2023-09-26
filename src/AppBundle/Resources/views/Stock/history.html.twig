@@ -1,0 +1,488 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+    '@AppBundle/Resources/public/vendor/moment/moment-with-locales.min.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+    '@AppBundle/Resources/public/js/app.stock-history.js'
+    '@AppBundle/Resources/public/js/partial/modal-change-current-company.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div id="header">
+    <div class="clearfix">
+      <div class="pull-left">
+        <h2>総在庫情報</h2>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="pull-left">
+        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalChangeCurrentCompany">
+          <i class="fa fa-fw fa-home"></i>{{ account.getCompany().getName() }}
+        </button>
+      </div>
+    </div>
+   {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+  </div>
+
+  {# Flash メッセージ #}
+  {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+  <script type="text/javascript">
+    const STOCK_HISTORY_DATA = {{ dataJson|raw }};
+  </script>
+
+  <ul class="nav nav-tabs" id="indexNavTab">
+    <li><a href="#tabStock" data-toggle="tab">総在庫</a></li>
+    <li><a href="#tabIoh" data-toggle="tab">注残</a></li>
+    <li><a href="#tabLocation" data-toggle="tab">各倉庫</a></li>
+    <li><a href="#tabOrder" data-toggle="tab">最終仕入日別</a></li>
+  </ul>
+
+  <!-- / タブ-->
+  <div id="indexTabBlock" class="tab-content">
+    <div class="tab-pane" id="tabStock">
+      <div id="stockList" class="container">
+
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start" class="form-control" id="filterDateStart" placeholder="FROM" />
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end" class="form-control" id="filterDateEnd" placeholder="TO" />
+              </div>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" v-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+
+        {# pagination (Vue component) #}
+        <div
+        is="parts-table-pagination"
+        :init-page-item-num="pageItemNum"
+        :init-page-item-num-list="pageItemNumList"
+        :item-num="totalItemNum"
+        :page="page"
+        v-on:change-page="showPage"
+        >
+        </div>
+        
+        <table class="table table-bordered table-condensed" v-show="pageData.length > 0">
+          <tr>
+            <th class="w50" rowspan=2>登録日時</th>
+            <th class="" colspan=2>総在庫</th>
+            <th class="" colspan=2>フリー</th>
+            <th class="" colspan=2>季節内</th>
+            <th class="" colspan=2>季節外</th>
+            <th class="" colspan=2>移動中</th>
+          </tr>
+
+          <tr>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+          </tr>
+
+          <tr v-for="item in pageData"
+              is="result-item"
+              :item="item"
+            ></tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <div class="tab-pane" id="tabIoh">
+
+      <div id="stockIohList" class="container">
+
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start_ioh" class="form-control" id="filterDateStartIoh" placeholder="FROM" />
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end_ioh" class="form-control" id="filterDateEndIoh" placeholder="TO" />
+              </div>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" v-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        {# pagination (Vue component) #}
+        <div
+        is="parts-table-pagination"
+        :init-page-item-num="pageItemNum"
+        :init-page-item-num-list="pageItemNumList"
+        :item-num="totalItemNum"
+        :page="page"
+        v-on:change-page="showPage"
+        >
+      </div>
+        
+        <table class="table table-bordered table-condensed" v-show="pageData.length > 0">
+          <tr>
+            <th class="w50" rowspan=2>登録日時</th>
+            <th class="" colspan=2>発注済</th>
+            <th class="" colspan=2>入荷済</th>
+            <th class="" colspan=2>出荷待</th>
+            <th class="" colspan=2>出荷済</th>
+          </tr>
+
+          <tr>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+          </tr>
+
+          <tr v-for="item in pageData"
+              is="result-item"
+              :item="item"
+            ></tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <div class="tab-pane" id="tabLocation">
+
+      <div id="stockLocationList" class="container">
+
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start_location" class="form-control" id="filterDateStartLocation" placeholder="FROM" />
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end_location" class="form-control" id="filterDateEndLocation" placeholder="TO" />
+              </div>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" v-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        {# pagination (Vue component) #}
+        <div
+        is="parts-table-pagination"
+        :init-page-item-num="pageItemNum"
+        :init-page-item-num-list="pageItemNumList"
+        :item-num="totalItemNum"
+        :page="page"
+        v-on:change-page="showPage"
+        >
+      </div>
+        
+        <table class="table table-bordered table-condensed" v-show="pageData.length > 0">
+          <tr>
+            <th class="w50" rowspan=2>登録日時</th>
+            <th class="" colspan=2>詰替MUGEN</th>
+            <th class="" colspan=2>藪吉出荷</th>
+            <th class="" colspan=2>SHOPLIST</th>
+            <th class="" colspan=2>古市</th>
+            <th class="" colspan=2>詰替古市</th>
+            <th class="" colspan=2>南京終</th>
+            <th class="" colspan=2>山田川</th>
+            <th class="" colspan=2>旧ムカイ</th>
+            <th class="" colspan=2>帯解</th>
+          </tr>
+
+          <tr>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+          </tr>
+
+          <tr v-for="item in pageData"
+              is="result-item"
+              :item="item"
+            ></tr>
+
+        </table>
+
+      </div>
+
+    </div>
+    
+    <div class="tab-pane" id="tabOrder">
+
+      <div id="stockOrderList" class="container">
+
+        <div class="panel-body">
+          <form class="form-inline">
+            <div class="clearfix form-group mr5 mb5">
+              <div class="input-group date w200 pull-left mr5">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_start_order" class="form-control" id="filterDateStartOrder" placeholder="FROM" />
+              </div>
+              <div class="pull-left inputHeight vMiddle mr5">
+                ～
+              </div>
+              <div class="input-group date w200 pull-left">
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                <input type="text" name="date_end_order" class="form-control" id="filterDateEndOrder" placeholder="TO" />
+              </div>
+            </div>
+
+            <div class="form-group mr5 mb5">
+              <select class="form-control" v-model="filterOptionMonth" v-on:change="setFilterDateMonth">
+                <option value=""></option>
+                <option v-for="month in filterOptionMonths" v-bind:value="month.key" v-text="month.display"></option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        {# pagination (Vue component) #}
+        <div
+        is="parts-table-pagination"
+        :init-page-item-num="pageItemNum"
+        :init-page-item-num-list="pageItemNumList"
+        :item-num="totalItemNum"
+        :page="page"
+        v-on:change-page="showPage"
+        >
+      </div>
+        
+        <table class="table table-bordered table-condensed" v-show="pageData.length > 0">
+          <tr>
+            <th class="w50" rowspan=2>登録日時</th>
+            <th class="" colspan=2>3ヶ月以内</th>
+            <th class="" colspan=2>6ヶ月以内</th>
+            <th class="" colspan=2>1年以内</th>
+            <th class="" colspan=2>2年以内</th>
+            <th class="" colspan=2>3年以内</th>
+            <th class="" colspan=2>4年以内</th>
+            <th class="" colspan=2>5年以内</th>
+            <th class="" colspan=2>6年以内</th>
+            <th class="" colspan=2>7年以内</th>
+            <th class="" colspan=2>8年以内</th>
+          </tr>
+
+          <tr>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+            <th class="w50">数量</th>
+            <th class="w50">在庫</th>
+          </tr>
+
+          <tr v-for="item in pageData"
+              is="result-item"
+              :item="item"
+            ></tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateStockListTableRow">
+    <tr class="text-center">
+      <td v-text="item.date" class="text-left vMiddle"></td>
+      <td v-text="item.total.totalStock" class="text-right vMiddle"></td>
+      <td v-text="item.total.totalAmount" class="text-right vMiddle"></td>
+      <td v-text="item.free.stock" class="text-right vMiddle"></td>
+      <td v-text="item.free.amount" class="text-right vMiddle"></td>
+      <td v-text="item.season.stock" class="text-right vMiddle"></td>
+      <td v-text="item.season.amount" class="text-right vMiddle"></td>
+      <td v-text="item.notSeason.stock" class="text-right vMiddle"></td>
+      <td v-text="item.notSeason.amount" class="text-right vMiddle"></td>
+      <td v-text="item.move.stock" class="text-right vMiddle"></td>
+      <td v-text="item.move.amount" class="text-right vMiddle"></td>
+    </tr>
+  </script>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateStockIohListTableRow">
+    <tr class="text-center">
+      <td v-text="item.date" class="text-left vMiddle"></td>
+      <td v-text="item.ordered.stock" class="text-right vMiddle"></td>
+      <td v-text="item.ordered.amount" class="text-right vMiddle"></td>
+      <td v-text="item.arrived.stock" class="text-right vMiddle"></td>
+      <td v-text="item.arrived.amount" class="text-right vMiddle"></td>
+      <td v-text="item.waited.stock" class="text-right vMiddle"></td>
+      <td v-text="item.waited.amount" class="text-right vMiddle"></td>
+      <td v-text="item.shipped.stock" class="text-right vMiddle"></td>
+      <td v-text="item.shipped.amount" class="text-right vMiddle"></td>
+    </tr>
+  </script>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateStockLocationListTableRow">
+    <tr class="text-center">
+      <td v-text="item.date" class="text-left vMiddle"></td>
+      <td v-text="item.tumekae.stock" class="text-right vMiddle"></td>
+      <td v-text="item.tumekae.amount" class="text-right vMiddle"></td>
+      <td v-text="item.yabu.stock" class="text-right vMiddle"></td>
+      <td v-text="item.yabu.amount" class="text-right vMiddle"></td>
+      <td v-text="item.shoplist.stock" class="text-right vMiddle"></td>
+      <td v-text="item.shoplist.amount" class="text-right vMiddle"></td>
+      <td v-text="item.huru.stock" class="text-right vMiddle"></td>
+      <td v-text="item.huru.amount" class="text-right vMiddle"></td>
+      <td v-text="item.tumehuru.stock" class="text-right vMiddle"></td>
+      <td v-text="item.tumehuru.amount" class="text-right vMiddle"></td>
+      <td v-text="item.butai2.stock" class="text-right vMiddle"></td>
+      <td v-text="item.butai2.amount" class="text-right vMiddle"></td>
+      <td v-text="item.yamadagawa.stock" class="text-right vMiddle"></td>
+      <td v-text="item.yamadagawa.amount" class="text-right vMiddle"></td>
+      <td v-text="item.kyumukai.stock" class="text-right vMiddle"></td>
+      <td v-text="item.kyumukai.amount" class="text-right vMiddle"></td>
+      <td v-text="item.obitoke.stock" class="text-right vMiddle"></td>
+      <td v-text="item.obitoke.amount" class="text-right vMiddle"></td>
+    </tr>
+  </script>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateStockOrderListTableRow">
+    <tr class="text-center">
+      <td v-text="item.date" class="text-left vMiddle"></td>
+      <td v-text="item.month3.stock" class="text-right vMiddle"></td>
+      <td v-text="item.month3.amount" class="text-right vMiddle"></td>
+      <td v-text="item.month6.stock" class="text-right vMiddle"></td>
+      <td v-text="item.month6.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year1.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year1.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year2.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year2.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year3.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year3.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year4.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year4.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year5.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year5.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year6.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year6.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year7.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year7.amount" class="text-right vMiddle"></td>
+      <td v-text="item.year8.stock" class="text-right vMiddle"></td>
+      <td v-text="item.year8.amount" class="text-right vMiddle"></td>
+    </tr>
+  </script>
+
+{% include 'AppBundle::modal/change-current-company.html.twig' %}
+
+{% endblock %}

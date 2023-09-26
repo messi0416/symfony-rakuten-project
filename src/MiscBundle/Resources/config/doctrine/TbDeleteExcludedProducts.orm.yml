@@ -1,0 +1,41 @@
+MiscBundle\Entity\TbDeleteExcludedProducts:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbDeleteExcludedProductsRepository
+    table: tb_delete_excluded_products
+    # indexes:
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        mall_id:
+            type: integer
+            nullable: false
+            default: 0
+        syohin_code:
+            type: string
+            length: 255
+            nullable: false
+        comment:
+            type: string
+            nullable: false
+        display_order:
+            type: integer
+            nullable: false
+            defualt: 0
+
+# Doctrine2 の仕様（というかこの仕様に意味があるのか？バグでしょ）により、
+# INSERT, UPDATE時には意地でもPHPから値を渡してやらないと気がすまない、らしいので、
+# DB側のデフォルト値（DEFAULT, ON UPDATE）を利用するためにひとまずコメントアウト。
+# もしEntityで利用する必要が出てきた場合には、getter, setter および hydrate時処理の実装が必要。
+#
+#        created:
+#            type: datetime
+#            nullable: false
+#        updated:
+#            type: datetime
+#            nullable: false
+
+    lifecycleCallbacks: {  }

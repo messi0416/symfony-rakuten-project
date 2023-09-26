@@ -1,0 +1,236 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+   {% stylesheets
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+   'bundles/app/css/app.concierge-urgent-shipping-stock-list.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.x 利用 #}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.concierge-urgent-shipping-stock-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <script type="text/javascript">
+    var VOUCHER_NUMBER = "{{ voucherNumber }}";
+  </script>
+
+  <div class="container" id="conciergeUrgentShippingStockList"
+    data-change-voucher-url="{{ path('concierge_urgent_shipping_stock_list') }}"
+    >
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>伝票商品 在庫状況</h2>
+        </div>
+
+        <div class="pull-right mt20 mb10">
+          <input type="text" class="form-control inlineBlock w150 mr5" placeholder="伝票番号"
+                 v-model="voucherNumber"
+                 v-on:click="selectAll($event)"
+                 v-on:keypress.enter="changeVoucher"
+            >
+          <button type="button" class="btn btn-success mr20" v-on:click="changeVoucher">検索</button>
+        </div>
+      </div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+
+    {% if voucher %}
+    <div>
+      <h3>伝票</h3>
+
+      <table class="table">
+        <tr>
+          <th class="col-xs-1 text-right">伝票番号</th>
+          <td class="col-xs-2">
+            <a href="#" v-on:click="openVoucherWindow($event)">
+              {{ voucher.getVoucherNumber() }}
+            </a>
+          </td>
+          <th class="col-xs-1 text-right">受注状態</th>
+          <td class="col-xs-3">{{ voucher.getOrderStatus() }}</td>
+
+          <th class="col-xs-1 text-right">購入者</th>
+          <td class="col-xs-5">{{ voucher.getCustomerName() }}</td>
+        </tr>
+        <tr>
+          <th class="col-xs-1 text-right">受注日</th>
+          <td class="col-xs-2">{% if voucher.getOrderDate() %}{{ voucher.getOrderDate().format('Y-m-d') }}{% endif %}</td>
+          <th class="col-xs-1 text-right">取込日</th>{# 受注日もだが、API取込なら時刻まで取得できている。CSV取込で消えるが、ひとまず表示しておく #}
+          <td class="col-xs-3">{% if voucher.getImportDate() %}{{ voucher.getImportDate().format('Y-m-d H:i:s') }}{% endif %}</td>
+
+          <td colspan="2"></td>
+        </tr>
+      </table>
+
+      <h3>明細</h3>
+
+      {% if voucher.getDetails()|length > 0 %}
+        {% for detail in voucher.getDetails() %}
+          {% if data[detail.getNeSyohinSyohinCode()] is defined %}
+            {% set itemData = data[detail.getNeSyohinSyohinCode()] %}
+          {% endif %}
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <table class="table table-bordered">
+                <tr>
+                  <th class="col-xs-1 text-right">商品コード</th>
+                  <td class="col-xs-4">
+                    <a href="{{ path('location_product_detail', { syohinCode: detail.getNeSyohinSyohinCode() }) }}" target="locationProductDetail">
+                    {{ detail.getNeSyohinSyohinCode() }}
+                    </a>
+                  </td>
+                  <th class="col-xs-1 text-right">受注数</th>
+                  <td class="col-xs-1">{{ detail.getOrderedNum() }}</td>
+                  <th class="col-xs-1 text-right">引当数</th>
+                  <td class="col-xs-1">{{ detail.getAssignedNum() }}</td>
+                  <th class="col-xs-1 text-right">引当日時</th>
+                  <td class="col-xs-2">{% if detail.getAssignedDate() %}{{ detail.getAssignedDate().format('Y-m-d H:i:s') }}{% endif %}</td>
+                </tr>
+              </table>
+
+              <table class="table">
+                <tr>
+                  <th>&nbsp;</th>
+                  {% for warehouse in warehouses %}
+                    <th class="text-center">{{ warehouse.name }}</th>
+                  {% endfor %}
+                  <th>合計</th>
+                </tr>
+
+                <tr>
+                  <td>実在庫</td>
+                  {% set total = 0 %}
+                  {% for warehouse in warehouses %}
+                    {% if itemData.stocks[warehouse.getId()] is defined %}
+                      {% set total = total + itemData.stocks[warehouse.getId()].stock %}
+                      <td class="text-center">
+                        {{ itemData.stocks[warehouse.getId()].stock }}
+                      </td>
+                    {% else %}
+                      <td class="text-center">
+                        0
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                  <td class="text-right">{{ total }}</td>
+                </tr>
+
+                <tr class="minus">
+                  <td>ピッキング</td>
+                  {% set total = 0 %}
+                  {% for warehouse in warehouses %}
+                    {% if itemData.pickings[warehouse.getId()] is defined %}
+                      {% set total = total + itemData.pickings[warehouse.getId()].reserved %}
+                      <td class="text-center">
+                        {{ itemData.pickings[warehouse.getId()].reserved }}
+                      </td>
+                    {% else %}
+                      <td class="text-center">
+                        0
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                  <td class="text-right">{{ total }}</td>
+                </tr>
+
+                <tr class="minus">
+                  <td>倉庫在庫ピッキング</td>
+                  {% set total = 0 %}
+                  {% for warehouse in warehouses %}
+                    {% if itemData.warehouse_pickings[warehouse.getId()] is defined %}
+                      {% set total = total + itemData.warehouse_pickings[warehouse.getId()].reserved %}
+                      <td class="text-center">
+                        {{ itemData.warehouse_pickings[warehouse.getId()].reserved }}
+                      </td>
+                    {% else %}
+                      <td class="text-center">
+                        0
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                  <td class="text-right">{{ total }}</td>
+                </tr>
+
+                <tr class="minus">
+                  <td>移動在庫</td>
+                  {% set total = 0 %}
+                  {% for warehouse in warehouses %}
+                    {% if itemData.transport_pickings[warehouse.getId()] is defined %}
+                      {% set total = total + itemData.transport_pickings[warehouse.getId()].transport_assign %}
+                      <td class="text-center">
+                        {{ itemData.transport_pickings[warehouse.getId()].transport_assign }}
+                      </td>
+                    {% else %}
+                      <td class="text-center">
+                        0
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                  <td class="text-right">{{ total }}</td>
+                </tr>
+
+              </table>
+
+          </div>
+        </div>
+      {% endfor %}
+      {% else %}
+        <div class="alert alert-danger">
+          受注明細が取得できませんでした。（キャンセル済みまたはイレギュラー）
+        </div>
+      {% endif %}
+
+
+      {#<table class="table table-bordered" >#}
+        {#<thead>#}
+          {#<tr>#}
+            {#<th>送り先名</th>#}
+            {#<th>送り先住所</th>#}
+            {#<th>同梱件数</th>#}
+            {#<th>伝票番号</th>#}
+          {#</tr>#}
+        {#</thead>#}
+
+        {#<tbody>#}
+        {#{% if data|length > 0 %}#}
+          {#{% for row in data %}#}
+            {#<tr>#}
+              {#<td>{{ row['送り先名'] }}</td>#}
+              {#<td>{{ row['送り先住所'] }}</td>#}
+              {#<td class="text-right">{{ row['同梱件数'] }}</td>#}
+              {#<td>{{ row['伝票番号']|nl2br }}</td>#}
+            {#</tr>#}
+          {#{% endfor %}#}
+        {#{% else %}#}
+          {#<tr>#}
+            {#<td colspan="4" class="text-center">データがありません。</td>#}
+          {#</tr>#}
+        {#{% endif %}#}
+        {#</tbody>#}
+      {#</table>#}
+
+    </div>
+    {% endif %}
+
+  </div>
+
+
+{% endblock %}
+

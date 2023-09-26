@@ -1,0 +1,159 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block headerTitle %}商品SKU一覧{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-product-sku-list.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block contents %}
+
+{% if product %}
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-4">
+          {% if product %}
+            <img src="{{ product.getImageUrl(imageUrl) }}" class="img-responsive">
+          {% endif %}
+        </div>
+
+        <div class="col-xs-8">
+          <span class="daihyoSyohinCode bold">
+            {{ daihyoSyohinCode }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="productSkuListMain">
+
+
+    <ul class="nav nav-tabs nav-tabs-justified" id="indexNavTab">
+      <li class="active"><a data-toggle="tab" href="#locationProductSkuList">SKU</a></li>
+      <li><a data-toggle="tab" href="#locationProductWeightEdit">送料設定</a></li>
+    </ul>
+
+    <div class="tab-content tab-content-bordered">
+
+      <div id="locationProductSkuList" class="tab-pane active">
+
+        <table class="table table-responsive list" id="skuList">
+          {% for choiceItem in product.getChoiceItems() %}
+            <tr>
+              <td class="col-xs-3 stock text-right">
+                <span class="bold">
+                  {{ choiceItem.getWarehouseStock(currentWarehouse) }}
+                </span>
+              </td>
+              <td class="col-xs-3 stock text-left">
+                / {{ choiceItem.stock }}
+              </td>
+
+              <td class="col-xs-6">
+                <a href="{{ path('location_product_detail', { 'syohinCode': choiceItem.getNeSyohinSyohinCode() }) }}">
+                  {{ choiceItem.getNeSyohinSyohinCode()}}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      <div id="locationProductWeightEdit" class="tab-pane">
+        <div class="panel">
+
+          <div class="panel-body">
+
+            <form role="form" action="{{ path('location_delivery_info_update', { 'daihyoSyohinCode' : product.getDaihyoSyohinCode() }) }}" method="post">
+
+              <div class="form-group">
+                {{ form_label(deliveryInfoForm.shippingdivision) }}
+                {{ form_widget(deliveryInfoForm.shippingdivision, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                {{ form_errors(deliveryInfoForm.shippingdivision, { 'attr': {'class' : 'alert alert-danger'} }) }}
+              </div>
+
+              <div class="form-group">
+                {{ form_label(deliveryInfoForm.weight) }}
+                {{ form_widget(deliveryInfoForm.weight, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                {{ form_errors(deliveryInfoForm.weight, { 'attr': {'class' : 'alert alert-danger'} }) }}
+              </div>
+
+              <div class="row row10">
+                <div class="col-xs-4 form-group">
+                  {{ form_label(deliveryInfoForm.depth) }}
+                  {{ form_widget(deliveryInfoForm.depth, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                  {{ form_errors(deliveryInfoForm.depth, { 'attr': {'class' : 'alert alert-danger'} }) }}
+                </div>
+                <div class="col-xs-4 form-group">
+                  {{ form_label(deliveryInfoForm.width) }}
+                  {{ form_widget(deliveryInfoForm.width, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                  {{ form_errors(deliveryInfoForm.width, { 'attr': {'class' : 'alert alert-danger'} }) }}
+                </div>
+                <div class="col-xs-4 form-group">
+                  {{ form_label(deliveryInfoForm.height) }}
+                  {{ form_widget(deliveryInfoForm.height, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                  {{ form_errors(deliveryInfoForm.height, { 'attr': {'class' : 'alert alert-danger'} }) }}
+                </div>
+              </div>
+
+              <div class="form-group mb30">
+                {{ form_label(deliveryInfoForm.mail_send_nums) }}
+                {{ form_widget(deliveryInfoForm.mail_send_nums, { 'attr': {'class' : 'form-control allowSubmit'} }) }}
+                {{ form_errors(deliveryInfoForm.mail_send_nums, { 'attr': {'class' : 'alert alert-danger'} }) }}
+              </div>
+
+              <div class="row row10 mb30">
+                <div class="form-group col-xs-6">
+                  {{ form_label(deliveryInfoForm.weight_check_need_flg) }}
+                  {{ form_widget(deliveryInfoForm.weight_check_need_flg, { 'attr': {'class' : 'checkboxLarge allowSubmit'} }) }}
+                  {{ form_errors(deliveryInfoForm.weight_check_need_flg, { 'attr': {'class' : 'alert alert-danger'} }) }}
+                </div>
+
+                <div class="form-group col-xs-6">
+                  {{ form_label(deliveryInfoForm.compress_flg) }}
+                  {{ form_widget(deliveryInfoForm.compress_flg, { 'attr': {'class' : 'checkboxLarge allowSubmit'} }) }}
+                  {{ form_errors(deliveryInfoForm.compress_flg, { 'attr': {'class' : 'alert alert-danger'} }) }}
+                </div>
+              </div>
+
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <div class="row">
+                    <div class="col-xs-12 form-group mb0">
+                      <input type="submit" value="保存する" class="form-control btn btn-danger" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {{ form_rest(deliveryInfoForm) }}
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+{% else %}
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="alert alert-warning">
+        該当する商品はありません。
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

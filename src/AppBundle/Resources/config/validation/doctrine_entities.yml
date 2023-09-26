@@ -1,0 +1,33 @@
+# 値下げ設定 バリデーション
+MiscBundle\Entity\TbDiscountSetting:
+    properties:
+        discount_excluded_days:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 9999
+        sales_term_days:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 9999
+        sales_sampling_days:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 9999
+        sell_out_days:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 9999
+        allowed_sell_out_over_days:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 9999
+        max_discount_rate:
+            - NotBlank: ~
+            - Range:
+                min: 0
+                max: 100

@@ -1,0 +1,111 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {#
+  {% stylesheets
+  'bundles/plusnaomain/css/sales_ranking.css' filter='cssrewrite'
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+  #}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+  '@AppBundle/Resources/public/js/app.skuShippingSetting.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+
+  <script type="text/javascript">
+    const SHIPPING_GROUP_LIST = {{ shippingGroupList|raw }};
+  </script>
+
+  <div id="skuShippingSetting" class="container"
+    data-search-url="{{ path('products_sku_shippingdivision_search') }}"
+    data-update-url="{{ path('products_sku_shippingdivision_update') }}"
+    >
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>SKU別送料設定 画面</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    {# 検索フォーム #}
+    <div class="form-inline clearfix mb10 mt10">
+      <div class="form-group pull-left mr10">
+        <label class="sr-only" for="inputVoucherNumber">SKU</label>
+        <span class="mr10">NE商品コード：</span> <input type="text" class="form-control w300" id="neSyohinSyohinCode" v-model="skuCode" v-on:keypress.enter="search">
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-primary" v-on:click="search">検索</button>
+      </div>
+    </div>
+
+    <div class="panel panel-default" v-if="item">
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="row row10 mb10">
+            <div class="col-xs-2 text-left">商品名： </div>
+            <div class="col-xs-8 text-left"><span v-text="item.product.daihyoSyohinName"></span></div>
+          </div>
+          <div class="row row10 mb10">
+            <div class="col-xs-2 text-left">現在の配送方法：</div>
+            <div class="col-xs-8 text-left"><span v-if="item.currentShippingdivisionName"><span v-text="shippingGroupList[item.currentShippingGroupCode]"></span>（<span v-text="item.currentShippingdivisionName"></span>）</span><span v-else>未設定</span></div>
+          </div>
+          <div class="row row10 mb10">
+            <div class="col-xs-2 text-left">変更後配送方法：</div>
+            <div class="col-xs-4 text-left">
+              <select v-model="updateShippingGroupCode" id="updateShippingGroupCode" class="form-control">
+                <option v-for="option in shippingGroupOptions" v-bind:value="option.value" v-text="option.text">
+                </option>
+              </select>
+            </div>
+            <div>
+              <button type="button" class="btn btn-primary" v-on:click="update">更新</button>
+            </div>
+          </div>
+      </div>
+
+      <div class="panel-body mt10">
+        <div class="mb10">こちらのSKUが同時更新されます</div>
+        <table class="table table-bordered table-condensed" v-show="item.productchoiceitemsList.length > 0">
+          <tr v-for="sku in item.productchoiceitemsList"
+              is="skuList"
+              :sku="sku"
+          ></tr>
+        </table>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  {# テーブル行テンプレート #}
+  <script type="text/x-template" id="templateSkuListTableRow">
+    <tr>
+      <td v-text="sku.neSyohinSyohinCode" class="text-left vMiddle"></td>
+    </tr>
+  </script>
+
+
+{% endblock %}

@@ -1,0 +1,111 @@
+# 仮想エンティティ 商品 モール別価格
+MiscBundle\Entity\VProductMallPrice:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\VProductMallPriceRepository
+  # table: tb_mainproducts
+  id:
+    daihyo_syohin_code:
+      type: string
+      nullable: false
+      length: 30
+      options:
+        fixed: false
+      id: true
+      column: daihyo_syohin_code
+      generator:
+        strategy: IDENTITY
+
+  fields:
+    sire_code:
+      type: string
+      nullable: true
+      length: 10
+      options:
+        fixed: false
+      column: sire_code
+
+    daihyo_syohin_name:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+      column: daihyo_syohin_name
+
+    # 価格非連動チェック
+    original_price_flg:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+      column: 価格非連動チェック
+
+    # 値下げ許可
+    pricedown_flg:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+      column: pricedown_flg
+
+    # cal 項目
+    baika_tnk:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+      column: baika_tnk
+
+    base_baika_tanka:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+      column: base_baika_tanka
+
+    # モール価格 - SHOPLIST
+    shoplist_registration_flg:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+    shoplist_original_price_flg: # ON/OFF bool
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+    # Access価格
+    shoplist_price:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+    # SHOPLIST登録価格
+    shoplist_current_price:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+
+    # モール価格 - 楽天
+    rakuten_original_price_flg: # ON/OFF bool
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+    # Access価格
+    rakuten_price:
+      type: integer
+      nullable: false
+      options:
+        unsigned: true
+        default: 0
+
+  lifecycleCallbacks: {  }

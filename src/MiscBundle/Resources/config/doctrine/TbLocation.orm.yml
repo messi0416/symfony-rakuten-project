@@ -1,0 +1,74 @@
+MiscBundle\Entity\TbLocation:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbLocationRepository
+  table: tb_location
+  uniqueConstraints:
+    location_code:
+      columns:
+        - warehouse_id
+        - location_code
+
+    auto_location:
+      columns:
+        - type
+        - auto_location_date
+        - auto_location_number
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      generator:
+          strategy: IDENTITY
+
+  fields:
+    warehouse_id:
+      type: integer
+      nullable: false
+      options:
+        default: 1
+
+    location_code:
+      type: string
+      length: 30
+      nullable: false
+
+    type:
+      type: string
+      length: 10
+      nullable: false
+      options:
+        default: ''
+
+    auto_location_date:
+      type: datetime
+      nullable: true
+
+    auto_location_number:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    move_furuichi_warehouse_flg:
+      type: boolean
+      options:
+        default: 0
+
+    created:
+      type: datetime
+      nullable: false
+    updated:
+      type: datetime
+      nullable: false
+
+  lifecycleCallbacks:
+    prePersist:
+      - fillTimestamps
+
+  oneToMany:
+    productLocations:
+      targetEntity: TbProductLocation
+      mappedBy: location
+      orderBy:
+        ne_syohin_syohin_code: ASC

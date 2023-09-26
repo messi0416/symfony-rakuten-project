@@ -1,0 +1,16 @@
+.asc::after {
+  content: "▲";
+}
+.desc::after {
+  content: "▼";
+}
+
+.fz8 {
+  font-size: 8px;
+}
+.fz10 {
+  font-size: 10px;
+}
+.fz12 {
+  font-size: 12px;
+}

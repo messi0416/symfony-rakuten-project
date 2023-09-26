@@ -1,0 +1,43 @@
+MiscBundle\Entity\TbDeliveryMethod:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbDeliveryMethodRepository
+    table: tb_delivery_method
+    id:
+        deliveryId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+            column: delivery_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        deliveryName:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+            column: delivery_name
+        deliveryCost:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+                default: '0'
+            column: delivery_cost
+        inquiryNumberNeedFlg:
+            type: boolean
+            nullable: false
+            options:
+                default: '0'
+            column: inquiry_number_need_flg
+        shippingGroupCode:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+            column: shipping_group_code
+    lifecycleCallbacks: {  }

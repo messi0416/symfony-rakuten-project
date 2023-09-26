@@ -1,0 +1,113 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+
+  'bundles/app/css/app.mall-order.css' filter='cssrewrite'
+  %}
+
+  <link href="{{ asset_url }}" rel="stylesheet" />
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+
+    '@AppBundle/Resources/public/js/app.mall-order.js'
+
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+    '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+    '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+    '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+  %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+<div class="container container-large"
+     id="ListDownloadOrder"
+  >
+
+  <div class="clearfix">
+    <div class="row">
+      <div class="pull-left">
+        <h2>輸出書類ダウンロード</h2>
+      </div>
+      <div class="pull-right">
+        <h3>
+          <a href="{{ path('plusnao_vendor_list_download_export_excel') }}" class="btn btn-default mb5"><i class="fa fa-repeat"></i> 再読込</a>
+        </h3>
+      </div>
+    </div>
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+  </div>
+
+  {# Flash メッセージ #}
+  {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+  <div class="row" id="functionBlock">
+  </div>
+
+  {% if pagination.count() > 0 %}
+
+    <div class="navigation text-right">
+      <p class="paginationInfo">
+        {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+        /
+        {{ paginationInfo.totalCount | number_format }}
+      </p>
+      {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <table class="table table-border table-condensed">
+    <tr>
+      <th class="text-center">仕入先</th>
+      <th class="text-center">作成日時</th>
+      <th class="text-center">アカウント(作成者)</th>
+      <th class="text-center">明細数</th>
+      <th class="text-center">ステータス</th>
+      <th class="text-center">最終ダウンロード日時</th>
+      <th class="text-center">ダウンロード</th>
+    </tr>
+
+    {% for row in pagination.getItems() %}
+    <tr>
+      <td>{{ row.name }}</td>
+      <td>{{ row.created }}</td>
+      <td>{{ row.username }}</td>
+      <td>{{ row.total_products }}</td>
+      <td>{{ row.status_str }}</td>
+      <td>{{ row.last_download }}</td>
+      <td>
+        {% if linkDownloads[row.id] is not empty %}
+          <a target="_blank" href="{{ linkDownloads[row.id] }}"><i class="fa fa-download text-success"></i> ダウンロード</a>
+        {% else %}
+
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% else %}
+    <div class="panel panel-default">
+      <div class="panel-body">
+        データがありません。
+      </div>
+    </div>
+  {% endif %}
+
+ </div>
+{% endblock %}
+

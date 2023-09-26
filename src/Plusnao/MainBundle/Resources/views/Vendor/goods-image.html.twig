@@ -1,0 +1,151 @@
+{% extends 'PlusnaoMainBundle::base-vendor.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/plusnaomain/bfh/css/bootstrap-formhelpers.min.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/bootstrap-select.min.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/bootstrap-tags.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/datetimepicker.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/jquery.bootstrap-touchspin.css' filter='cssrewrite'
+
+    'bundles/plusnaomain/css/admin-style.css' filter='cssrewrite'
+    'bundles/plusnaomain/css/goods-image.css' filter='cssrewrite' %}
+
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {# この画面では Vue.js2 を利用 #}
+  {{ parent() }}
+  {% javascripts
+
+    '@AppBundle/Resources/public/js/vue.2.5.16.min.js'
+    '@AppBundle/Resources/public/js/vue-router.2.2.1.js'
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+    '@PlusnaoMainBundle/Resources/public/bfh/js/bootstrap-formhelpers.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-select.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.bootstrap-touchspin.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-tags.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.maskedinput.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/moment.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/jquery.bootstrap.wizard.min.js'
+    '@PlusnaoMainBundle/Resources/public/js/bootstrap-datetimepicker.js'
+
+    '@PlusnaoMainBundle/Resources/public/js/goods-image.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+{% block body %}
+  <script type="text/javascript">
+    var DAIHYO_SYOHIN_CODE = "{{ product ? product.getDaihyoSyohinCode() : ''}}";
+    var IMAGE_URL_PARENT = "{{ imageUrlParent }}";
+    var IMAGE_EDIT_DATA = {{ dataJson|raw }};
+  </script>
+  
+  <div id="header" class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Logo -->
+          <div class="logo">
+            <h1 class="inlineBlock">商品画像（{{ product ? product.getDaihyoSyohinCode() : '' }}）</h1>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="name">
+            <a href="{{ path('plusnao_logout') }}"
+                class="btn {{ account.isForestStaff() ? 'btn-warning' : 'btn-default' }} mb5 mr5">
+              <i class="fa fa-fw fa-sign-out"></i>
+              {{ account.getUsername() }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="productImageEdit" class="container">
+
+    <div id="productImageEditMain">
+
+      {% if product %}
+
+        <div class="row">
+          <div class="col-xs-4 col-sm-6 col-md-5 col-lg-4" style="height: 80vh; overflow-y: auto">
+
+            <div :is="editListComponent"
+                 :edit-list="editList"
+                 v-on:set-current-image="setCurrentImage"
+              >
+            </div>
+
+          </div>
+
+          <div class="col-xs-8 col-sm-6 col-md-7 col-lg-8">
+            <div>左の一覧から画像を選択すると拡大画像が表示されます</div>
+            <ul class="nav nav-tabs" id="imageEditTab">
+              <li class="active"><a href="#tabImageEditDetail" data-toggle="tab">画像</a></li>
+            </ul>
+            <div id="imageEditTabBlock" class="tab-content" style="height: 75vh; overflow-y: auto; overflow-x:hidden; padding-top: 10px;">
+
+              {# 画像表示タブ #}
+              <div class="tab-pane show" id="tabImageEditDetail">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <img class="img-responsive" v-bind:src="currentImageUrl" v-show="currentImageUrl">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      {% else %}
+        データがありません。
+      {% endif %}
+
+    </div>
+  </div>
+
+  {# 画像リスト アイコン版 #}
+  <script type="text/x-template" id="templateProductImageEditIconList">
+    <div>
+      <div class="clearfix">
+        <div class="pull-right"><span v-text="editList.length"></span> 枚</div>
+      </div>
+
+      <div class="row row10 clearfix">
+        <div v-for="item in editList"
+             is="image-list-item"
+             :item="item"
+             v-on:set-current-image="setCurrentImage"
+        >
+        </div>
+        <div is="image-list-item"
+             :item="{}"
+        >
+        </div>
+      </div>
+    </div>
+
+  </script>
+
+  {# 画像アイコン #}
+  <script type="text/x-template" id="templateProductImageEditIconListItem">
+    <div class="col-lg-1-5 col-md-3 col-sm-4 col-xs-12 mb10 grid-img"
+         v-bind:class="insertAreaCss"
+         v-on:click="setCurrentImage"
+      >
+      <img class="img-thumbnail mt0"
+           style="max-height: 124px;"
+           v-bind:src="imageUrlWithRandom"
+           v-show="item.imageUrl"
+        >
+    </div>
+  </script>
+
+{% endblock %}

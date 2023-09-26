@@ -1,0 +1,119 @@
+{% extends 'AppBundle:Location:base.html.twig' %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts '@AppBundle/Resources/public/js/app.location-warehouse-from.js' %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}倉庫から 商品一覧{% endblock %}
+
+{% block headerButtons %}
+  <a class="btn btn-sm btn-default" href="{{ path('location_warehouse_from_location_list') }}">
+    倉庫から ロケーション一覧
+  </a>
+{% endblock %}
+
+{% block contents %}
+
+  <div class="row row10 mb10" id="recalculateFromForm"
+       data-url="{{ path('location_warehouse_from_recalculate') }}"
+      >
+    <div class="col-xs-7">
+      <span>最終更新：</span><br>
+      <span>{% if lastUpdated %}{{ lastUpdated.format('Y/m/d H:i:s') }}{% else %}--{% endif %}</span>
+    </div>
+
+    <div class="col-xs-5">
+      <button class="btn btn-default fullWidth" v-on:click="recalculate">
+        <i class="fa fa-calculator"></i>
+        再集計
+      </button>
+    </div>
+  </div>
+
+  {% if pagination.count() > 0 %}
+    <div>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+      <table class="table" id="warehouseList">
+        {% for product in pagination.getItems() %}
+          <tr>
+            <td class="col-xs-3" rowspan="2">
+              {% if product.getImageUrl() %}
+                <a href="{{ path('location_product_detail', { 'syohinCode' : product.getNeSyohinSyohinCode() }) }}">
+                  <img src="{{ product.getImageUrl(imageParentUrl) }}" class="img-responsive">
+                </a>
+              {% endif %}
+            </td>
+            <td class="col-xs-7">
+              <a href="{{ path('location_product_detail', { 'syohinCode' : product.getNeSyohinSyohinCode() }) }}">
+                {{ product.getNeSyohinSyohinCode() }}
+              </a>
+            </td>
+            <td class="col-xs-2 text-center">
+              <p class="bold bigger mb0">
+                {{ product.getShortage() }}
+              </p>
+              {#<button class="btn btn-xs btn-info fullWidth" v-on:click="toggleDetail($event)">詳細</button>#}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <table class="table table-condensed borderless mb0">
+                {% for location in product.getPLocationList() %}
+                  <tr>
+                    <th class="col-xs-10 text-right">
+                      <a href="{{ path('location_location_detail', { 'locationId' : location.id }) }}">
+                        {{ location.code }}
+                      </a>
+                    </th>
+                    <td class="col-xs-2 text-right">{{ location.stock }}</td>
+                  </tr>
+                {%  endfor %}
+              </table>
+          </tr>
+          {# 詳細 #}
+          <tr class="detail noBorder">
+            <td colspan="3">
+              <table class="table table-condensed table-bordered">
+                <tr>
+                  <th class="col-xs-2 text-center">引当</th>
+                  <td class="col-xs-2 text-right">{{ product.getAllocationNum() }}</td>
+                  <th class="col-xs-2 text-center">在庫</th>
+                  <td class="col-xs-2 text-right">{{ product.getStock() }}</td>
+                  <th class="col-xs-2 text-center">P</th>
+                  <td class="col-xs-2 text-right">{{ product.getPStock() }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+      <div class="navigation text-right">
+        <p class="paginationInfo">
+          {{ paginationInfo.firstItemNumber | number_format }} - {{ paginationInfo.lastItemNumber | number_format }}
+          /
+          {{ paginationInfo.totalCount | number_format }}
+        </p>
+        {{ knp_pagination_render(pagination) }}
+      </div>
+
+    </div>
+  {% else %}
+    <div id="warehouseList" class="alert alert-warning">データがありません。</div>
+  {% endif %}
+
+{% endblock %}

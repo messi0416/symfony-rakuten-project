@@ -1,0 +1,247 @@
+# DefaultController
+default:
+  cancel: 閉じる
+  submit: はい
+  update: 更新
+  label:
+    label_pdf: ラベルPDF
+    error_message: エラーにより、PDFの出力ができませんでした。
+    download: ダウンロード
+    print_target: 印刷対象
+    num_change: 全行数量変更
+    search:
+      product_code: 商品コード
+
+
+# VendorController
+vendor:
+  company_name: 株式会社フォレスト
+  honorific: 様
+  language:
+    japanese: 日本語
+    chinese: 中文
+
+  cancel: 閉じる
+  submit: はい
+  update: 更新
+  confirm: 確認
+  present_recount: 現拠点更新
+  all_recount: 全拠点更新
+  last_update: 最終更新
+  export_shipping_download: 輸出書類ダウンロード
+  management_by_voucher: 伝票毎注残管理
+
+  search:
+    submit: 検索
+    clear: クリア
+    product_code: 商品コード
+    order_date: 発注日
+    voucher_number: 伝票番号
+    syohin_code: 商品コード
+    status: 注残ステータス
+    vendor_comment: 連絡事項
+    unallocated: 未引当
+    shipping_number: 発送伝票番号
+    receive_order_number: 受注番号
+    warehousing_number: 入庫番号
+    person: 担当者
+    check: フォレスト確認済未入荷残0出力
+    alert:
+      select: 警告・注意
+      all: いずれかの警告・注意有り
+      regular_none: 良品無し
+      unset_weight_size: 重量・サイズ未設定
+      unset_material_description: 材質・DESCRIPTION未設定
+    shipping_type:
+      select: 発送種別
+      air: エア便
+      container: コンテナ便
+
+  bulk:
+    word: 抽出結果への一括処理
+    select: 処理内容を選択
+    status_update_ordered: すべて発注済にする
+    status_update_arrived: すべて入荷済にする
+    status_update_waited: すべて出荷待にする
+    status_update_shipping: すべて出荷済にする
+    export_shipping: 輸出書類を出力する
+    submit: 実行
+
+  # 注残履歴一覧
+  order_status_list:
+    page_name: 集計
+
+  # 注残一覧画面
+  order_list:
+    title: 注残一覧
+
+    status_untreated: 未処理
+    status_ordered: 発注済
+    status_arrived: 入荷済
+    status_waited: 出荷待
+    status_shipped: 出荷済
+    status_shortage: 欠品
+
+    vendor_comment: 連絡事項
+    cost: 原価
+    
+    shipping_type_button_air: エア
+    shipping_type_button_container: コン
+
+    header:
+      voucher_number: 伝票番号
+      order_date:     発注日
+      syohin_code:    商品コード
+      category:       商品カテゴリ
+      image:          画像
+      address:        仕入先アドレス
+      size:           サイズ
+      color:          カラー
+      cost:           原価(円)
+      order_num:      発注数
+      remain_num:     注残数
+      order_comment:  仕入備考
+      button_unallocated: 未引当
+      button_ordered: 発注済
+      button_arrived: 入荷済
+      button_waited: 出荷待
+      button_shipped: 出荷済
+      button_shortage:  欠品
+      shipping_number:  発送伝票番号
+      receive_order_number: 受注番号
+      warehousing_number: 入庫番号
+      shipping_operation_number: 出庫番号
+
+    manipulate_order:
+      button      : 伝票
+      title       : 伝票操作
+      split       : 分割
+      submit_split: 分割を実行
+
+    edit_spec:
+      button        : spec
+      title         : 商品諸元編集
+      weight        : 重量(g)
+      depth         : 縦(mm)
+      width         : 横(mm)
+      height        : 高さ(mm)
+      submit_update : 変更を保存
+      
+    edit_rate:
+      modal_title: レート設定
+      one_dollar: 1ドル
+      yen: 円
+    
+    change_shipping_type:
+      modal_title   : 発送種別変更確認
+      confirm_message : 以下の伝票の発送種別を[ %shippingTypeString% ]に変更します。よろしいですか？
+      shipping_type_air: エア便
+      shipping_type_container: コンテナ便
+      
+    empty_shipping:
+      modal_title   : 処理確認
+      modal_updating_title: 輸出書類を作成中…
+    
+    reassess_unallocated:
+      updating: 更新中
+
+    messages:
+      common:
+        update_success: 更新に成功しました。
+        update_failure: 更新に失敗しました。
+        confirm: よろしいですか？
+      csv_upload:
+        other_extension: ファイルの拡張子が .csv ではありません。
+        nothing_select: アップロードするファイルが選択されていません。
+        updating: 現在データの更新中です。完了するまで画面を閉じないでください。
+      manipulate_order:
+        confirm_split: 指定の件数で伝票を分割します。よろしいですか。
+        complete_split: 発注伝票を分割しました。
+      status_update:
+        ordered: 抽出中の行をすべて発注済にしてよろしいですか。
+        arrived: 抽出中の行をすべて入荷済にしてよろしいですか。
+        waited: 抽出中の行をすべて出荷待にしてよろしいですか。
+        shipped: 抽出中の行をすべて出荷済にしてよろしいですか。
+        error: 抽出結果に更新できないステータスが含まれています、抽出条件・抽出結果を確認してください。
+      empty_shipping:
+        sku_spec_empty: SPECが未計測の行があります。
+        empty_shipping_number: 発送伝票番号が空欄の行があります。
+        pushed_to_queue: 輸出書類作成の処理をキューに追加しました。
+        confirm_print: このまま、輸出書類を作成致しますか？
+      reassess_unallocated:
+        confirm_all_agent: すべての拠点の未引当を更新します。
+        confirm_individual_agent: 現在の拠点の未引当を更新します。
+        complete: 更新が正常に終了しました。
+        reload_page: ページを再読み込みします。
+      back_button: ブラウザの戻るボタンは使用しないでください。
+
+    errors:
+      update_order_num:
+        no_data: 'データが見つかりませんでした。更新を中止しました。'
+        invalid_data: 'データが正しく取得できませんでした。更新を中止しました。'
+        no_value: '発注数が入力されていません。更新を中止しました。'
+        same_value: '発注数が同じです。更新を中止しました。'
+        small_value: '発注数を減らすことはできません。'
+        too_small: 'すでに入荷・欠品済みの発注数より少ない数字には更新できません。更新を中止しました。'
+        server_busy: 'サーバエラーで更新できませんでした。再度実行してください。'
+
+
+  remain_order:
+    title: 伝票毎注残管理
+
+    voucher_number     : 発注伝票番号
+    shipping_type      : 発送種別
+    agent_code         : 依頼先コード
+    order_date         : 発行日
+    min_remain_status  : 最遅ステータス
+    oldest_update_date : 最遅ステータス最古更新日
+    product_code       : 主な商品コード
+    image              : 画像
+    total_remain_num   : 伝票注残合計
+    comment            : コメント
+
+  csv:
+    upload: アップロード
+    download: ダウンロード
+    description_download: DESCRIPTIONダウンロード
+    hint_download: 材質商品説明ダウンロード
+
+    upload_message: CSVアップロードが完了しました、画面を更新します。
+    error_message: エラーにより、CSVのダウンロードができませんでした。
+
+    header:
+      voucher_number      : 発注伝票番号
+      order_date          : 発注日
+      sire_name           : 発注先
+      syohin_code         : 商品コード
+      daihyo_syohin_label : 商品サブコード
+      colname             : 横軸名
+      rowname             : 縦軸名
+      support_colname     : 横軸名補助
+      support_rowname     : 縦軸名補助
+      cost                : 原価(円)
+      order_num           : フォレスト確認済発注数量
+      regular             : フォレスト確認済良品入荷済数量
+      defective           : フォレスト確認済暫定欠品数量
+      shortage            : フォレスト確認済欠品数量
+      remain_num          : フォレスト確認済未入荷残
+      remain_ordered_date : web発注済
+      remain_arrived_date : web入荷済
+      remain_waiting_date : web出荷待
+      remain_shipping_date: web出荷済
+      remain_stockout_date: web欠品
+      vendor_comment      : web連絡事項
+      shipping_number     : web発送伝票番号
+      receive_order_number: web受注番号
+      warehousing_number  : web入庫番号
+      sire_adress         : 仕入先アドレス
+      image_url           : 画像のリンク先
+      barcode             : バーコード
+      order_comment       : 指示コメント
+      weight              : 重量
+      depth               : 縦
+      width               : 横
+      height              : 高
+      description_en      : DESCRIPTION
+      hint_ja             : 材質商品説明
+

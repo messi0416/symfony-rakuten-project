@@ -1,0 +1,17 @@
+#remainOrderStatusDateList tbody {
+  border-collapse: collapse;
+  border-top-width: 1px;
+}
+
+.cursorWait {
+  cursor: wait !important;
+}
+.cursorAuto {
+  cursor: auto;
+}
+
+#deliveryShippingVoucherList .pagination {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	vertical-align: middle;
+}

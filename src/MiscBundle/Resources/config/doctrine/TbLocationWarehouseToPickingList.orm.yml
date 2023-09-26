@@ -1,0 +1,79 @@
+MiscBundle\Entity\TbLocationWarehouseToPickingList:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\BaseRepository
+  table: tb_location_warehouse_to_picking_list
+
+  id:
+    ne_syohin_syohin_code:
+      type: string
+      nullable: false
+      length: 50
+      options:
+        fixed: false
+      id: true
+
+  fields:
+    location_id:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    location_code:
+      type: string
+      nullable: false
+      length: 30
+      options:
+        fixed: false
+        default: ''
+    position:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    stock:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    move_num:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    status:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    pict_directory:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+    pict_filename:
+      type: string
+      nullable: true
+      length: 255
+      options:
+        fixed: false
+        default: ''
+
+    created:
+      type: datetime
+      nullable: true
+    updated:
+      type: datetime
+      nullable: true
+
+  lifecycleCallbacks: {  }
+
+  oneToOne:
+    choiceItem:
+      targetEntity: TbProductchoiceitems
+      inversedBy: warehouseToPickingList
+      joinColumn:
+        name: ne_syohin_syohin_code
+        referencedColumnName: ne_syohin_syohin_code
+        nullable: true

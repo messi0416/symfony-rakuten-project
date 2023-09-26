@@ -1,0 +1,36 @@
+services:
+    AMC.log_control:
+        class: Oyrworks\Bundle\AMCBundle\Command\Control\LogControl
+        arguments: [%DataDirectory%]
+    AMC.csv_control:
+        class: Oyrworks\Bundle\AMCBundle\Command\Control\CSVControl
+        arguments: [%DataDirectory%]
+    AMC.amazon_xml_control:
+        class: Oyrworks\Bundle\AMCBundle\Command\Control\AmazonXMLControl
+    AMC.amazon_mws_control:
+        class: Oyrworks\Bundle\AMCBundle\Command\Control\AmazonMWSControl
+        arguments: [%AmazonMWSAuthorizingInformation%, %DataDirectory%]
+     
+            
+parameters:
+    # この項目は、すべて parameters.env.yml で上書きされる
+    AmazonMWSAuthorizingInformation:
+        SELLER_ID: "" # Amazonマーケットプレイスでの出品者ID（必須）
+        AWS_ACCESS_KEY_ID: "" # Amazon MWSのアクセスキーID（必須）
+        AWS_SECRET_KEY: "" # Amazon MWSの秘密キー（必須）
+        MWS_Auth_Token: ~ # 開発者用アクセストークン（開発者アカウントでのアクセスの際必要）
+        isDeveloperAccount: FALSE # 開発者アカウントかどうか（TRUEまたはFALSE）
+
+    DataDirectory:
+        path: "%kernel.root_dir%/../WEB_CSV/Amazon/FBAOrder/" # CSV、XML、専用ログ、ネクストエンジンのアップロードの際に返却されたデータを保存するディレクトリ
+        csv: "csv/" # CSVを保存するディレクトリ
+        data: "data/" # AmazonからダウンロードしてXMLを保存するディレクトリ（デフォルトは”data/“）
+        log_file: "amc.log" # 専用ログファイルの名前
+        nextengine_result: "result.json" # ネクストエンジンからの返却されたデータ
+
+    MySQL:
+        host: "%database_host%" # MySQLのホスト名（localhostなど）
+        user: "%database_user%" # MySQLのユーザー名
+        password: "%database_password%" # MySQLのパスワード
+        database: "%database_name%" # このアプリケーション用のデータベース名
+        table: "not_shipped" # Pendingのデータを保存するテーブル名

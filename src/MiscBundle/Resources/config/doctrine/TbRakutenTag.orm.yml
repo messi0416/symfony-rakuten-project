@@ -1,0 +1,51 @@
+MiscBundle\Entity\TbRakutenTag:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbRakutenTagRepository
+    table: tb_rakuten_tag
+    id:
+        directory_id:
+            type: string
+            length: 15
+            nullable: false
+            id: true
+            column: ディレクトリID
+        tag_id:
+            type: string
+            length: 15
+            nullable: false
+            id: true
+            column: タグID
+
+    fields:
+        path:
+            type: string
+            length: 255
+            nullable: false
+            options:
+                fixed: false
+                default: ''
+            column: パス名
+        classification:
+            type: string
+            length: 100
+            nullable: false
+            options:
+                fixed: false
+                default: ''
+            column: 分類
+        tag:
+            type: string
+            length: 100
+            nullable: false
+            options:
+                fixed: false
+                default: ''
+            column: タグ名
+        select_enabled:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+            column: 項目選択肢別在庫登録可
+
+    lifecycleCallbacks: {  }

@@ -1,0 +1,71 @@
+{% extends 'AppBundle::base-mobile.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.packing-group-list.js'
+    '@AppBundle/Resources/public/js/partial/global-message.js'
+   %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block headerTitle %}梱包グループリスト{% endblock %}
+
+{% block headerButtons %}
+  <a href="{{ path('packing_hold_shipping_voucher_list') }}" class="btn btn-success">保留伝票リスト</a>
+{% endblock %}
+
+{% block contents %}
+
+  <script type="text/javascript">
+    const WAREHOUSE_ID = '{{ account.getWarehouse().getId() }}';
+  </script>
+
+  <div id="packingGroupList" data-search-url="{{ path('packing_packing_group_find') }}" v-cloak>
+
+    {# global-message コンポーネント #}
+    <div is="parts-global-message" :state="messageState"></div>
+
+    <form>
+      <div class="row row10 mb10">
+        <div class="col-xs-6">
+          <select class="form-control" v-model="isTodayOnly" @change="search">
+            <option value="1">本日分</option>
+            <option value="0">過去1週間分</option>
+          </select>
+        </div>
+        <div class="col-xs-6">
+          <select class="form-control" v-model="isUnfinishOnly" @change="search">
+            <option value="1">未完了のみ</option>
+            <option value="0">すべて</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div class="list-group">
+      <template v-if="list.length">
+        <div v-for="item in list">
+          <a class="list-group-item inputHeight cursorPointer" :class="item.css" :href="item.packingGroupUrl">
+            <table class="table layout">
+              <tr>
+                <td class="col-xs-7 text-left" v-text="item.name"></td>
+                <td class="col-xs-5 text-left" v-text="item.status"></td>
+              </tr>
+            </table>
+          </a>
+        </div>
+      </template>
+      <template v-else>
+        <div class="row row10">
+          <div class="col-xs-12">
+            <div class="alert alert-info">梱包グループリストはありません。</div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </div>
+
+{% endblock %}

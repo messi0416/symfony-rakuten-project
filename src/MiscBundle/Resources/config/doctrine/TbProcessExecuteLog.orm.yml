@@ -1,0 +1,83 @@
+MiscBundle\Entity\TbProcessExecuteLog:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbProcessExecuteLogRepository
+    table: tb_process_execute_log
+    indexes:
+        index_process:
+            columns:
+                - process_id
+                - process_status
+                - start_datetime
+    id:
+        id:
+            type: bigint
+            nullable: false
+            unsigned: false
+            comment: ID
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        processId:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: "プロセスID\ntb_process.id"
+            column: process_id
+        startDatetime:
+            type: datetime
+            nullable: false
+            comment: 開始日時
+            column: start_datetime
+        endDatetime:
+            type: datetime
+            nullable: true
+            comment: 終了日時
+            column: end_datetime
+        queueName:
+            type: string
+            nullable: false
+            length: 255
+            fixed: false
+            comment: "利用キュー\nキュー名。キュー利用無しの場合はnone、不明な場合はunknown"
+            default: ''
+            column: queue_name
+        status:
+            type: integer
+            nullable: false
+            comment: "ステータス\n1: 処理中 2: 正常終了 9: エラー終了"
+            default: '1'
+            column: status
+        processNumber1:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "処理数1\n処理速度に最も影響する数値"
+            column: process_number1
+        processNumber2:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "処理数2\n処理速度に2番目に影響する数値"
+            column: process_number2
+        processNumber3:
+            type: integer
+            nullable: true
+            unsigned: false
+            comment: "処理数3\n処理速度に3番目に影響する数値"
+            column: process_number3
+        version:
+            type: float
+            nullable: false
+            precision: 5
+            scale: 2
+            comment: "バージョン\n処理数の取得方式が変わった場合バージョンを上げる。同一バージョンの数値は比較できるが、異なるバージョンの数値は比較できない。"
+            default: '1.00'
+        errorInformation:
+            type: text
+            nullable: true
+            length: 65535
+            fixed: false
+            comment: "エラー内容\nエラー終了した場合、エラーの内容を保持する"
+            column: error_information
+    lifecycleCallbacks: {  }

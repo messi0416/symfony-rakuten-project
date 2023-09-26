@@ -1,0 +1,17 @@
+{% extends 'AppBundle:Products:base.html.twig' %}
+
+{% block headerTitle %}
+  削除対象外商品コード 編集
+{% endblock %}
+
+{% block contents %}
+  <div class="row">
+    <div class="col-sm-6" id="deleteExcludedProductForm" data-back-url="{{ path('products_delete_exclusion') }}">
+
+      {% include 'AppBundle:Products:DeleteExclusion/form.html.twig' with {'actionUrl': path('products_delete_exclusion_edit', {'id': excludedProduct.getId()})} %}
+
+    </div>
+    <div class="col-sm-6"></div>
+  </div>
+
+{% endblock %}

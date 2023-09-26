@@ -1,0 +1,225 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+  'bundles/app/vendor/bootstrap-fileinput/css/fileinput.css' filter='cssrewrite'
+  'bundles/app/vendor/datepicker/css/bootstrap-datepicker.css' filter='cssrewrite'
+
+  'bundles/app/css/app.products-mall-price.css' filter='cssrewrite' %}
+
+  <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {% set useVue100 = true %}{# Vue.js 1.0 利用 #}
+  {{ parent() }}
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/db/db.min.js'
+
+  '@AppBundle/Resources/public/js/app.products-mall-price.js'
+
+  '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/fileinput.js'
+  '@AppBundle/Resources/public/vendor/bootstrap-fileinput/js/locales/ja.js'
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js' %}
+
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div class="container container-large">
+
+    <div class="clearfix" id="globalMessage"
+         data-loading-image-url="{{ asset('img/loading.gif') }}"
+         data-get-list-data-url="{{ path('products_mall_price_get_list_data') }}"
+      >
+      <div class="row">
+        <div class="pull-left">
+          <h2>SHOPLIST価格一覧</h2>
+        </div>
+        <div class="pull-right">
+          <h3>
+            <button class="btn btn-default" data-toggle="modal" data-target="#modalUploadCsv">
+              <i class="fa fa-upload"></i> SHOPLIST商品詳細CSVアップロード
+            </button>
+
+            <button class="btn btn-default mr5" v-on:click="loadData"><i class="fa fa-repeat"></i> 再読込</button>
+
+            <div class="dropdown pull-right">
+              <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                操作 <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a v-on:click="checkAll">
+                    <i class="fa fa-check-square-o"></i> 全てチェックする
+                  </a>
+                </li>
+                <li>
+                  <a v-on:click="unCheckAll">
+                    <i class="fa fa-square-o"></i> 全てチェックを外す
+                  </a>
+                </li>
+                <li>
+                  <a v-on:click="csvDownload">
+                    <i class="fa fa-download"></i> CSVダウンロード
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="pull-left">
+          <div class="(% messageCssClass %)" v-text="message"></div>
+        </div>
+      </div>
+    </div>
+
+    {% for type, flashMessages in app.session.flashbag.all() %}
+      {% if type in ['info', 'success', 'notice', 'warning', 'danger'] %}
+        <div>
+          {% for flashMessage in flashMessages %}
+            <div class="alert alert-{{ type }}">
+              {{ flashMessage }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="row" id="functionBlock">
+    </div>
+
+
+    <div id="mallPriceList"
+         data-load-url="{{ path('products_mall_price_get_list_data') }}"
+         data-image-parent-url="{{ imageParentUrl }}"
+      >
+
+      {# ページ送りリンク #}
+      <nav class="tablePagination">
+        <ul class="pagination pagination-sm">
+          <li v-bind:class="[isStartPage ? 'disabled' : '']">
+            <a href="#" aria-label="Previous" class="disabled" v-on:click="showPrev">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li v-for="pageIndex in pageList" track-by="$index" v-bind:class="[isPage(pageIndex) ? 'active' : '']">
+            <template v-if="isNaN(pageIndex)">
+              <span>(% pageIndex %)</span>
+            </template>
+            <template v-else>
+              <a href="#" v-on:click="showPage(pageIndex, $event)">(% pageIndex %)</a>
+            </template>
+          </li>
+          <li v-bind:class="[isEndPage ? 'disabled' : '']">
+            <a href="#" aria-label="Next" v-on:click="showNext">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+
+        <form role="form" class="inlineBlock">
+          <select v-model="pageItemNum" class="form-control input-sm" v-on:change="showPage(1)" number>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="500">500</option>
+          </select>
+        </form>
+      </nav>
+
+
+      <table class="table table-border table-condensed">
+        <tr>
+          <th class="text-center sortable" v-bind:class="getSortMarkCssClass('daihyo_syohin_code')" v-on:click="switchSort('daihyo_syohin_code')">商品コード</th>
+          <th class="text-center">サムネイル</th>
+          <th class="text-center sortable" v-bind:class="getSortMarkCssClass('rakuten_price')" v-on:click="switchSort('rakuten_price')">楽天販売価格</th>
+          <th class="text-center sortable" v-bind:class="getSortMarkCssClass('shoplist_price')" v-on:click="switchSort('shoplist_price')">SHOPLIST(Access)</th>
+          <th class="text-center sortable" v-bind:class="getSortMarkCssClass('shoplist_current_price')" v-on:click="switchSort('shoplist_current_price')">SHOPLIST登録</th>
+          <th class="text-center sortable" v-bind:class="getSortMarkCssClass('diff_rate')" v-on:click="switchSort('diff_rate')">価格乖離率</th>
+          <th class="text-center">
+            <input type="checkbox" class="checkboxLarge" v-on:click="pageCheckToggle($event)" >
+          </th>
+        </tr>
+
+        <tr v-for="item in pageData">
+          <td v-text="item.daihyo_syohin_code"></td>
+          <td>
+            <img v-if="item.picture.length > 0" v-bind:src="item.picture" class="img-responsive thumb" />
+          </td>
+          <td class="text-right" v-text="item.rakuten_price"></td>
+          <td class="text-right" v-text="item.shoplist_price"></td>
+          <td class="text-right" v-text="item.shoplist_current_price"></td>
+          <td class="text-center"><span v-text="item.diff_rate"></span>%</td>
+          <td class="text-center">
+            <input type="checkbox" class="checkboxLarge"
+                   v-model="item.checked"
+                   v-bind:true-value="1"
+                   v-bind:false-value="0"
+                   v-on:click="toggleCheck(item)"/>
+          </td>
+        </tr>
+
+      </table>
+
+      {# ダウンロード用form #}
+      <form action="{{ path('products_mall_price_shoplist_price_download') }}" method="post"
+            id="csvDownloadForm"></form>
+    </div>
+
+
+  </div>
+
+  {# modals #}
+  <div class="modal"
+       id="modalUploadCsv"
+       tabindex="-1"
+       data-backdrop="static" data-keyboard="false"
+       data-upload-url="{{ path('products_mall_price_shoplist_upload') }}"
+    >
+
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="modal-label">
+            SHOPLIST 商品詳細CSVアップロード
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="message-area">
+            <div v-bind:class="messageClass" v-text="message"></div>
+          </div>
+
+          {# アップロード #}
+          <form method="post" enctype="multipart/form-data">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label class="control-label">アップロードするファイルを選択してください</label>
+                <input id="shoplistCsvUpload" name="upload[]" type="file" class="file-loading" multiple>
+                <div id="" class="help-block"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+

@@ -1,0 +1,155 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {% stylesheets
+    'bundles/app/css/app.product-edit-size-register.css' filter='cssrewrite'
+  %}
+    <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.product-edit-sizeRegister.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div
+    id="sizeRegister" class="container"
+    data-search-url="{{ path('product_edit_size_register_search') }}"
+    data-update-url="{{ path('product_edit_size_register_update') }}"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_300_300'}) }}"
+  >
+
+    {# Flash メッセージ #}
+    {% include 'AppBundle::parts/flash-message.html.twig' %}
+
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>自動計測機能連動 サイズ登録</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+    {# 検索フォーム #}
+    <div class="form-inline clearfix mb10 mt10">
+      <div class="form-group pull-left mr5">
+        <label class="mb0" for="barcode">バーコード：</label>
+        <input type="text" class="form-control w200" id="barcode"
+          v-model="barcode" @keyup.enter="search" />
+      </div>
+      <div class="form-group pull-left mr20">
+        <button type="button" class="btn btn-primary" @click="search">
+          検索
+        </button>
+      </div>
+      <div class="form-group pull-left mr5">
+        <label class="mb0" for="neSyohinSyohinCode">NE商品コード：</label>
+        <input type="text" class="form-control w200" id="neSyohinSyohinCode"
+          v-model="skuCode" @keyup.enter="search('sku')" />
+      </div>
+      <div class="form-group pull-left mr10">
+        <button type="button" class="btn btn-primary" @click="search('sku')">
+          検索
+        </button>
+      </div>
+    </div>
+
+    <div class="panel panel-default" v-if="item" v-cloak>
+      <div class="panel-body">
+        <div class="form-group d-flex mw1000 mx-auto">
+          <div class="row row10 flex-1 mr20">
+            <table class="table table-bordered table-condensed mb5">
+              <tr>
+                <td class="text-center vMiddle fz20 bold" v-text="item.neSyohinSyohinCode"></td>
+              </tr>
+              <tr>
+                <td v-text="item.daihyoSyohinName"></td>
+              </tr>
+              <tr>
+                <td class="w300">
+                  <img :src="displayThumbnailUrl" class="img-responsive mx-auto" />
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="flex-1">
+            <div class="row row10 mb10">
+              <table class="table table-bordered table-condensed mb5">
+                <tr>
+                  <th></th>
+                  <th class="text-center w100" data-toggle="tooltip" title="最長辺">幅 (cm)</th>
+                  <th class="text-center w100" data-toggle="tooltip" title="中辺">奥行 (cm)</th>
+                  <th class="text-center w100" data-toggle="tooltip" title="最短辺">高さ (cm)</th>
+                  <th class="text-center w100">重量 (g)</th>
+                </tr>
+                <tr>
+                  <td class="text-center">現在のサイズ</td>
+                  <td class="text-right" v-text="displayCurrentSize.width"></td>
+                  <td class="text-right" v-text="displayCurrentSize.depth"></td>
+                  <td class="text-right" v-text="displayCurrentSize.height"></td>
+                  <td class="text-right" v-text="displayCurrentSize.weight"></td>
+                </tr>
+                <tr>
+                  <td class="text-center vMiddle">変更後サイズ</td>
+                  <td>
+                    <input id="width" type="number" step="0.1" min="0"
+                      v-model="inputList.width" @input="editSize($event.target)"
+                      class="form-control text-right" :class="addWarningClass.width" />
+                  </td>
+                  <td>
+                    <input id="depth" type="number" step="0.1" min="0"
+                      v-model="inputList.depth" @input="editSize($event.target)"
+                      class="form-control text-right" :class="addWarningClass.depth" />
+                  </td>
+                  <td>
+                    <input id="height" type="number" step="0.1" min="0"
+                      v-model="inputList.height" @input="editSize($event.target)"
+                      class="form-control text-right" :class="addWarningClass.height" />
+                  </td>
+                  <td>
+                    <input id="weight" type="number" step="1" min="0"
+                      v-model="inputList.weight" @input="editSize($event.target)"
+                      class="form-control text-right" :class="addWarningClass.weight" />
+                  </td>
+                </tr>
+              </table>
+              <button type="button" @click="update" class="btn btn-primary pull-right">
+                更新
+              </button>
+            </div>
+            <div class="panel-body mt10 w400 mx-auto">
+              <div class="mb10">こちらのSKUが同時更新されます</div>
+              <table class="table table-bordered table-condensed"
+                v-show="item.skuList.length > 0"
+              >
+                <tr v-for="sku in item.skuList" is="skuList" :sku="sku">
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {# テーブル行テンプレート #}
+    <script type="text/x-template" id="templateSkuListTableRow">
+      <tr>
+        <td v-text="sku" class="text-left vMiddle">
+        </td>
+      </tr>
+    </script>
+
+  </div>
+{% endblock %}

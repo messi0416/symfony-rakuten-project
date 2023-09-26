@@ -1,0 +1,105 @@
+MiscBundle\Entity\TbStockTransport:
+    type: entity
+    repositoryClass: MiscBundle\Entity\Repository\TbStockTransportRepository
+    table: tb_stock_transport
+    # indexes:
+    id:
+        id:
+            type: integer
+            nullable: false
+            generator:
+                strategy: AUTO
+    fields:
+        account:
+            type: string
+            length: 30
+            nullable: false
+            options:
+              default: ''
+        status:
+            type: integer
+            nullable: false
+            options:
+              default: 0
+        date:
+            type: datetime
+            nullable: false
+
+        departure_date:
+            type: datetime
+            nullable: true
+        estimated_date:
+            type: datetime
+            nullable: true
+        arrival_date:
+            type: datetime
+            nullable: true
+        transport_code:
+            type: string
+            length: 20
+            nullable: false
+            options:
+              default: ''
+        transport_number:
+            type: string
+            length: 50
+            nullable: false
+            options:
+              default: ''
+        shipping_method:
+            type: string
+            length: 20
+            nullable: false
+            options:
+              default: ''
+        shipping_number:
+            type: string
+            length: 50
+            nullable: false
+            options:
+              default: ''
+
+        departure:
+            type: string
+            length: 20
+            nullable: false
+            options:
+              default: ''
+        destination:
+            type: string
+            length: 20
+            nullable: false
+            options:
+              default: ''
+
+        departure_warehouse_id:
+            type: integer
+            nullable: false
+            options:
+              default: 0
+        destination_warehouse_id:
+            type: integer
+            nullable: false
+            options:
+              default: 0
+
+        picking_list_date:
+            type: datetime
+            nullable: true
+        picking_list_number:
+            type: integer
+            nullable: false
+            options:
+                default: 0
+
+        created:
+            type: datetime
+            nullable: false
+        updated:
+            type: datetime
+            nullable: false
+
+    lifecycleCallbacks:
+        # 初回登録時 処理
+        prePersist:
+            - fillTimestamps

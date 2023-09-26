@@ -1,0 +1,28 @@
+MiscBundle\Entity\TbSalesAnaMatch:
+    type: entity
+    table: tb_sales_ana_match
+    id:
+        # 受注年:
+        year:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+        # 受注月:
+        month:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            id: true
+    fields:
+        # 総合計:
+        total:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    lifecycleCallbacks: {  }

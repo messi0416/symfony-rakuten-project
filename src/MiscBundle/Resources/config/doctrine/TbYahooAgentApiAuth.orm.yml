@@ -1,0 +1,10 @@
+MiscBundle\Entity\TbYahooAgentApiAuth:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbYahooAgentApiAuthRepository
+  table: tb_yahoo_agent_api_auth
+
+  fields:
+    shop_code:
+      type: string
+      nullable: false
+      default: ''

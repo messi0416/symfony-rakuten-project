@@ -1,0 +1,59 @@
+MiscBundle\Entity\TbSalesDetailVoucherCateDirectory:
+    type: entity
+    table: tb_sales_detail_voucher_cate_directory
+    indexes:
+        rakutencategories_1:
+            columns:
+                - rakutencategories_1
+        rakutencategories_1_root:
+            columns:
+                - rakutencategories_1_root
+    id:
+        # neディレクトリid:
+        id:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+                default: ''
+            id: true
+            column: NEディレクトリID
+            generator:
+                strategy: IDENTITY
+    fields:
+        cateCode:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: cate_code
+        rakutencategories1:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: rakutencategories_1
+        rakutencategories1Root:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: rakutencategories_1_root
+        rakutencategories1Order:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: rakutencategories_1_order
+        rakutencategories1Branch:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: rakutencategories_1_branch
+    lifecycleCallbacks: {  }

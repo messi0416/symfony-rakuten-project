@@ -1,0 +1,65 @@
+MiscBundle\Entity\TbProductLocationLog:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbProductLocationLogRepository
+  table: tb_product_location_log
+
+  id:
+    id:
+      type: integer
+      nullable: false
+      generator:
+          strategy: IDENTITY
+
+  fields:
+    account:
+      type: string
+      length: 30
+      nullable: false
+    operation:
+      type: string
+      length: 50
+      nullable: false
+    type:
+      type: string
+      length: 10
+      nullable: false
+    action_key:
+      type: string
+      length: 24
+      nullable: false
+    location_id:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+    location_code:
+      type: string
+      length: 30
+      nullable: false
+      options:
+        default: ''
+    ne_syohin_syohin_code:
+      type: string
+      length: 50
+      nullable: false
+      options:
+        default: ''
+
+    pre_info:
+      type: string
+      nullable: true
+    post_info:
+      type: string
+      nullable: true
+
+    created:
+      type: datetime
+      nullable: false
+
+    # tb_product_location_log_comment.comment 値はNativeQueryや手動でセットする
+    comment:
+      type: string
+      nullable: true
+      readOnly: true
+
+  lifecycleCallbacks: {}

@@ -1,0 +1,16 @@
+/** モデル募集フォーム 共通CSS */
+
+#modelRecruitmentKidsForm
+{
+  padding-top: 20px;
+}
+
+ul.formNotes {
+  list-style:none;
+  padding-left: 10px;
+}
+
+.note {
+  font-size: 0.7rem;
+  color: #0000ff;
+}

@@ -1,0 +1,16 @@
+MiscBundle\Entity\TbStockChangeHistoryExcludeProduct:
+  type: entity
+  repositoryClass: MiscBundle\Entity\Repository\TbStockChangeHistoryExcludeProductRepository
+  table: tb_stock_change_history_exclude_product
+  id:
+    daihyoSyohinCode:
+      type: string
+      nullable: false
+      length: 30
+      fixed: false
+      comment: 代表商品コード
+      id: true
+      column: daihyo_syohin_code
+      generator:
+        strategy: IDENTITY
+  lifecycleCallbacks: {}

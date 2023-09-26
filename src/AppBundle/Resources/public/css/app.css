@@ -1,0 +1,869 @@
+/**
+ * アプリ CSS
+ */
+@media (min-width: 1200px) {
+  .container-large {
+    width: 1900px;
+    max-width: 100%;
+  }
+
+  .container-full {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .modal-content.large {}
+}
+@media (min-width: 992px) {
+  .modal-content.large {}
+}
+@media (min-width: 1300px) {
+  .modal-content.large {
+    width:1200px;
+    margin-left: -150px; /* (900 - 1200) / 2 */
+  }
+}
+@media (min-width: 1600px) {
+  .modal-content.large {
+    width:1500px;
+    margin-left: -300px; /* (900 - 1500) / 2 */
+  }
+}
+
+body{
+  font-family:Avenir , "Open Sans" , "Helvetica Neue" , Helvetica , Arial , Verdana , Roboto, "ヒラギノ角ゴ Pro W3" , "Hiragino Kaku Gothic Pro" , "Meiryo UI" , "メイリオ" , Meiryo , "游ゴシック" , "Yu Gothic" , "游ゴシック体" , "YuGothic" , "ＭＳ Ｐゴシック" , "MS PGothic" , sans-serif;
+}
+
+/* bootstrap上書き */
+.nav-tabs > li > a {
+  background-color: whitesmoke;  /* 非活性タブの色を薄い灰色に */
+  border-bottom: 1px solid #ddd;
+}
+
+/* tableタグに設定。奇数行に背景色を付け見易くする（マージしたテーブルには非推奨） */
+.odd-bg-smoke tr:nth-child(odd) td {
+  background-color: whitesmoke;
+}
+
+.bg-modified {
+  background-color: mistyrose;
+}
+.shadow-modified {
+  box-shadow: red 0px 0px 6px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.clearfix:after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.rowEqHeight {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.rowMiddleCol {
+  position: relative;
+}
+.rowMiddleCol > div {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.row10 {
+  margin-left:-5px;
+  margin-right:-5px;
+}
+.row10>div{
+  padding-right:5px;
+  padding-left:5px;
+}
+.row10>label{
+  padding-right:5px;
+  padding-left:5px;
+}
+
+.form-horizontal .form-group.narrowSpace>label {
+  padding-right: 5px;
+}
+.form-horizontal .form-group.narrowSpace>div {
+  padding-left: 5px;
+}
+
+.panelTitle {
+  font-size: 24px;
+}
+
+.modal-open {
+  overflow: auto;
+}
+
+.hidden {
+  display: none;
+}
+.mb0 { margin-bottom: 0 !important; }
+.mb5 { margin-bottom: 5px !important; }
+.mb10 { margin-bottom: 10px !important; }
+.mb20 { margin-bottom: 20px !important; }
+.mb30 { margin-bottom: 30px !important; }
+.mb40 { margin-bottom: 40px !important; }
+.mb50 { margin-bottom: 50px !important; }
+
+.mr3 { margin-right: 3px !important; }
+.mr5 { margin-right: 5px !important; }
+.mr10 { margin-right: 10px !important; }
+.mr20 { margin-right: 20px !important; }
+.mr30 { margin-right: 30px !important; }
+.mr40 { margin-right: 40px !important; }
+.mr50 { margin-right: 50px !important; }
+
+.mt0 { margin-top: 0 !important; }
+.mt8 { margin-top: 8px !important; }
+.mt10 { margin-top: 10px !important; }
+.mt20 { margin-top: 20px !important; }
+
+.ml5 { margin-left: 5px !important; }
+
+.w30 { width: 30px !important; }
+.w50 { width: 50px !important; }
+.w60 { width: 60px !important; }
+.w70 { width: 70px !important; }
+.w80 { width: 80px !important; }
+.w100 { width: 100px !important; }
+.w120 { width: 120px !important; }
+.w150 { width: 150px !important; }
+.w170 { width: 170px !important; }
+.w200 { width: 200px !important; }
+.w300 { width: 300px !important; }
+.w400 { width: 400px !important; }
+.w500 { width: 500px !important; }
+.w600 { width: 600px !important; }
+
+.h20 { height: 20px !important; }
+.h30 { height: 30px !important; }
+.h50 { height: 50px !important; }
+.h60 { height: 60px !important; }
+.h80 { height: 80px !important; }
+.h100 { height: 100px !important; }
+.h120 { height: 120px !important; }
+.h150 { height: 150px !important; }
+.h200 { height: 200px !important; }
+.h300 { height: 300px !important; }
+.h400 { height: 400px !important; }
+.h500 { height: 500px !important; }
+.h600 { height: 600px !important; }
+
+.minWidth100 { min-width: 100px !important; }
+.minWidth180 { min-width: 180px !important; }
+.minWidth300 { min-width: 300px !important; }
+
+.p6v { padding-top: 6px !important; padding-bottom: 6px !important; }
+.p0v { padding-top: 0px !important; padding-bottom: 0px !important; }
+
+.p0 { padding: 0px !important; }
+.p6 { padding: 6px !important; }
+.p10 { padding: 10px !important; }
+
+.pt6  { padding-top: 6px !important; }
+.pt10 { padding-top: 10px !important; }
+.pt15 { padding-top: 15px !important; }
+.pt30 { padding-top: 30px !important; }
+
+.pb6 { padding-bottom: 6px !important; }
+
+.pl5 { padding-left: 5px !important; }
+.pl30 { padding-left: 30px !important; }
+
+.pr5 { padding-right: 5px !important; }
+.pr30 { padding-right: 30px !important; }
+
+
+.relative {
+  position: relative;
+}
+
+.displayTable {
+  display: table;
+}
+.displayTableCell {
+  display: table-cell;
+}
+
+.wordBreakAll {
+  word-break: break-all;
+}
+
+/* font-awesome までちょっかいを掛ける templatemo。（誰が採用した。）仕方ないので別クラス */
+.fa-my-search:before {
+  content: "\f002";
+}
+/* これもtemplatemo の上書きに対抗 */
+.table-condensed>tbody>tr>td,
+.table-condensed>tbody>tr>th,
+.table-condensed>tfoot>tr>td,
+.table-condensed>tfoot>tr>th,
+.table-condensed>thead>tr>td,
+.table-condensed>thead>tr>th {
+  padding: 5px;
+}
+
+.vTop {
+  vertical-align: top !important;
+}
+.vMiddle {
+  vertical-align: middle !important;
+}
+.vBottom {
+  vertical-align: bottom !important;
+}
+
+input[type=checkbox].checkboxLarge {
+  -ms-transform: scale(1.5, 1.5);
+  -webkit-transform: scale(1.5, 1.5);
+  transform: scale(1.5, 1.5);
+}
+
+.top04em { /* チェックボックスの縦中央寄せ */
+  position: absolute;
+  top: 0.4em;
+}
+
+form label {
+  font-weight: normal;
+}
+.form-group label {
+  font-weight: normal;
+}
+
+.formError li {
+  margin-left: 0;
+  list-style-type: none;
+}
+
+.tooltip.error .tooltip-inner {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #a94442;
+  text-align: center;
+  background-color: #f2dede;
+  border-radius: 4px;
+}
+
+.shadow {
+  background-color: #efefef;
+}
+.gray {
+  color: #c0c0c0;
+}
+.dgray {
+  color: #606060;
+}
+
+.red {
+  color: red;
+}
+
+input:read-only.readonlyWhite {
+  background-color: #fff;
+}
+
+.updatedRow {
+  background-color: #fffacd;
+}
+
+.inlineBlock {
+  display: inline-block;;
+}
+
+.forceInlineBlock {
+  display: inline-block !important;
+}
+
+.inlineFlex {
+  display: inline-flex;
+}
+
+
+.fullWidth {
+  width: 100%;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+.multiLine {
+  white-space: pre;
+  word-wrap: break-word;
+}
+.multiLineWrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.text-pre-wrap {
+  white-space: pre-wrap;
+}
+
+div.main {
+  margin-top: 20px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+a.pointer {
+  cursor: pointer;
+}
+
+li.buttonLi {
+  height: 54px;
+  line-height: 34px;
+}
+
+div.buttonBand {
+  width: 100%;
+  margin-bottom: 5px;
+  text-align: right;
+}
+
+.weightNormal {
+  font-weight: normal;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.inputHeight {
+  line-height: 34px;
+}
+.inputHeightSm {
+  line-height: 30px;
+}
+.alertHeight {
+  line-height: 52px;
+}
+
+.input-xs {
+  height: 24px;
+  padding: 2px 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+div.loading {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+}
+
+div.loading p.notice {
+  margin: 10px auto;
+}
+
+
+div.notifyIcon {
+  margin-top: 20px;
+  margin-bottom: 10px;
+
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 24px;
+  line-height: 30px;
+  vertical-align: middle;
+}
+
+div#globalMessage {
+  padding: 10px;
+}
+
+input.miniInt {
+  width: 24px;
+  text-align: center;
+}
+input.smallInt {
+  width: 45px;
+  text-align: right;
+}
+input.midSmallInt {
+  width: 60px;
+  text-align: right;
+}
+
+/* テーブル ソートヘッダ */
+th.sortFree {
+  background-image: none;
+}
+th.sortAsc {
+  background: url("../img/sort_asc.png") no-repeat right 6px bottom 12px;
+}
+th.sortDesc {
+  background: url("../img/sort_desc.png") no-repeat right 6px bottom 8px;
+}
+
+
+.noticeSubTitle {
+  word-wrap: break-word;
+  max-width: 80px;
+}
+
+
+div.explain {
+  padding: 10px 10px;
+  font-size: 0.8em;
+  line-height: 1em;
+  color: #606060;
+}
+
+
+/* 通知一覧 「information」アイコン */
+img.notificationListIcon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.notificationInformation {
+}
+.notificationInformation textarea {
+  margin: 10px auto;
+  width: 100%;
+  height: 400px;
+}
+
+.list-group-item.narrow {
+  padding: 3px 6px;
+}
+
+.list-group-item.gray, .list-group-item.gray:focus, .list-group-item.gray:hover {
+  color: #777;
+  background-color: #eee;
+}
+
+/* 機能 ボタン画面 */
+#modalExportCsvYahoo .dialogForm {
+  padding: 5px 20px;
+}
+/* Yahoo CSV 「削除CSV」チェックボックス 中央揃え */
+#modalExportCsvYahoo #makeDeleteCheckBoxLabel {
+  position: relative;
+  line-height: 34px;
+}
+#modalExportCsvYahoo .labelDeleteDisabled {
+  text-decoration: line-through;
+  color: #c0c0c0;
+  cursor: default;
+}
+
+
+/**
+ * 原価率一覧表
+ */
+#costRatesTable thead tr th.sortable {
+  cursor: pointer;
+}
+#costRatesTable th.costRateFormCol, #costRatesTable th.costRateFormCol {
+  min-width: 80px;
+}
+
+#costRatesTable td.costRate {
+  background-color: #f0ffff !important;
+}
+#costRatesTable tr.unsettled {
+  background-color: #fff0f5 !important;
+}
+#costRatesTable .tableComment {
+  width: 100%;
+  text-align: right;
+}
+
+
+/**
+ * 商品管理
+ */
+#deleteExcludedProductForm {
+  max-width: 600px;
+}
+
+#deleteExcludedProductForm .inputComment {
+  height: 200px;
+}
+
+#deleteExcludedProductsList .tdId {
+  width: 60px;
+}
+#deleteExcludedProductsList .tdCommandButton {
+  width: 150px;
+}
+#deleteExcludedProductsList .tdComment {
+  white-space: pre;
+}
+
+
+/**
+ * 値下げ機能
+ */
+#productsDiscount h2.page-header {
+  margin-top: 10px;
+}
+
+#productsDiscount .pagination {
+  margin: 10px 0;
+}
+
+#productsDiscount table.settingForm {
+  width: 400px;
+  margin-right: 0;
+}
+#productsDiscount img.thumb {
+  width: 80px;
+}
+
+
+table.settingForm>tbody>tr>th,
+table.settingForm>tbody>tr>td {
+  vertical-align: middle;
+}
+table.settingForm>tbody>tr>th {
+  text-align: right;
+  width: 30%;
+}
+table.settingForm>tbody>tr>td {
+  width: 20%;
+}
+
+
+/* ページ送り */
+nav.tablePagination {
+  width: 100%;
+  text-align: right;
+}
+
+/**
+ * 商品別原価率
+ */
+#productCostRateListTable table.table {
+  margin-bottom: 10px;
+}
+#productCostRateListTable div.navigation {
+  text-align: right;
+}
+#productCostRateListTable div.navigation .pagination {
+  margin-bottom: 10px;
+  vertical-align: bottom;
+}
+#productCostRateListTable div.navigation.bottom .pagination {
+  margin-top: 0;
+  margin-bottom: 20px;
+  vertical-align: top;
+}
+#productCostRateListTable .tableComment {
+  width: 100%;
+  text-align: right;
+}
+
+#productCostRateListTable div.navigation .paginationInfo {
+  display: inline-block;
+  margin-bottom: 10px;
+  margin-right: 20px;
+}
+
+#productCostRateListTable img.thumb {
+  width: 80px;
+}
+
+#productCostRateList .searchForm {
+  width: 250px;
+}
+#productCostRateList .settingInputBlock {
+  /* width: 120px; */
+  margin-right: 10px;
+  margin-bottom: 10px;
+  text-align: right;
+}
+#productCostRateList .settingInputBlock input.num {
+  text-align: right;
+}
+
+#productCostRateList p.sireName {
+  color: #606060;
+  text-align: right;
+  width: 100%;
+  padding-top: 10px;
+}
+
+#productCostRateList td.costRate {
+  background-color: #f0ffff !important;
+}
+#productCostRateList tr.unsettled {
+  background-color: #fff0f5 !important;
+}
+
+
+
+.tab-content.tab-content-bordered {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.nav>li.comment {
+  float: right;
+}
+.nav>li.comment>span {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+
+table.table-no-top-border {}
+table.tableNoTopBorder>tbody>tr:first-child>th,
+table.table-no-top-border>tbody>tr:first-child>td {
+  border-top: none;
+}
+
+/**
+ * Fileアップロード用
+ */
+.kv-file-content {
+  display: none;
+}
+.file-preview-frame {
+  height: inherit;
+}
+
+select option.placeholder {
+  color: #c0c0c0;
+}
+select.placeholder {
+  color: #c0c0c0;
+}
+select option.normal {
+  color: #000000;
+}
+
+/**
+ * 倉庫シンボル
+ */
+.label-symbol {
+  color: #333;
+  border: solid 1px #ccc;
+  background-color: #fff;
+}
+
+.warehouseSymbol {
+  font-size: 16px;
+}
+
+/** ボタンの外見のみ。overflowのeffectやカーソルなし */
+.btnLabel {
+  margin: 0;
+  font: inherit;
+
+  overflow: visible;
+  text-transform: none;
+
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+
+  /*
+  -webkit-appearance: button;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  */
+}
+.btnLabel.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.btnLabel.btn-default,
+.btnLabel.btn-default:active
+{
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.btnLabel.btn-success,
+.btnLabel.btn-success:active {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.btnLabel.btn-info,
+.btnLabel.btn-info:active {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.btnLabel.btn-warning,
+.btnLabel.btn-warning:active {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+.btnLabel.btn-danger,
+.btnLabel.btn-danger:active {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.table.layout>tbody>tr>td,
+.table.layout>tbody>tr>th
+{
+  padding: 3px;
+  border: none;
+}
+
+/* 5分割 */
+.col-xs-1-5, .col-sm-1-5, .col-md-1-5, .col-lg-1-5,
+.col-xs-2-5, .col-sm-2-5, .col-md-2-5, .col-lg-2-5,
+.col-xs-3-5, .col-sm-3-5, .col-md-3-5, .col-lg-3-5,
+.col-xs-4-5, .col-sm-4-5, .col-md-4-5, .col-lg-4-5 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.col-xs-1-5 {
+  width: 20%;
+  float: left;
+}
+.col-xs-2-5 {
+  width: 40%;
+  float: left;
+}
+
+.col-xs-3-5 {
+  width: 60%;
+  float: left;
+}
+
+.col-xs-4-5 {
+  width: 80%;
+  float: left;
+}
+@media (min-width: 768px) {
+  .col-sm-1-5 {
+    width: 20%;
+    float: left;
+  }
+  .col-sm-2-5 {
+    width: 40%;
+    float: left;
+  }
+  .col-sm-3-5 {
+    width: 60%;
+    float: left;
+  }
+  .col-sm-4-5 {
+    width: 80%;
+    float: left;
+  }
+}
+@media (min-width: 992px) {
+  .col-md-1-5 {
+    width: 20%;
+    float: left;
+  }
+  .col-md-2-5 {
+    width: 40%;
+    float: left;
+  }
+  .col-md-3-5 {
+    width: 60%;
+    float: left;
+  }
+  .col-md-4-5 {
+    width: 80%;
+    float: left;
+  }
+}
+@media (min-width: 1200px) {
+  .col-lg-1-5 {
+    width: 20%;
+    float: left;
+  }
+  .col-lg-2-5 {
+    width: 40%;
+    float: left;
+  }
+  .col-lg-3-5 {
+    width: 60%;
+    float: left;
+  }
+  .col-lg-4-5 {
+    width: 80%;
+    float: left;
+  }
+}
+
+#shippingPendingList #pendingListTable .product-name {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.more-line2-dot-notation {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+[v-cloak] {
+  display: none;
+}
+.scroll-table {
+  display: block;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+.scroll-table > tbody {
+  width: 100%;
+  display:table;
+}
+
+/**
+ * Font Awesomeアイコン用
+ */
+ .attention-large-icon::before{
+  font-size:1.8em;
+  color:red;
+}

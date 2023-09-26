@@ -1,0 +1,150 @@
+{% extends 'AppBundle::base-admin.html.twig' %}
+{% block stylesheets %}
+  {{ parent() }}
+  {%  stylesheets
+  %}
+  <link href="{{ asset_url }}" rel="stylesheet"/>
+  {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+  {% javascripts
+    '@AppBundle/Resources/public/js/app.product-edit-season-setting.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block body %}
+  <div
+    id="season-setting"
+    class="container"
+    data-thumbnail-url="{{ path('product_view_thumbnail', {dir: 'dir', resizeFile: 'file_80_80'}) }}"
+    data-search-url="{{ path('product_edit_season_setting_search') }}"
+    data-update-url="{{ path('product_edit_season_setting_update') }}"
+  >
+    <div id="header">
+      <div class="clearfix">
+        <div class="pull-left">
+          <h2>シーズン設定</h2>
+        </div>
+      </div>
+
+      {# global-message コンポーネント #}
+      <div is="parts-global-message" :state="messageState"></div>
+    </div>
+
+
+    {# 代表商品情報 #}
+    <div class="panel panel-default" v-cloak>
+      <div class="panel-body">
+        <div>
+          <table class="table table-bordered">
+            <tr>
+              {# 代表商品コード #}
+              <td
+                v-text="mainProduct.daihyoSyohinCode"
+                class="fz18 text-center vMiddle bold w200 px6 py2"
+              >
+              </td>
+              {# 商品画像 #}
+              <td class="w80">
+                <img
+                  :src="thumbnailUrl"
+                  class="img-responsive center-block"
+                  alt="商品画像"
+                />
+              </td>
+              {# 代表商品名 #}
+              <td v-text="mainProduct.daihyoSyohinName" class="vMiddle b0 px6 py2">
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {# 更新ボタン #}
+    <div class="mb10">
+      <button
+        type="button"
+        class="btn btn-primary"
+        @click="update"
+        :disabled="!mainProduct.daihyoSyohinCode || !isUpdatable">
+        更新
+      </button>
+    </div>
+
+    {# シーズン設定 #}
+    <div class="row row10" v-cloak>
+      <div
+        v-for="(settingName, settingKey) in settingTargets"
+        :key="settingKey"
+        class="col-xs-12 col-lg-4 panel panel-default"
+      >
+        <div class="panel-body">
+          {# 項目名 #}
+          <p v-text="settingName"></p>
+          {# 月選択フォーム #}
+          <div class="col-xs-3 p0">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="form-group">
+                  <div v-for="n in 12" class="form-inline">
+                    <input
+                      class="checkbox mr3"
+                      :id="settingKey + n"
+                      type="checkbox"
+                      :value="n"
+                      v-model="months[settingKey]"
+                      :disabled="!mainProduct.daihyoSyohinCode || !isUpdatable"
+                    >
+                    <label
+                      class="checkbox-inline p0 vMiddle"
+                      :for="settingKey + n"
+                      v-text="n + '月'"
+                    >
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {# 一括変更ボタン #}
+          <div class="col-xs-9 p0">
+            <div class="col-xs-6">
+              <div
+                v-for="(months, key) in batchChangeItems.ON"
+                :key="key"
+                class="mb10"
+              >
+                <button
+                  class="btn btn-sm btn-secondary"
+                  v-text="key + ' ON'"
+                  @click="batchChange(settingKey, months, 'ON')"
+                >
+                </butoon>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <div
+                v-for="(months, key) in batchChangeItems.OFF"
+                :key="key"
+                class="mb10"
+              >
+                <button
+                  class="btn btn-sm btn-secondary"
+                  v-text="key + ' OFF'"
+                  @click="batchChange(settingKey, months, 'OFF')"
+                >
+                </butoon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,100 @@
+MiscBundle\Entity\TbMainproductsEnglish:
+  type: entity
+  table: tb_mainproducts_english
+
+  id:
+    daihyo_syohin_code:
+      type: string
+      nullable: false
+      length: 30
+      options:
+        fixed: false
+      id: true
+      column: daihyo_syohin_code
+
+  fields:
+
+    title:
+      type: text
+      nullable: false
+      length: 255
+      options:
+        fixed: false
+
+    description:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    about_size:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    about_color:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    about_material:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    about_brand:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    usage_note:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    supplemental_explanation:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    short_description:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+    short_supplemental_explanation:
+      type: text
+      nullable: true
+      length: 65535
+      options:
+        fixed: false
+
+    manual_input:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+    check_flg:
+      type: integer
+      nullable: false
+      options:
+        default: 0
+
+  lifecycleCallbacks: {  }
+
+  oneToOne:
+    product:
+      targetEntity: TbMainproducts
+      inversedBy: english
+      joinColumn:
+        name: daihyo_syohin_code
+        referencedColumnName: daihyo_syohin_code
+      fetch: LAZY

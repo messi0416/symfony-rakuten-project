@@ -1,0 +1,89 @@
+{% extends 'AppBundle:Picking:base.html.twig' %}
+
+{% block headerTitle %}倉庫在庫ピッキングリスト{% endblock %}
+
+
+{% block javascripts %}
+  {% set useVue200 = true %}{# Vue.js 2.0 利用 #}
+  {{ parent() }}
+
+  {# pagination コンポーネント#}
+  {% include 'AppBundle::parts/pagination.html.twig' %}
+
+  {% javascripts
+  '@AppBundle/Resources/public/vendor/datepicker/js/bootstrap-datepicker.js'
+  '@AppBundle/Resources/public/vendor/datepicker/locales/bootstrap-datepicker.ja.min.js'
+
+  '@AppBundle/Resources/public/js/app.picking-warehouse-stock-move-list.js'
+  %}
+  <script src="{{ asset_url }}"></script>
+  {% endjavascripts %}
+{% endblock %}
+
+{% block contents %}
+
+  <p>現在の倉庫在庫移動先： {{ warehouseName }}</p>
+  <form id="warehouseStockMoveListSearchForm" action="{{ path('picking_warehouse_stock_move_list') }}" method="get">
+    <div class="row row10 mb10">
+
+      <div class="col-xs-6">
+        <div class="input-group date">
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+          <input type="text" name="date" class="form-control" id="searchDate" value="{{ conditions.date ? conditions.date.format('Y-m-d') : '' }}" />
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <select class="form-control" id="pickingListSearchStatus" name="status" v-on:change="search">
+          <option value="incomplete"{% if conditions.status|default('incomplete') == 'incomplete' %} selected{% endif %}>未完了のみ</option>
+          <option value="all"{% if conditions.status|default('') == 'all' %} selected{% endif %}>すべて</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="list-group" id="warehouseStockMoveList"
+       data-remove-list-url="{{ path('picking_warehouse_stock_move_list_remove') }}"
+  >
+
+    {% if list | length > 0 %}
+
+      <table class="table narrow">
+        {% for item in list %}
+        <tr>
+          <td class="col-xs-5 vMiddle">
+            {{ item.date_short }} [ <strong>{{ item.number }}</strong> ]
+            <span class="badge">{{ item.syohin_num }}</span>
+          </td>
+          <td class="col-xs-3 text-center vMiddle">
+            {{ item.status }}
+          </td>
+          <td class="col-xs-3 text-center">
+            <a href="{{ path('picking_warehouse_stock_move_picking_list', { date: item.date, number: item.number }) }}" class="btn {{ item.css }} fullWidth">
+              {{ item.account_name|length > 0 ? item.account_name : 'ピッキング' }}
+            </a>
+          </td>
+
+          <td class="col-xs-1 text-center">
+            <button type="button" class="btn btn-danger" v-on:click="removeList('{{ item.date }}', '{{ item.number }}')">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+
+        </tr>
+        {% endfor %}
+
+      </table>
+
+    {% else %}
+      <div class="row row10">
+        <div class="col-xs-12">
+          <div class="alert alert-info">倉庫在庫ピッキングリストはありません。</div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endblock %}
